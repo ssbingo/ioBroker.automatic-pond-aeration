@@ -169,6 +169,10 @@ admin/                         jsonConfig.json + i18n (siehe §7)
 
 ## 4. ESP32-Direktansteuerung (Kernanforderung „keine weitere Instanz")
 
+> **Zielhardware steht fest:** Waveshare **ESP32-S3-POE-ETH-8DI-8RO** (8 Relais via TCA9554, 8 DI, PoE-Ethernet).
+> Details, Pin-/Kanal-Map und die konkreten Design-Konsequenzen (Relais-Budget, Failsafe-Verdrahtung,
+> Kommunikationsweg PoE-Ethernet) in **[Anhang A](#anhang-a--zielhardware-m7-waveshare-esp32-s3-poe-eth-8di-8ro)**.
+
 **Empfehlung: eigenes, dokumentiertes JSON-Protokoll über HTTP + WebSocket, mit Referenz-Firmware.**
 
 - **Transport:** REST für Kommandos/Konfig, **WebSocket** für Echtzeit-Statuspush (niedrige Latenz für Sicherheit).
@@ -362,7 +366,7 @@ Widget-Adapter darauf aufsetzen kann.
 | **M4.1** | Logging & Debugging | Umfangreiches, aussagekräftiges Logging auf allen Ebenen (error/warn/**debug**/silly) durchgängig **Englisch** (greppbar); **INFO-Meldungen lokalisiert** an der ioBroker-Systemsprache über `lib/messages.js` (11 Sprachen, `translate()` mit EN-Fallback + `{placeholder}`) | Log deckt Start/Config/Kommandos/Control-Tick/Sicherheit/Backend ab; INFO folgt Systemsprache; error/warn/debug/silly bleiben EN |
 | **M5** | Monitoring + Astro/Geo | O₂/Temp/Wassertemp/Druck, Alarme; SunCalc + Nominatim (R12, debounced) | Sensorwerte + Astro-States korrekt |
 | **M6** | Feeder-Kopplung | Discovery (`onMessage`) + Pause-Logik (measure/configured/pulse) + Offset | Fütterung pausiert gewählte Stellen korrekt |
-| **M7** | ESP32-Backend + Firmware | HTTP/WS-Backend, mDNS-Discovery, Heartbeat/Failsafe; Referenz-Firmware-Repo (Grundversion) | ESP32 direkt steuerbar, Failsafe getestet |
+| **M7** | ESP32-Backend + Firmware | HTTP/WS-Backend, Discovery, Heartbeat/Failsafe; Referenz-Firmware für **Waveshare ESP32-S3-POE-ETH-8DI-8RO** (8 Relais via TCA9554, 8 DI, PoE-Ethernet) — **hardwaregenau nach [Anhang A](#anhang-a--zielhardware-m7-waveshare-esp32-s3-poe-eth-8di-8ro)** | ESP32 direkt steuerbar, Boot-/Netz-Failsafe getestet |
 | **M8** | Admin-UI-Feinschliff | Alle Tabs, sendTo-Aktionen, responsive, i18n 11 Sprachen | Responsive-Design-Initiative erfüllt |
 | **M9** | Doku + Release-Härtung | Doku 11 Sprachen (R14/R20), Changelog-Disziplin (R15/R17), Repochecker 0 E/0 W | Release `v0.x`, Aufnahme-Anforderungen erfüllt |
 | **M10** | Erweiterungen | Winter-Modus, O₂-Regelkreis, Statistik, Notifications, Dry-Run | nach Priorität |
@@ -402,5 +406,87 @@ Tasmota-Zusatzbackend). Der ESP32-Firmware-Teil (M7) läuft als **separates Repo
 
 ---
 
-*Nächster konkreter Schritt nach Freigabe: M0 – Gerüst via `npx @iobroker/create-adapter@latest` erzeugen
-(TypeScript, JSON-Config, Node 20, MIT, Trusted-Publishing-Deploy).*
+*Umsetzungsstand (2026-07-07): M0–M5 inkl. M4.1 sind umgesetzt und als 0.0.1–0.0.7 auf GitHub
+(JavaScript, React-Admin, Node ≥ 22). Als Nächstes M6 (Feeder-Kopplung), dann M7 (ESP32, siehe
+Anhang A), M8 (Admin-UI), M9 (Doku/Release).*
+
+---
+
+## Anhang A — Zielhardware (M7): Waveshare ESP32-S3-POE-ETH-8DI-8RO
+
+> Die verbindliche Zielhardware für den ESP32-Backend + die Referenz-Firmware. Vollständiges
+> Datenblatt im Repo: [`dev/hardware/ESP32-S3-POE-ETH-8DI-8RO.md`](dev/hardware/ESP32-S3-POE-ETH-8DI-8RO.md).
+> **Ab sofort hardwaregenau darauf aufsetzen.**
+
+### A.1 Kern-Specs (relevant für uns)
+- **ESP32-S3-WROOM-1U-N16R8** (16 MB Flash, 8 MB PSRAM), WLAN 2,4 GHz + BLE.
+- **8 Relais** (COM/NO/NC, ≤ 10 A/250 V AC bzw. 10 A/30 V DC) über I/O-Expander **TCA9554 (I²C 0x20, Pin 0–7)**.
+- **8 Digitaleingänge** DI1–DI8 = **GPIO4–GPIO11** (invertiert, INPUT_PULLUP), optokoppler-isoliert.
+- **Ethernet W5500** (SPI: CLK15/MOSI13/MISO14/CS16/INT12) + **PoE 802.3af**; **RS485** isoliert (TX17/RX18, Modbus-RTU, 9600).
+- I²C-Bus SDA42/SCL41 (TCA9554 + RTC PCF85063); **Summer GPIO46**, **RGB-LED WS2812 GPIO38**, Boot GPIO0.
+- Versorgung: **PoE** *oder* 7–36 V DC *oder* 5 V USB-C. Vollständig isoliert, Hutschiene.
+
+### A.2 Kommunikationsweg (Adapter ↔ Board) — Entscheidung
+Ziel ist „keine weitere ioBroker-Instanz". Daher:
+- **Primär: PoE-Ethernet (W5500)** → ein Kabel für Strom + Daten, galvanisch getrennt, robust (ideal am Teich).
+  Die **eigene Referenz-Firmware** exponiert unser **HTTP-REST + WebSocket-JSON-Protokoll** (siehe §4) direkt.
+- **WLAN** als Fallback (eigene Firmware kann Ethernet primär + WLAN-Fallback; die ESPHome-Einschränkung
+  „Ethernet XOR WLAN" gilt nur für ESPHome, nicht zwingend für eigene Firmware).
+- **Bewusst NICHT** als Standardweg: ESPHome-native-API (bräuchte ESPHome-Adapter), MQTT/Waveshare-Cloud
+  (bräuchte Broker) und RS485-Modbus-Steuerung (bräuchte Modbus-Adapter) — alle = „weitere Instanz".
+
+### A.3 Relais-Belegung & -Budget (WICHTIG)
+`setValve(i)` schaltet **TCA9554-Pin i** (I²C 0x20). Es gibt **nur 8 Relais gesamt** — Belüftungsstellen,
+Notventil und (steuerbare) Pumpe teilen sich diese 8 Kanäle:
+
+| Konfiguration | Belegte Relais | Max. Belüftungsstellen / 1 Board |
+|---|---|---|
+| Notventil (1) + steuerbare Pumpe (1) | 2 | **6** |
+| Notventil (1), Pumpe extern/immer-an | 1 | **7** |
+| kein Notventil-Relais (passiv) + keine Pumpensteuerung | 0 | **8** |
+| Motorkugelhahn-Notventil **3-Draht (2 Relais)** + Pumpe (1) | 3 | **5** |
+
+→ **Konsequenz:** Die Produktobergrenze „8 Belüftungsstellen" ist auf **einem** Board nur ohne Relais für
+Notventil/Pumpe erreichbar. Für 8 Stellen **plus** Notventil/Pumpe braucht es ein **zweites Board** oder
+externe Kontaktoren. **Firmware + Adapter benötigen daher eine konfigurierbare Kanal-Zuordnung**
+(Punkt→Relaisindex, Notventil→Relais, Pumpe→Relais) **und eine Warnung bei Überbuchung** (> 8 Ausgänge).
+
+### A.4 Failsafe-Verdrahtung (Deadhead-Schutz, ergänzt M3)
+Relais sind bei **Stromausfall und beim Boot de-energisiert** → der de-energisierte Zustand **muss** der sichere
+sein. Empfohlenes Prinzip (gegen Schaltplan + Ventil-Datenblatt prüfen):
+
+| Aktor | Ventiltyp | Relais/Spule | Normalbetrieb | Stromlos (Power-Loss/Boot) |
+|---|---|---|---|---|
+| Belüftungsventil | Magnet **NC** | Spule an COM–NO | Relais AN = Ventil **auf** | Ventil **zu** (sicher) |
+| Notventil (Relief) | Magnet **NO** | Spule an COM–NO | Relais AN = Ventil **zu** | Ventil **auf** (Relief) ✔ Failsafe |
+| Pumpe | via Kontaktor | Kontaktor an COM–NO | Relais AN = Pumpe **an** | Pumpe **aus** ✔ |
+
+- **Firmware setzt beim Boot sofort sichere Defaults** (Notventil auf, Ventile zu, Pumpe aus), **bevor** das
+  Netzwerk verbunden ist.
+- **Motorkugelhahn (CWX-15N) als Notventil — Achtung:** ein Motorkugelhahn **federt nicht selbsttätig auf** und
+  bleibt bei Stromausfall in seiner Position. Er ist damit **kein** „fail-open"-Relief. Dann muss der
+  **Deadhead-Schutz über die Pumpe** greifen (Pumpe im selben Stromkreis → fällt mit aus). **Empfehlung für echte
+  Failsafe: Notventil als NO-Magnetventil** (siehe Entscheidung 5). Motorkugelhahn ggf. **2 Relais** (auf/zu) +
+  **Endlagen-Feedback über DI**; Stellzeit über `emergencyMotorTravelSec`.
+
+### A.5 Digitaleingänge (DI1–DI8) — Nutzung
+GPIO4–GPIO11 (invertiert). Vorgesehene Verwendung, von der Firmware im `/api/status` gemeldet und vom Adapter
+in Safety/Monitoring gespeist:
+- **Ventil-Endlagen** (Motorkugelhahn auf/zu) · **Druckschalter** (harte Überdrucksicherung) · **Schwimmer-/
+  Leckschalter** · **Pumpen-Lauf-Feedback** · **Handtaster** (lokaler Not-Aus/Override).
+
+### A.6 Sensoren & lokale Autonomie
+- **RS485 (Modbus RTU):** O₂-/Temperatur-/Drucksensoren können **direkt am Board** hängen; die Firmware liest sie
+  und exponiert sie im `/api/status` → spart separate ioBroker-Adapter (Alternative zum M5-Fremd-States-Weg).
+- **RTC PCF85063 + NVS/Flash:** autonome Zeit & Zeitplan-Fallback, damit die Firmware auch **ohne Netz** sicher
+  weiterläuft (On-Device-Watchdog, Rundlauf, Notventil-Logik).
+- **Summer (GPIO46):** akustischer Alarm bei Interlock-Trip · **RGB-LED (WS2812, GPIO38):** Statusfarbe
+  (grün normal / gelb Modus / rot Interlock).
+
+### A.7 Firmware ↔ Protokoll-Mapping (konkretisiert §4)
+- `GET /api/info` → `{fw, protocol, relays:8, di:8, features:[ethernet,rs485,rtc]}`.
+- `GET /api/status` → `{valves:[8×bool] (TCA9554), di:[8×bool] (GPIO4–11), pump, emergency, pressure/o2/temps (RS485), uptime}`.
+- `POST /api/valve {index,open}` → TCA9554-Pin · `POST /api/emergency` · `POST /api/pump` · `WS /ws` (Status-Push + Heartbeat).
+- **Firmware-Stack-Empfehlung:** Arduino-ESP32 oder ESP-IDF; W5500-Ethernet-Lib; TCA9554 über I²C; AsyncWebServer
+  für HTTP+WS; WS2812/Buzzer für lokale Signalisierung. **Protokoll-versioniert** (`/api/info.protocol`), Adapter
+  prüft Kompatibilität.
