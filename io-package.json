@@ -1,20 +1,20 @@
 {
 	"common": {
 		"name": "automatic-pond-aeration",
-		"version": "0.0.9",
+		"version": "0.0.10",
 		"news": {
-			"0.0.9": {
-				"en": "Full configuration UI: a tabbed admin page for aeration points, groups, schedules, sensors, location (map + geocoding), the feeder coupling and safety — so everything can be configured and tested from the admin.",
-				"de": "Vollständige Konfigurations-Oberfläche: eine Tab-Admin-Seite für Belüftungsstellen, Gruppen, Zeitpläne, Sensoren, Standort (Karte + Geocoding), Feeder-Kopplung und Sicherheit — alles im Admin konfigurier- und testbar.",
-				"ru": "Полный интерфейс настройки: вкладки админки для точек аэрации, групп, расписаний, датчиков, местоположения (карта + геокодинг), связи с кормушкой и безопасности — всё настраивается и тестируется из админки.",
-				"pt": "Interface de configuração completa: uma página de administração com separadores para pontos de arejamento, grupos, horários, sensores, localização (mapa + geocodificação), ligação ao alimentador e segurança — tudo configurável e testável na administração.",
-				"nl": "Volledige configuratie-UI: een admin-pagina met tabbladen voor beluchtingspunten, groepen, schema's, sensoren, locatie (kaart + geocoding), voederautomaat-koppeling en veiligheid — alles configureerbaar en testbaar in de admin.",
-				"fr": "Interface de configuration complète : une page d'administration à onglets pour les points d'aération, groupes, horaires, capteurs, localisation (carte + géocodage), couplage au distributeur et sécurité — tout est configurable et testable dans l'administration.",
-				"it": "Interfaccia di configurazione completa: una pagina di amministrazione a schede per punti di aerazione, gruppi, pianificazioni, sensori, posizione (mappa + geocodifica), accoppiamento con l'alimentatore e sicurezza — tutto configurabile e testabile nell'amministrazione.",
-				"es": "Interfaz de configuración completa: una página de administración con pestañas para puntos de aireación, grupos, horarios, sensores, ubicación (mapa + geocodificación), acoplamiento con el comedero y seguridad — todo configurable y probable desde la administración.",
-				"pl": "Pełny interfejs konfiguracji: panel administracyjny z zakładkami dla punktów napowietrzania, grup, harmonogramów, czujników, lokalizacji (mapa + geokodowanie), sprzężenia z karmnikiem i bezpieczeństwa — wszystko konfigurowalne i testowalne w panelu.",
-				"uk": "Повний інтерфейс налаштування: сторінка адміністрування з вкладками для точок аерації, груп, розкладів, датчиків, розташування (карта + геокодування), зв'язку з годівницею та безпеки — усе налаштовується й тестується в адмінці.",
-				"zh-cn": "完整的配置界面：带标签页的管理页面，涵盖增氧点、分组、计划、传感器、位置（地图+地理编码）、喂食器联动和安全——全部可在管理界面中配置和测试。"
+			"0.0.10": {
+				"en": "Admin fixes: the OpenStreetMap map now renders correctly and is capped to a third of the page width; the feeder and notification tabs discover the available instances via dropdowns; clearer card-based layout.",
+				"de": "Admin-Korrekturen: die OpenStreetMap-Karte wird jetzt korrekt dargestellt und auf ein Drittel der Seitenbreite begrenzt; die Feeder- und Benachrichtigungs-Tabs finden die verfügbaren Instanzen per Dropdown; übersichtlicheres, kartenbasiertes Layout.",
+				"ru": "Исправления админки: карта OpenStreetMap теперь отображается корректно и ограничена третью ширины страницы; вкладки кормушки и уведомлений находят доступные экземпляры через выпадающие списки; более наглядный макет на карточках.",
+				"pt": "Correções na administração: o mapa OpenStreetMap agora é apresentado corretamente e limitado a um terço da largura da página; os separadores do alimentador e das notificações descobrem as instâncias disponíveis através de listas suspensas; layout mais claro baseado em cartões.",
+				"nl": "Admin-fixes: de OpenStreetMap-kaart wordt nu correct weergegeven en beperkt tot een derde van de paginabreedte; de voeder- en meldingstabbladen vinden de beschikbare instanties via dropdowns; overzichtelijkere, op kaarten gebaseerde lay-out.",
+				"fr": "Corrections de l'administration : la carte OpenStreetMap s'affiche désormais correctement et est limitée à un tiers de la largeur de la page ; les onglets distributeur et notifications découvrent les instances disponibles via des listes déroulantes ; mise en page plus claire à base de cartes.",
+				"it": "Correzioni all'amministrazione: la mappa OpenStreetMap ora viene visualizzata correttamente ed è limitata a un terzo della larghezza della pagina; le schede alimentatore e notifiche rilevano le istanze disponibili tramite menu a discesa; layout più chiaro basato su schede.",
+				"es": "Correcciones de administración: el mapa de OpenStreetMap ahora se muestra correctamente y está limitado a un tercio del ancho de la página; las pestañas de comedero y notificaciones detectan las instancias disponibles mediante listas desplegables; diseño más claro basado en tarjetas.",
+				"pl": "Poprawki panelu: mapa OpenStreetMap wyświetla się teraz poprawnie i jest ograniczona do jednej trzeciej szerokości strony; zakładki karmnika i powiadomień wykrywają dostępne instancje za pomocą list rozwijanych; czytelniejszy układ oparty na kartach.",
+				"uk": "Виправлення адмінки: карта OpenStreetMap тепер відображається коректно й обмежена третиною ширини сторінки; вкладки годівниці та сповіщень знаходять доступні екземпляри через випадні списки; наочніший макет на картках.",
+				"zh-cn": "管理界面修复：OpenStreetMap 地图现在正确显示并限制为页面宽度的三分之一；喂食器和通知标签页通过下拉列表发现可用实例；更清晰的卡片式布局。"
 			}
 		},
 		"titleLang": {

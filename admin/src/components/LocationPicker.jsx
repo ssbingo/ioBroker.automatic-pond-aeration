@@ -134,12 +134,13 @@ function LocationPicker(props) {
 					{error}
 				</Typography>
 			) : null}
-			{/* responsive: full width on small screens, capped on wider ones */}
+			{/* responsive: full width on small screens, capped to max. one third of the
+			    page width on wider ones (as requested) */}
 			<Box
 				sx={{
 					height: 320,
 					width: '100%',
-					maxWidth: { xs: '100%', sm: 480, md: 600 },
+					maxWidth: { xs: '100%', sm: '50%', md: '33%' },
 					mb: 1,
 					border: '1px solid rgba(128,128,128,0.4)',
 				}}
