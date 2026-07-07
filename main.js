@@ -9,11 +9,12 @@
  * monitoring, astronomical times and geolocation, plus a coupling to
  * ioBroker.automatic-feeder that pauses selected points during feeding.
  *
- * Milestone M4: the control engine is in place. An arbiter computes the desired valve
- * states from the mode (auto/manual/off), the schedule, the cyclic round-robin and the
- * groups; valves are switched make-before-break and the M3 dead-head safety interlock runs
- * on top of every result. Monitoring (M5), the feeder coupling (M6) and the ESP32 backend
- * (M7) follow in later milestones.
+ * Milestone M5: monitoring, astronomical times and geolocation are in place. Sensor values
+ * (oxygen, air/water temperature, pressure) are read from foreign states and mirrored, with
+ * low-oxygen / pressure alarms and a temperature-compensated oxygen saturation; astro times
+ * come from suncalc, coordinates from the system config or a Nominatim lookup (rule 12). The
+ * control engine (M4) and the dead-head safety interlock (M3) run underneath. The feeder
+ * coupling (M6) and the ESP32 backend (M7) follow in later milestones.
  *
  * Logging levels used (configurable per instance in the ioBroker admin):
  *   error  - failures that need attention (write failed, unexpected exception)
@@ -30,6 +31,14 @@ const { IoBrokerBackend } = require('./lib/hal/iobroker-backend');
 const { evaluateSafety, planValveTransition } = require('./lib/safety');
 const { resolveDesiredValves } = require('./lib/control/arbiter');
 const { translate, SUPPORTED_LANGUAGES } = require('./lib/messages');
+const { evaluateOxygenAlarm, evaluatePressureAlarm, oxygenSaturationPct } = require('./lib/monitoring/alarms');
+const { computeAstro } = require('./lib/monitoring/astro');
+const {
+	buildNominatimUrl,
+	parseNominatimResponse,
+	mayGeocode,
+	USER_AGENT: GEO_USER_AGENT,
+} = require('./lib/monitoring/geocode');
 
 /** Matches a per-point manual command id like "control.point.3.open". */
 const POINT_OPEN_RE = /^control\.point\.(\d+)\.open$/;
@@ -70,6 +79,14 @@ class AutomaticPondAeration extends utils.Adapter {
 		this.lastOpenCount = -1;
 		// System language for localized INFO messages (detected in onReady).
 		this.sysLang = 'en';
+		// Monitoring / astro / geolocation runtime state.
+		this.astroTimer = null;
+		this.coords = { lat: NaN, lon: NaN };
+		this.lastNight = null;
+		this.lastAstroKey = '';
+		this.oxygenAlarm = false;
+		this.pressureAlarm = false;
+		this.lastGeocodeMs = 0;
 		// A valid (empty) normalized config until onReady loads the real one.
 		this.cfg = validateConfig({}).config;
 	}
@@ -140,6 +157,14 @@ class AutomaticPondAeration extends utils.Adapter {
 			this.controlTick('tick').catch(e => this.log.warn(`Control tick failed: ${e.message}`));
 		}, 1000);
 		await this.controlTick('startup');
+
+		// Monitoring, astronomical times and geolocation (M5).
+		await this.resolveCoordinates();
+		await this.updateAstro();
+		await this.updateMonitoring();
+		this.astroTimer = this.setInterval(() => {
+			this.updateAstro().catch(e => this.log.warn(`Astro update failed: ${e.message}`));
+		}, 60000);
 
 		await this.setConnected(true);
 		this.logInfo('adapterStarted', { points: config.points.length, groups: config.groups.length, mode: this.mode });
@@ -233,6 +258,7 @@ class AutomaticPondAeration extends utils.Adapter {
 			this.backend
 				.handleForeignChange(id, state)
 				.then(() => this.applySafety('hardware-change'))
+				.then(() => this.updateMonitoring())
 				.catch(e => this.log.warn(`Reflecting ${id} failed: ${e.message}`));
 			return;
 		}
@@ -436,6 +462,164 @@ class AutomaticPondAeration extends utils.Adapter {
 	}
 
 	/**
+	 * Resolve the pond coordinates from the configuration (ioBroker system config, or the
+	 * shared location) and publish them to the location.* states.
+	 *
+	 * @returns {Promise<void>}
+	 */
+	async resolveCoordinates() {
+		let lat = NaN;
+		let lon = NaN;
+		let address = '';
+		if (this.cfg.locationMode === 'shared') {
+			lat = parseFloat(String(this.cfg.latitude ?? ''));
+			lon = parseFloat(String(this.cfg.longitude ?? ''));
+			address = this.cfg.address || '';
+		} else {
+			try {
+				const sys = await this.getForeignObjectAsync('system.config');
+				lat = parseFloat(String(sys?.common?.latitude ?? ''));
+				lon = parseFloat(String(sys?.common?.longitude ?? ''));
+			} catch (e) {
+				this.log.debug(`Could not read the system coordinates: ${e.message}`);
+			}
+		}
+		this.coords = { lat, lon };
+		if (Number.isFinite(lat)) {
+			await this.setStateChangedAsync('location.latitude', { val: lat, ack: true });
+		}
+		if (Number.isFinite(lon)) {
+			await this.setStateChangedAsync('location.longitude', { val: lon, ack: true });
+		}
+		if (address) {
+			await this.setStateChangedAsync('location.resolvedAddress', { val: address, ack: true });
+		}
+		if (Number.isFinite(lat) && Number.isFinite(lon)) {
+			this.log.debug(`Using coordinates lat=${lat}, lon=${lon} (location mode "${this.cfg.locationMode}").`);
+		} else {
+			this.log.warn(
+				'No valid coordinates configured — astronomical times and the night flag are unavailable until a location is set (rule 12).',
+			);
+		}
+	}
+
+	/**
+	 * Recompute the astronomical times from the coordinates and publish astro.* (only when the
+	 * values actually change).
+	 *
+	 * @returns {Promise<void>}
+	 */
+	async updateAstro() {
+		const a = computeAstro(this.coords.lat, this.coords.lon, new Date());
+		if (!a.valid) {
+			return;
+		}
+		const key = `${a.sunrise ? a.sunrise.getTime() : 0}|${a.sunset ? a.sunset.getTime() : 0}`;
+		if (this.lastAstroKey !== key) {
+			this.lastAstroKey = key;
+			await this.setStateChangedAsync('astro.sunrise', {
+				val: a.sunrise ? a.sunrise.toISOString() : '',
+				ack: true,
+			});
+			await this.setStateChangedAsync('astro.sunset', { val: a.sunset ? a.sunset.toISOString() : '', ack: true });
+			await this.setStateChangedAsync('astro.solarNoon', {
+				val: a.solarNoon ? a.solarNoon.toISOString() : '',
+				ack: true,
+			});
+			this.log.debug(
+				`Astro times updated: sunrise=${a.sunrise?.toISOString()}, sunset=${a.sunset?.toISOString()}.`,
+			);
+		}
+		if (this.lastNight !== a.isNight) {
+			this.lastNight = a.isNight;
+			await this.setStateChangedAsync('astro.isNight', { val: a.isNight, ack: true });
+			this.log.debug(`Astro: isNight=${a.isNight}.`);
+		}
+	}
+
+	/**
+	 * Evaluate the sensor alarms and the oxygen saturation from the latest readings and
+	 * publish the derived sensors.* states.
+	 *
+	 * @returns {Promise<void>}
+	 */
+	async updateMonitoring() {
+		if (!this.backend || typeof this.backend.getSensorValues !== 'function') {
+			return;
+		}
+		const s = this.backend.getSensorValues();
+		if (this.cfg.o2Enabled) {
+			this.oxygenAlarm = evaluateOxygenAlarm(
+				s.oxygen,
+				this.cfg.o2LowThreshold,
+				this.cfg.o2Hysteresis,
+				this.oxygenAlarm,
+			);
+			await this.setStateChangedAsync('sensors.oxygenAlarm', { val: this.oxygenAlarm, ack: true });
+			const sat = oxygenSaturationPct(s.oxygen, s.waterTemp);
+			if (sat !== null) {
+				await this.setStateChangedAsync('sensors.oxygenSaturation', { val: sat, ack: true });
+			}
+		}
+		if (this.cfg.pressureEnabled) {
+			this.pressureAlarm = evaluatePressureAlarm(
+				s.pressure,
+				this.cfg.pressureMin,
+				this.cfg.pressureMax,
+				0,
+				this.pressureAlarm,
+			);
+			await this.setStateChangedAsync('sensors.pressureAlarm', { val: this.pressureAlarm, ack: true });
+		}
+	}
+
+	/**
+	 * Handle a geocoding request from the admin UI (rule 12: on demand only, identifying
+	 * User-Agent, debounced, 10 s timeout). Answers via the sendTo callback.
+	 *
+	 * @param {ioBroker.Message} obj - the sendTo message with { address }
+	 * @returns {Promise<void>}
+	 */
+	async handleGeocode(obj) {
+		const respond = payload => obj.callback && this.sendTo(obj.from, obj.command, payload, obj.callback);
+		const address = obj.message && typeof obj.message === 'object' ? obj.message.address : undefined;
+		if (!address) {
+			respond({ error: 'No address provided.' });
+			return;
+		}
+		const now = Date.now();
+		if (!mayGeocode(this.lastGeocodeMs, now, 1500)) {
+			respond({ error: 'Please wait a moment before the next lookup.' });
+			return;
+		}
+		this.lastGeocodeMs = now;
+		let timer = null;
+		try {
+			const controller = new AbortController();
+			timer = this.setTimeout(() => controller.abort(), 10000);
+			const res = await fetch(buildNominatimUrl(address), {
+				headers: { 'User-Agent': `${GEO_USER_AGENT}/${this.version}` },
+				signal: controller.signal,
+			});
+			const json = await res.json();
+			const parsed = parseNominatimResponse(json);
+			if (!parsed) {
+				respond({ error: 'No result for this address.' });
+				return;
+			}
+			this.log.debug(`Geocoded "${address}" -> ${parsed.latitude}, ${parsed.longitude} (${parsed.displayName}).`);
+			respond({ result: parsed });
+		} catch (e) {
+			this.log.warn(`Geocoding failed: ${e.message}`);
+			respond({ error: `Geocoding failed: ${e.message}` });
+		} finally {
+			if (timer) {
+				this.clearTimeout(timer);
+			}
+		}
+	}
+
+	/**
 	 * Handle messages sent from the admin UI (sendTo). Placeholder for the discovery,
 	 * geocoding and valve-test handlers added in later milestones.
 	 *
@@ -451,6 +635,9 @@ class AutomaticPondAeration extends utils.Adapter {
 				if (obj.callback) {
 					this.sendTo(obj.from, obj.command, { pong: true }, obj.callback);
 				}
+				break;
+			case 'geocodeAddress':
+				this.handleGeocode(obj).catch(e => this.log.warn(`Geocode handler failed: ${e.message}`));
 				break;
 			default:
 				this.log.debug(`Unknown admin message command: ${obj.command}`);
@@ -471,6 +658,10 @@ class AutomaticPondAeration extends utils.Adapter {
 			if (this.controlTimer) {
 				this.clearInterval(this.controlTimer);
 				this.controlTimer = null;
+			}
+			if (this.astroTimer) {
+				this.clearInterval(this.astroTimer);
+				this.astroTimer = null;
 			}
 			if (this.watchdog) {
 				this.clearInterval(this.watchdog);

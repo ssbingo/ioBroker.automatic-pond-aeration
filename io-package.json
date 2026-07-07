@@ -1,20 +1,20 @@
 {
 	"common": {
 		"name": "automatic-pond-aeration",
-		"version": "0.0.6",
+		"version": "0.0.7",
 		"news": {
-			"0.0.6": {
-				"en": "Comprehensive, meaningful logging on all levels (error/warn/info/debug/silly); operational INFO messages are now shown in the ioBroker system language (English fallback), while warnings, errors and debug stay in English.",
-				"de": "Umfangreiches, aussagekräftiges Logging auf allen Ebenen (error/warn/info/debug/silly); INFO-Meldungen erscheinen jetzt in der ioBroker-Systemsprache (englischer Fallback), Warnungen/Fehler/Debug bleiben englisch.",
-				"ru": "Подробное информативное логирование на всех уровнях; INFO-сообщения теперь отображаются на системном языке ioBroker (запасной — английский), предупреждения/ошибки/отладка остаются на английском.",
-				"pt": "Registo abrangente e informativo em todos os níveis; as mensagens INFO passam a ser mostradas no idioma do sistema ioBroker (fallback inglês), enquanto avisos/erros/depuração permanecem em inglês.",
-				"nl": "Uitgebreide, informatieve logging op alle niveaus; INFO-meldingen worden nu getoond in de ioBroker-systeemtaal (Engelse fallback), waarschuwingen/fouten/debug blijven Engels.",
-				"fr": "Journalisation complète et pertinente à tous les niveaux ; les messages INFO sont désormais affichés dans la langue système d'ioBroker (repli en anglais), tandis que les avertissements/erreurs/débogage restent en anglais.",
-				"it": "Logging completo e significativo su tutti i livelli; i messaggi INFO ora vengono mostrati nella lingua di sistema di ioBroker (fallback inglese), mentre avvisi/errori/debug restano in inglese.",
-				"es": "Registro completo e informativo en todos los niveles; los mensajes INFO ahora se muestran en el idioma del sistema de ioBroker (reserva en inglés), mientras que avisos/errores/depuración permanecen en inglés.",
-				"pl": "Rozbudowane, czytelne logowanie na wszystkich poziomach; komunikaty INFO są teraz wyświetlane w języku systemowym ioBroker (awaryjnie po angielsku), a ostrzeżenia/błędy/debug pozostają po angielsku.",
-				"uk": "Докладне інформативне журналювання на всіх рівнях; повідомлення INFO тепер відображаються системною мовою ioBroker (резервна — англійська), а попередження/помилки/debug залишаються англійською.",
-				"zh-cn": "各级别全面且有意义的日志；INFO 消息现在按 ioBroker 系统语言显示（英文回退），而警告/错误/调试保持英文。"
+			"0.0.7": {
+				"en": "Monitoring, astro and geolocation: oxygen/temperature/pressure sensors are read and mirrored, with low-oxygen and pressure alarms and a temperature-compensated oxygen saturation; sunrise/sunset/night come from the coordinates (system config or a Nominatim lookup).",
+				"de": "Monitoring, Astro und Geolocation: Sauerstoff-/Temperatur-/Drucksensoren werden gelesen und gespiegelt, mit Sauerstoffmangel- und Druckalarm sowie temperaturkompensierter Sauerstoffsättigung; Sonnenauf-/-untergang/Nacht aus den Koordinaten (Systemkonfig oder Nominatim-Abfrage).",
+				"ru": "Мониторинг, астрономические времена и геолокация: датчики кислорода/температуры/давления считываются и отражаются, с сигналами нехватки кислорода и давления и температурно-компенсированной насыщенностью кислородом; восход/закат/ночь — из координат (системная конфигурация или запрос Nominatim).",
+				"pt": "Monitorização, astro e geolocalização: sensores de oxigénio/temperatura/pressão são lidos e espelhados, com alarmes de oxigénio baixo e de pressão e saturação de oxigénio compensada pela temperatura; nascer/pôr do sol/noite a partir das coordenadas (config. do sistema ou pesquisa Nominatim).",
+				"nl": "Monitoring, astro en geolocatie: zuurstof-/temperatuur-/druksensoren worden uitgelezen en gespiegeld, met alarmen voor lage zuurstof en druk en een temperatuurgecompenseerde zuurstofverzadiging; zonsopgang/-ondergang/nacht uit de coördinaten (systeemconfig of Nominatim-zoekopdracht).",
+				"fr": "Surveillance, astro et géolocalisation : les capteurs d'oxygène/température/pression sont lus et reflétés, avec alarmes d'oxygène bas et de pression et une saturation en oxygène compensée en température ; lever/coucher du soleil/nuit à partir des coordonnées (config système ou recherche Nominatim).",
+				"it": "Monitoraggio, astro e geolocalizzazione: i sensori di ossigeno/temperatura/pressione vengono letti e rispecchiati, con allarmi di ossigeno basso e pressione e una saturazione di ossigeno compensata in temperatura; alba/tramonto/notte dalle coordinate (config di sistema o ricerca Nominatim).",
+				"es": "Monitorización, astro y geolocalización: los sensores de oxígeno/temperatura/presión se leen y reflejan, con alarmas de oxígeno bajo y de presión y una saturación de oxígeno compensada por temperatura; amanecer/atardecer/noche a partir de las coordenadas (config. del sistema o búsqueda Nominatim).",
+				"pl": "Monitorowanie, astro i geolokalizacja: czujniki tlenu/temperatury/ciśnienia są odczytywane i odzwierciedlane, z alarmami niskiego tlenu i ciśnienia oraz kompensowanym temperaturowo nasyceniem tlenem; wschód/zachód słońca/noc ze współrzędnych (konfiguracja systemu lub zapytanie Nominatim).",
+				"uk": "Моніторинг, астрономічні часи та геолокація: датчики кисню/температури/тиску зчитуються та відображаються, з сигналами низького кисню й тиску та температурно-компенсованим насиченням киснем; схід/захід сонця/ніч із координат (системна конфігурація або запит Nominatim).",
+				"zh-cn": "监测、天文时刻与地理定位：读取并映射溶氧/温度/压力传感器，具备低氧和压力报警以及温度补偿的溶氧饱和度；日出/日落/夜间根据坐标（系统配置或 Nominatim 查询）得出。"
 			}
 		},
 		"titleLang": {
