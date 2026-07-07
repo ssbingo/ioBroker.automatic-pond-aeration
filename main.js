@@ -9,12 +9,11 @@
  * monitoring, astronomical times and geolocation, plus a coupling to
  * ioBroker.automatic-feeder that pauses selected points during feeding.
  *
- * Milestone M5: monitoring, astronomical times and geolocation are in place. Sensor values
- * (oxygen, air/water temperature, pressure) are read from foreign states and mirrored, with
- * low-oxygen / pressure alarms and a temperature-compensated oxygen saturation; astro times
- * come from suncalc, coordinates from the system config or a Nominatim lookup (rule 12). The
- * control engine (M4) and the dead-head safety interlock (M3) run underneath. The feeder
- * coupling (M6) and the ESP32 backend (M7) follow in later milestones.
+ * Milestone M6: the feeder coupling is in place. While ioBroker.automatic-feeder is feeding,
+ * the selected aeration points are paused (forced off) for the feeding time plus a
+ * configurable offset (measure/pulse modes); the feeder switches can be auto-discovered from
+ * the admin. Monitoring (M5), the control engine (M4) and the dead-head safety interlock (M3)
+ * run underneath. The ESP32 backend (M7) and the admin UI (M8) follow.
  *
  * Logging levels used (configurable per instance in the ioBroker admin):
  *   error  - failures that need attention (write failed, unexpected exception)
@@ -39,6 +38,7 @@ const {
 	mayGeocode,
 	USER_AGENT: GEO_USER_AGENT,
 } = require('./lib/monitoring/geocode');
+const { isFeeding, anyFeeding, feederForcedOff } = require('./lib/feeder/pause');
 
 /** Matches a per-point manual command id like "control.point.3.open". */
 const POINT_OPEN_RE = /^control\.point\.(\d+)\.open$/;
@@ -87,6 +87,11 @@ class AutomaticPondAeration extends utils.Adapter {
 		this.oxygenAlarm = false;
 		this.pressureAlarm = false;
 		this.lastGeocodeMs = 0;
+		// Feeder coupling runtime state.
+		this.feederSwitchSet = new Set();
+		this.feederFeedingActive = {};
+		this.feederPauseActive = false;
+		this.feederPauseTimer = null;
 		// A valid (empty) normalized config until onReady loads the real one.
 		this.cfg = validateConfig({}).config;
 	}
@@ -165,6 +170,9 @@ class AutomaticPondAeration extends utils.Adapter {
 		this.astroTimer = this.setInterval(() => {
 			this.updateAstro().catch(e => this.log.warn(`Astro update failed: ${e.message}`));
 		}, 60000);
+
+		// Feeder coupling (M6): pause selected points while ioBroker.automatic-feeder is feeding.
+		await this.initFeeder(config);
 
 		await this.setConnected(true);
 		this.logInfo('adapterStarted', { points: config.points.length, groups: config.groups.length, mode: this.mode });
@@ -250,6 +258,14 @@ class AutomaticPondAeration extends utils.Adapter {
 	 */
 	onStateChange(id, state) {
 		if (!state) {
+			return;
+		}
+
+		// Watched feeder switches → feeding-pause state machine (M6).
+		if (this.feederSwitchSet.has(id)) {
+			this.handleFeederChange(id, state).catch(e =>
+				this.log.warn(`Feeder change for ${id} failed: ${e.message}`),
+			);
 			return;
 		}
 
@@ -365,6 +381,7 @@ class AutomaticPondAeration extends utils.Adapter {
 			nowDay: now.getDay(),
 			nowMinutes: now.getHours() * 60 + now.getMinutes(),
 			elapsedMs: Date.now() - this.roundRobinStartMs,
+			feederForcedOff: this.getFeederForcedOff(),
 		});
 
 		const cur = this.backend.getCurrentState();
@@ -620,6 +637,176 @@ class AutomaticPondAeration extends utils.Adapter {
 	}
 
 	/**
+	 * Initialize the feeder coupling: subscribe the selected feeder switches and read their
+	 * current state. No-op when the coupling is disabled or nothing is selected.
+	 *
+	 * @param {ioBroker.AdapterConfig} config - the normalized configuration
+	 * @returns {Promise<void>}
+	 */
+	async initFeeder(config) {
+		this.feederSwitchSet = new Set();
+		this.feederFeedingActive = {};
+		this.feederPauseActive = false;
+		if (!config.feederEnabled || !Array.isArray(config.feederSwitches) || config.feederSwitches.length === 0) {
+			return;
+		}
+		for (const sid of config.feederSwitches) {
+			if (typeof sid === 'string' && sid) {
+				this.feederSwitchSet.add(sid);
+				await this.subscribeForeignStatesAsync(sid);
+				try {
+					const st = await this.getForeignStateAsync(sid);
+					this.feederFeedingActive[sid] = isFeeding(st ? st.val : false);
+				} catch (e) {
+					this.log.debug(`Could not read feeder switch ${sid}: ${e.message}`);
+				}
+			}
+		}
+		await this.setStateChangedAsync('feeder.pauseActive', { val: false, ack: true });
+		this.log.debug(
+			`Feeder coupling active: watching ${this.feederSwitchSet.size} switch(es), mode "${config.feederDurationMode}", offset ${config.feederOffsetSec}s, affected points [${config.feederAffectedPoints}].`,
+		);
+		if (anyFeeding(this.feederFeedingActive)) {
+			const ms =
+				config.feederDurationMode === 'pulse'
+					? (config.feederFeedingDurationSec + config.feederOffsetSec) * 1000
+					: 0;
+			await this.startFeederPause(ms, 'startup');
+		}
+	}
+
+	/**
+	 * React to a change of a watched feeder switch and drive the pause state machine
+	 * (measure/configured = follow the switch; pulse = fixed duration from the rising edge).
+	 *
+	 * @param {string} id - the feeder state id
+	 * @param {ioBroker.State | null | undefined} state - the new state
+	 * @returns {Promise<void>}
+	 */
+	async handleFeederChange(id, state) {
+		const wasFeeding = anyFeeding(this.feederFeedingActive);
+		this.feederFeedingActive[id] = isFeeding(state ? state.val : false);
+		const nowFeeding = anyFeeding(this.feederFeedingActive);
+		this.log.debug(
+			`Feeder switch ${id} = ${state ? state.val : '?'} (feeding: was ${wasFeeding}, now ${nowFeeding}).`,
+		);
+
+		if (this.cfg.feederDurationMode === 'pulse') {
+			if (!wasFeeding && nowFeeding) {
+				await this.startFeederPause((this.cfg.feederFeedingDurationSec + this.cfg.feederOffsetSec) * 1000, id);
+			}
+			return;
+		}
+
+		// measure / configured: pause while feeding, then keep it paused for the offset.
+		if (nowFeeding) {
+			if (!this.feederPauseActive || this.feederPauseTimer) {
+				await this.startFeederPause(0, id);
+			}
+		} else if (wasFeeding && this.feederPauseActive) {
+			const ms = Math.max(0, this.cfg.feederOffsetSec * 1000);
+			if (this.feederPauseTimer) {
+				this.clearTimeout(this.feederPauseTimer);
+			}
+			await this.setStateChangedAsync('feeder.pauseUntil', { val: Date.now() + ms, ack: true });
+			this.feederPauseTimer = this.setTimeout(() => {
+				this.endFeederPause().catch(e => this.log.warn(`Feeder resume failed: ${e.message}`));
+			}, ms);
+			this.log.debug(`Feeding ended; aeration resumes in ${this.cfg.feederOffsetSec}s.`);
+		}
+	}
+
+	/**
+	 * Activate the feeder pause. `durationMs > 0` auto-ends it after that time (pulse mode);
+	 * `0` keeps it active until feeding stops (measure mode).
+	 *
+	 * @param {number} durationMs - auto-end after this many ms (0 = open-ended)
+	 * @param {string} source - what started the pause (for logging)
+	 * @returns {Promise<void>}
+	 */
+	async startFeederPause(durationMs, source) {
+		const wasActive = this.feederPauseActive;
+		this.feederPauseActive = true;
+		if (this.feederPauseTimer) {
+			this.clearTimeout(this.feederPauseTimer);
+			this.feederPauseTimer = null;
+		}
+		const until = durationMs > 0 ? Date.now() + durationMs : 0;
+		await this.setStateChangedAsync('feeder.pauseActive', { val: true, ack: true });
+		await this.setStateChangedAsync('feeder.pauseUntil', { val: until, ack: true });
+		await this.setStateChangedAsync('feeder.lastFeedStart', { val: Date.now(), ack: true });
+		if (durationMs > 0) {
+			this.feederPauseTimer = this.setTimeout(() => {
+				this.endFeederPause().catch(e => this.log.warn(`Feeder resume failed: ${e.message}`));
+			}, durationMs);
+		}
+		if (!wasActive) {
+			this.logInfo('feederPauseStart');
+			this.log.debug(
+				`Feeder pause started (${this.cfg.feederDurationMode}, source ${source}); affected points [${this.cfg.feederAffectedPoints}].`,
+			);
+		}
+		await this.controlTick('feeder-pause');
+	}
+
+	/**
+	 * End the feeder pause and resume aeration.
+	 *
+	 * @returns {Promise<void>}
+	 */
+	async endFeederPause() {
+		if (this.feederPauseTimer) {
+			this.clearTimeout(this.feederPauseTimer);
+			this.feederPauseTimer = null;
+		}
+		if (!this.feederPauseActive) {
+			return;
+		}
+		this.feederPauseActive = false;
+		await this.setStateChangedAsync('feeder.pauseActive', { val: false, ack: true });
+		await this.setStateChangedAsync('feeder.pauseUntil', { val: 0, ack: true });
+		this.logInfo('feederPauseEnd');
+		await this.controlTick('feeder-resume');
+	}
+
+	/**
+	 * The per-point "force off" mask from the current feeder pause (all-false when inactive).
+	 *
+	 * @returns {boolean[]} mask of points forced closed by the feeder pause
+	 */
+	getFeederForcedOff() {
+		return feederForcedOff(this.feederPauseActive, this.cfg.feederAffectedPoints, this.cfg.points.length);
+	}
+
+	/**
+	 * Discover the switches of the selected automatic-feeder instance and return them as a
+	 * selection list ({ value, label }) for the admin UI (answered via the sendTo callback).
+	 *
+	 * @param {ioBroker.Message} obj - the sendTo message with { instance }
+	 * @returns {Promise<void>}
+	 */
+	async handleDiscoverFeeder(obj) {
+		const respond = payload => obj.callback && this.sendTo(obj.from, obj.command, payload, obj.callback);
+		const msg = obj.message && typeof obj.message === 'object' ? obj.message : {};
+		const instance = msg.instance || this.cfg.feederInstance;
+		if (!instance) {
+			respond({ error: 'No feeder instance selected.' });
+			return;
+		}
+		try {
+			const inst = await this.getForeignObjectAsync(`system.adapter.${instance}`);
+			const switches = inst && inst.native && Array.isArray(inst.native.switches) ? inst.native.switches : [];
+			const list = switches
+				.filter(sw => sw && sw.id)
+				.map(sw => ({ value: `${instance}.switches.${sw.id}.status.feedingActive`, label: sw.name || sw.id }));
+			this.log.debug(`Feeder discovery on "${instance}": ${list.length} switch(es).`);
+			respond({ result: list });
+		} catch (e) {
+			respond({ error: `Could not read the feeder configuration: ${e.message}` });
+		}
+	}
+
+	/**
 	 * Handle messages sent from the admin UI (sendTo). Placeholder for the discovery,
 	 * geocoding and valve-test handlers added in later milestones.
 	 *
@@ -638,6 +825,9 @@ class AutomaticPondAeration extends utils.Adapter {
 				break;
 			case 'geocodeAddress':
 				this.handleGeocode(obj).catch(e => this.log.warn(`Geocode handler failed: ${e.message}`));
+				break;
+			case 'discoverFeederSwitches':
+				this.handleDiscoverFeeder(obj).catch(e => this.log.warn(`Feeder discovery failed: ${e.message}`));
 				break;
 			default:
 				this.log.debug(`Unknown admin message command: ${obj.command}`);
@@ -662,6 +852,10 @@ class AutomaticPondAeration extends utils.Adapter {
 			if (this.astroTimer) {
 				this.clearInterval(this.astroTimer);
 				this.astroTimer = null;
+			}
+			if (this.feederPauseTimer) {
+				this.clearTimeout(this.feederPauseTimer);
+				this.feederPauseTimer = null;
 			}
 			if (this.watchdog) {
 				this.clearInterval(this.watchdog);

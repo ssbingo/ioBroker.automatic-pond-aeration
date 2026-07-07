@@ -139,6 +139,8 @@ declare global {
 			feederSwitches: string[];
 			/** Offset in seconds added after feeding ends before aeration resumes. */
 			feederOffsetSec: number;
+			/** Feeding duration in seconds for the "pulse" mode (feeder only sends a short pulse). */
+			feederFeedingDurationSec: number;
 			/** How the feeding duration is determined. */
 			feederDurationMode: 'measure' | 'configured' | 'pulse';
 			/** Indices (0-based) of aeration points switched off during feeding. */
