@@ -1,20 +1,20 @@
 {
 	"common": {
 		"name": "automatic-pond-aeration",
-		"version": "0.0.3",
+		"version": "0.0.4",
 		"news": {
-			"0.0.3": {
-				"en": "Hardware abstraction layer: an ioBroker backend drives valves, pump and emergency valve through existing foreign states (rule 1) and mirrors their status into the data points; manual valve commands are executed.",
-				"de": "Hardware-Abstraktionsschicht: ein ioBroker-Backend steuert Ventile, Pumpe und Notventil über vorhandene Fremd-States (Regel 1) und spiegelt deren Status in die Datenpunkte; manuelle Ventilbefehle werden ausgeführt.",
-				"ru": "Слой абстракции оборудования: бэкенд ioBroker управляет клапанами, насосом и аварийным клапаном через существующие внешние состояния и отражает их статус в точках данных; ручные команды клапанов выполняются.",
-				"pt": "Camada de abstração de hardware: um backend ioBroker controla válvulas, bomba e válvula de emergência através de estados existentes e reflete o seu estado nos pontos de dados; os comandos manuais de válvula são executados.",
-				"nl": "Hardware-abstractielaag: een ioBroker-backend bestuurt kleppen, pomp en noodklep via bestaande states en spiegelt hun status naar de datapunten; handmatige klepcommando's worden uitgevoerd.",
-				"fr": "Couche d'abstraction matérielle : un backend ioBroker pilote les vannes, la pompe et la vanne de secours via des états existants et reflète leur statut dans les points de données ; les commandes manuelles de vanne sont exécutées.",
-				"it": "Livello di astrazione hardware: un backend ioBroker controlla valvole, pompa e valvola di emergenza tramite stati esistenti e ne rispecchia lo stato nei punti dati; i comandi manuali delle valvole vengono eseguiti.",
-				"es": "Capa de abstracción de hardware: un backend de ioBroker controla válvulas, bomba y válvula de emergencia a través de estados existentes y refleja su estado en los puntos de datos; se ejecutan los comandos manuales de válvula.",
-				"pl": "Warstwa abstrakcji sprzętu: backend ioBroker steruje zaworami, pompą i zaworem awaryjnym przez istniejące stany i odzwierciedla ich status w punktach danych; ręczne polecenia zaworów są wykonywane.",
-				"uk": "Рівень абстракції обладнання: бекенд ioBroker керує клапанами, насосом і аварійним клапаном через наявні стани та відображає їхній статус у точках даних; ручні команди клапанів виконуються.",
-				"zh-cn": "硬件抽象层：ioBroker 后端通过现有的外部状态驱动阀门、水泵和应急阀，并将其状态映射到数据点；执行手动阀门命令。"
+			"0.0.4": {
+				"en": "Dead-head safety interlock: a watchdog ensures at least the configured minimum number of valves stays open while the pump runs; otherwise the emergency valve is opened and (if possible) the pump is stopped.",
+				"de": "Deadhead-Sicherheitsverriegelung: ein Watchdog stellt sicher, dass bei laufender Pumpe mindestens die konfigurierte Mindestzahl an Ventilen offen bleibt; andernfalls wird das Notventil geöffnet und (falls möglich) die Pumpe abgeschaltet.",
+				"ru": "Защитная блокировка от работы «в тупик»: сторожевой таймер следит, чтобы при работающем насосе оставалось открытым не меньше заданного числа клапанов; иначе открывается аварийный клапан и (по возможности) насос выключается.",
+				"pt": "Bloqueio de segurança contra dead-head: um watchdog garante que, com a bomba a funcionar, permaneça aberto pelo menos o número mínimo de válvulas configurado; caso contrário, abre a válvula de emergência e (se possível) desliga a bomba.",
+				"nl": "Dead-head-veiligheidsvergrendeling: een watchdog zorgt dat bij een draaiende pomp minimaal het ingestelde aantal kleppen open blijft; anders wordt de noodklep geopend en (indien mogelijk) de pomp uitgeschakeld.",
+				"fr": "Verrouillage de sécurité anti-dead-head : un chien de garde garantit qu'au moins le nombre minimal de vannes configuré reste ouvert lorsque la pompe tourne ; sinon la vanne de secours est ouverte et (si possible) la pompe est arrêtée.",
+				"it": "Interblocco di sicurezza anti dead-head: un watchdog garantisce che, con la pompa in funzione, resti aperto almeno il numero minimo di valvole configurato; altrimenti apre la valvola di emergenza e (se possibile) spegne la pompa.",
+				"es": "Enclavamiento de seguridad anti dead-head: un watchdog garantiza que, con la bomba en marcha, permanezca abierto al menos el número mínimo de válvulas configurado; de lo contrario abre la válvula de emergencia y (si es posible) detiene la bomba.",
+				"pl": "Blokada bezpieczeństwa przed pracą „na głucho”: watchdog dba, aby przy pracującej pompie pozostawała otwarta co najmniej skonfigurowana minimalna liczba zaworów; w przeciwnym razie otwiera zawór awaryjny i (jeśli to możliwe) wyłącza pompę.",
+				"uk": "Запобіжне блокування від роботи «в глухий кут»: сторожовий таймер стежить, щоб при працюючому насосі залишалася відкритою щонайменше задана кількість клапанів; інакше відкривається аварійний клапан і (за можливості) насос вимикається.",
+				"zh-cn": "防憋压安全联锁：看门狗确保水泵运行时至少保持所配置的最少阀门数量开启；否则打开应急阀并（在可能时）停止水泵。"
 			}
 		},
 		"titleLang": {

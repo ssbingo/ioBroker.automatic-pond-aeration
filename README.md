@@ -200,6 +200,9 @@ follow-up vis-2 widget adapter).
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.0.4 (2026-07-07)
+* (ssbingo) Dead-head safety interlock with a watchdog: while the pump runs, at least the configured minimum number of valves must stay open, otherwise the emergency valve is opened and (if controllable) the pump is stopped. Adds pure, unit-tested make-before-break and anti short-cycle helpers
+
 ### 0.0.3 (2026-07-07)
 * (ssbingo) Hardware abstraction layer with an ioBroker backend: valves, pump and emergency valve are driven through existing ioBroker states (rule 1) and their status is mirrored into the data points; manual valve commands (`control.point.<n>.open`, `control.allOff`) are executed
 

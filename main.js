@@ -9,10 +9,11 @@
  * monitoring, astronomical times and geolocation, plus a coupling to
  * ioBroker.automatic-feeder that pauses selected points during feeding.
  *
- * Milestone M2: the hardware abstraction layer (HAL) is in place. The ioBroker backend
- * drives valves/pump/emergency valve through existing foreign states (rule 1) and mirrors
- * their status into the adapter's data points. The control engine (arbiter, schedule,
- * round-robin, groups) and the safety interlock follow in later milestones.
+ * Milestone M3: the dead-head safety interlock is in place. A watchdog continuously
+ * ensures that at least `minOpenValves` valves stay open while the pump runs; otherwise
+ * the emergency valve is opened and (if controllable) the pump is stopped. The HAL
+ * (M2) drives the hardware through foreign states. The control engine (arbiter, schedule,
+ * round-robin, groups) follows in M4.
  *
  * Logging levels used (configurable per instance in the ioBroker admin):
  *   error  - failures that need attention (write failed, unexpected exception)
@@ -26,6 +27,7 @@ const utils = require('@iobroker/adapter-core');
 const { validateConfig } = require('./lib/config');
 const { buildObjectModel, computeObsolete } = require('./lib/objects');
 const { IoBrokerBackend } = require('./lib/hal/iobroker-backend');
+const { evaluateSafety } = require('./lib/safety');
 
 /** Matches a per-point manual command id like "control.point.3.open". */
 const POINT_OPEN_RE = /^control\.point\.(\d+)\.open$/;
@@ -48,6 +50,9 @@ class AutomaticPondAeration extends utils.Adapter {
 		this.objectModel = [];
 		// Set in onReady once the configuration is validated.
 		this.backend = null;
+		// Safety watchdog timer and last interlock state (for edge-triggered logging).
+		this.watchdog = null;
+		this.interlockWasActive = false;
 		// A valid (empty) normalized config until onReady loads the real one.
 		this.cfg = validateConfig({}).config;
 	}
@@ -85,6 +90,12 @@ class AutomaticPondAeration extends utils.Adapter {
 
 		// Our own command states (foreign hardware states are subscribed by the backend).
 		this.subscribeStates('control.*');
+
+		// Safety watchdog: re-evaluate the dead-head interlock periodically (rule 3: cleared in onUnload).
+		await this.applySafety('startup');
+		this.watchdog = this.setInterval(() => {
+			this.applySafety('watchdog').catch(e => this.log.warn(`Safety watchdog failed: ${e.message}`));
+		}, config.watchdogIntervalSec * 1000);
 
 		await this.setConnected(true);
 		this.log.info(
@@ -149,6 +160,7 @@ class AutomaticPondAeration extends utils.Adapter {
 		if (this.backend && this.backend.ownsForeignState(id)) {
 			this.backend
 				.handleForeignChange(id, state)
+				.then(() => this.applySafety('hardware-change'))
 				.catch(e => this.log.warn(`Reflecting ${id} failed: ${e.message}`));
 			return;
 		}
@@ -201,6 +213,58 @@ class AutomaticPondAeration extends utils.Adapter {
 	}
 
 	/**
+	 * Evaluate and apply the dead-head safety interlock: while the pump runs, at least
+	 * `minOpenValves` valves must stay open; otherwise the emergency valve is opened and,
+	 * if the pump is controllable, it is stopped. Called on startup, by the watchdog and
+	 * whenever a mirrored hardware state changes.
+	 *
+	 * @param {string} source - what triggered the evaluation (for logging)
+	 * @returns {Promise<void>}
+	 */
+	async applySafety(source) {
+		if (!this.backend) {
+			return;
+		}
+		// Nothing to protect when no aeration point, pump or emergency valve is configured.
+		const hasSystem =
+			this.cfg.points.length > 0 || Boolean(this.cfg.pumpObjectId) || Boolean(this.cfg.emergencyObjectId);
+		if (!hasSystem) {
+			return;
+		}
+		const cur = this.backend.getCurrentState();
+		const decision = evaluateSafety({
+			valveOpen: cur.valves,
+			pumpRunning: cur.pumpRunning,
+			pumpMonitored: Boolean(this.cfg.pumpObjectId),
+			pumpControllable: Boolean(this.cfg.pumpControllable),
+			minOpenValves: this.cfg.minOpenValves,
+		});
+
+		// Edge-triggered logging so a persistent trip is not logged on every tick.
+		if (decision.interlockActive && !this.interlockWasActive) {
+			this.log.error(`Safety interlock TRIPPED (${source}): ${decision.tripReason}`);
+		} else if (!decision.interlockActive && this.interlockWasActive) {
+			this.log.info('Safety interlock cleared.');
+		}
+		this.interlockWasActive = decision.interlockActive;
+
+		// Open/close the emergency valve only when the target differs from the current state.
+		if (decision.emergencyValve !== cur.emergencyOpen) {
+			await this.backend.setEmergency(decision.emergencyValve);
+		}
+		// Emergency pump stop (bypasses the anti short-cycle guard).
+		if (decision.stopPump && cur.pumpRunning) {
+			await this.backend.setPump(false);
+		}
+
+		await this.setStateAsync('safety.interlockActive', { val: decision.interlockActive, ack: true });
+		await this.setStateAsync('safety.openValveCount', { val: decision.openValveCount, ack: true });
+		if (decision.tripReason) {
+			await this.setStateAsync('safety.lastTripReason', { val: decision.tripReason, ack: true });
+		}
+	}
+
+	/**
 	 * Handle messages sent from the admin UI (sendTo). Placeholder for the discovery,
 	 * geocoding and valve-test handlers added in later milestones.
 	 *
@@ -233,6 +297,10 @@ class AutomaticPondAeration extends utils.Adapter {
 	 */
 	async onUnload(callback) {
 		try {
+			if (this.watchdog) {
+				this.clearInterval(this.watchdog);
+				this.watchdog = null;
+			}
 			if (this.backend) {
 				await this.backend.destroy();
 			}
