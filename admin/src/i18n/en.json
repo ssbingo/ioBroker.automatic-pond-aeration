@@ -58,6 +58,7 @@
 	"No automatic-feeder instance found.": "No automatic-feeder instance found.",
 	"No location found": "No location found",
 	"No messaging instance found.": "No messaging instance found.",
+	"No response from the adapter. Is the instance running?": "No response from the adapter. Is the instance running?",
 	"No switches found.": "No switches found.",
 	"Normally open (fail-safe)": "Normally open (fail-safe)",
 	"Notifications": "Notifications",

@@ -58,6 +58,7 @@
 	"No automatic-feeder instance found.": "No se encontró ninguna instancia de automatic-feeder.",
 	"No location found": "No se encontró ninguna ubicación",
 	"No messaging instance found.": "No se encontró ninguna instancia de mensajería.",
+	"No response from the adapter. Is the instance running?": "Sin respuesta del adaptador. ¿La instancia está en ejecución?",
 	"No switches found.": "No se encontraron interruptores.",
 	"Normally open (fail-safe)": "Normalmente abierto (a prueba de fallos)",
 	"Notifications": "Notificaciones",

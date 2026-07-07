@@ -95,14 +95,19 @@ function LocationPicker(props) {
 		setError('');
 		try {
 			const res = await socket.sendTo(instanceId, 'geocodeAddress', { address: query });
+			// eslint-disable-next-line no-console
+			console.log('[automatic-pond-aeration] geocode response:', res);
 			if (res && res.result) {
 				onChange({
 					latitude: String(res.result.latitude),
 					longitude: String(res.result.longitude),
 					address: res.result.displayName || query,
 				});
+			} else if (res && res.error) {
+				setError(res.error);
 			} else {
-				setError((res && res.error) || I18n.t('No location found'));
+				// no result and no error -> the running instance did not answer the sendTo
+				setError(I18n.t('No response from the adapter. Is the instance running?'));
 			}
 		} catch (e) {
 			setError(`${I18n.t('Geocoding failed: instance must be running')} (${e})`);

@@ -600,6 +600,7 @@ class AutomaticPondAeration extends utils.Adapter {
 	async handleGeocode(obj) {
 		const respond = payload => obj.callback && this.sendTo(obj.from, obj.command, payload, obj.callback);
 		const address = obj.message && typeof obj.message === 'object' ? obj.message.address : undefined;
+		this.log.debug(`Geocode request received for "${address}".`);
 		if (!address) {
 			respond({ error: 'No address provided.' });
 			return;

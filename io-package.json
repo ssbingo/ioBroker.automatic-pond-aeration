@@ -1,20 +1,20 @@
 {
 	"common": {
 		"name": "automatic-pond-aeration",
-		"version": "0.0.10",
+		"version": "0.0.11",
 		"news": {
-			"0.0.10": {
-				"en": "Admin fixes: the OpenStreetMap map now renders correctly and is capped to a third of the page width; the feeder and notification tabs discover the available instances via dropdowns; clearer card-based layout.",
-				"de": "Admin-Korrekturen: die OpenStreetMap-Karte wird jetzt korrekt dargestellt und auf ein Drittel der Seitenbreite begrenzt; die Feeder- und Benachrichtigungs-Tabs finden die verfügbaren Instanzen per Dropdown; übersichtlicheres, kartenbasiertes Layout.",
-				"ru": "Исправления админки: карта OpenStreetMap теперь отображается корректно и ограничена третью ширины страницы; вкладки кормушки и уведомлений находят доступные экземпляры через выпадающие списки; более наглядный макет на карточках.",
-				"pt": "Correções na administração: o mapa OpenStreetMap agora é apresentado corretamente e limitado a um terço da largura da página; os separadores do alimentador e das notificações descobrem as instâncias disponíveis através de listas suspensas; layout mais claro baseado em cartões.",
-				"nl": "Admin-fixes: de OpenStreetMap-kaart wordt nu correct weergegeven en beperkt tot een derde van de paginabreedte; de voeder- en meldingstabbladen vinden de beschikbare instanties via dropdowns; overzichtelijkere, op kaarten gebaseerde lay-out.",
-				"fr": "Corrections de l'administration : la carte OpenStreetMap s'affiche désormais correctement et est limitée à un tiers de la largeur de la page ; les onglets distributeur et notifications découvrent les instances disponibles via des listes déroulantes ; mise en page plus claire à base de cartes.",
-				"it": "Correzioni all'amministrazione: la mappa OpenStreetMap ora viene visualizzata correttamente ed è limitata a un terzo della larghezza della pagina; le schede alimentatore e notifiche rilevano le istanze disponibili tramite menu a discesa; layout più chiaro basato su schede.",
-				"es": "Correcciones de administración: el mapa de OpenStreetMap ahora se muestra correctamente y está limitado a un tercio del ancho de la página; las pestañas de comedero y notificaciones detectan las instancias disponibles mediante listas desplegables; diseño más claro basado en tarjetas.",
-				"pl": "Poprawki panelu: mapa OpenStreetMap wyświetla się teraz poprawnie i jest ograniczona do jednej trzeciej szerokości strony; zakładki karmnika i powiadomień wykrywają dostępne instancje za pomocą list rozwijanych; czytelniejszy układ oparty na kartach.",
-				"uk": "Виправлення адмінки: карта OpenStreetMap тепер відображається коректно й обмежена третиною ширини сторінки; вкладки годівниці та сповіщень знаходять доступні екземпляри через випадні списки; наочніший макет на картках.",
-				"zh-cn": "管理界面修复：OpenStreetMap 地图现在正确显示并限制为页面宽度的三分之一；喂食器和通知标签页通过下拉列表发现可用实例；更清晰的卡片式布局。"
+			"0.0.11": {
+				"en": "Address search: clearer diagnostics — it now distinguishes \"no answer from the running instance\" from \"no result\", and logs the response for troubleshooting.",
+				"de": "Adresssuche: klarere Diagnose — unterscheidet jetzt „keine Antwort der laufenden Instanz\" von „kein Treffer\" und protokolliert die Antwort zur Fehlersuche.",
+				"ru": "Поиск адреса: понятнее диагностика — теперь различает «нет ответа от запущенного экземпляра» и «нет результата», и логирует ответ для отладки.",
+				"pt": "Pesquisa de endereço: diagnóstico mais claro — agora distingue «sem resposta da instância em execução» de «sem resultado» e regista a resposta para diagnóstico.",
+				"nl": "Adres zoeken: duidelijkere diagnose — onderscheidt nu 'geen antwoord van de draaiende instantie' van 'geen resultaat' en logt het antwoord voor probleemoplossing.",
+				"fr": "Recherche d'adresse : diagnostic plus clair — distingue désormais « aucune réponse de l'instance en cours » de « aucun résultat » et journalise la réponse pour le dépannage.",
+				"it": "Ricerca indirizzo: diagnostica più chiara — ora distingue «nessuna risposta dall'istanza in esecuzione» da «nessun risultato» e registra la risposta per la risoluzione dei problemi.",
+				"es": "Búsqueda de dirección: diagnóstico más claro — ahora distingue «sin respuesta de la instancia en ejecución» de «sin resultado» y registra la respuesta para la solución de problemas.",
+				"pl": "Wyszukiwanie adresu: czytelniejsza diagnostyka — rozróżnia teraz „brak odpowiedzi od działającej instancji\" od „brak wyniku\" i loguje odpowiedź do diagnozy.",
+				"uk": "Пошук адреси: чіткіша діагностика — тепер розрізняє «немає відповіді від запущеного екземпляра» та «немає результату» і логує відповідь для діагностики.",
+				"zh-cn": "地址搜索：更清晰的诊断——现在区分“运行中的实例无响应”和“无结果”，并记录响应以便排查。"
 			}
 		},
 		"titleLang": {

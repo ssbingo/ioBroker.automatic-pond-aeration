@@ -58,6 +58,7 @@
 	"No automatic-feeder instance found.": "Geen automatic-feeder-instantie gevonden.",
 	"No location found": "Geen locatie gevonden",
 	"No messaging instance found.": "Geen messaging-instantie gevonden.",
+	"No response from the adapter. Is the instance running?": "Geen antwoord van de adapter. Draait de instantie?",
 	"No switches found.": "Geen schakelaars gevonden.",
 	"Normally open (fail-safe)": "Normaal open (fail-safe)",
 	"Notifications": "Meldingen",

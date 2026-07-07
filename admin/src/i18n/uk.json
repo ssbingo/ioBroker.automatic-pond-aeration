@@ -58,6 +58,7 @@
 	"No automatic-feeder instance found.": "Екземпляр automatic-feeder не знайдено.",
 	"No location found": "Місцезнаходження не знайдено",
 	"No messaging instance found.": "Екземпляр обміну повідомленнями не знайдено.",
+	"No response from the adapter. Is the instance running?": "Немає відповіді від адаптера. Екземпляр запущено?",
 	"No switches found.": "Перемикачів не знайдено.",
 	"Normally open (fail-safe)": "Нормально відкритий (відмовостійкий)",
 	"Notifications": "Сповіщення",

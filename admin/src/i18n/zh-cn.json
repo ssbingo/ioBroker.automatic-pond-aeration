@@ -58,6 +58,7 @@
 	"No automatic-feeder instance found.": "未找到 automatic-feeder 实例。",
 	"No location found": "未找到位置",
 	"No messaging instance found.": "未找到消息实例。",
+	"No response from the adapter. Is the instance running?": "适配器无响应。实例是否正在运行？",
 	"No switches found.": "未找到开关。",
 	"Normally open (fail-safe)": "常开（故障安全）",
 	"Notifications": "通知",
