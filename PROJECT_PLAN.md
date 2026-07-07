@@ -359,6 +359,7 @@ Widget-Adapter darauf aufsetzen kann.
 | **M2** | HAL + ioBroker-Backend | HardwareBackend-Interface, IoBrokerBackend (R1: Fremd-States steuern/lesen), Handbetrieb-States | Ventile/Pumpe über Fremd-States schaltbar |
 | **M3** | **Sicherheit** (kritisch) | Safety-Validator + Interlock + Watchdog + Notventil-Logik, make-before-break, Anti-Takt; **Unit-Tests** | Alle Safety-Edge-Cases getestet grün |
 | **M4** | Steuer-Engine | Scheduler, RoundRobin, Groups, Arbiter (Priorität), Handbetrieb-Override | Drei Paradigmen + Arbitrierung funktionieren |
+| **M4.1** | Logging & Debugging | Umfangreiches, aussagekräftiges Logging auf allen Ebenen (error/warn/**debug**/silly) durchgängig **Englisch** (greppbar); **INFO-Meldungen lokalisiert** an der ioBroker-Systemsprache über `lib/messages.js` (11 Sprachen, `translate()` mit EN-Fallback + `{placeholder}`) | Log deckt Start/Config/Kommandos/Control-Tick/Sicherheit/Backend ab; INFO folgt Systemsprache; error/warn/debug/silly bleiben EN |
 | **M5** | Monitoring + Astro/Geo | O₂/Temp/Wassertemp/Druck, Alarme; SunCalc + Nominatim (R12, debounced) | Sensorwerte + Astro-States korrekt |
 | **M6** | Feeder-Kopplung | Discovery (`onMessage`) + Pause-Logik (measure/configured/pulse) + Offset | Fütterung pausiert gewählte Stellen korrekt |
 | **M7** | ESP32-Backend + Firmware | HTTP/WS-Backend, mDNS-Discovery, Heartbeat/Failsafe; Referenz-Firmware-Repo (Grundversion) | ESP32 direkt steuerbar, Failsafe getestet |

@@ -29,6 +29,7 @@ const { buildObjectModel, computeObsolete } = require('./lib/objects');
 const { IoBrokerBackend } = require('./lib/hal/iobroker-backend');
 const { evaluateSafety, planValveTransition } = require('./lib/safety');
 const { resolveDesiredValves } = require('./lib/control/arbiter');
+const { translate, SUPPORTED_LANGUAGES } = require('./lib/messages');
 
 /** Matches a per-point manual command id like "control.point.3.open". */
 const POINT_OPEN_RE = /^control\.point\.(\d+)\.open$/;
@@ -67,6 +68,8 @@ class AutomaticPondAeration extends utils.Adapter {
 		this.lastActive = [];
 		this.lastActiveMode = '';
 		this.lastOpenCount = -1;
+		// System language for localized INFO messages (detected in onReady).
+		this.sysLang = 'en';
 		// A valid (empty) normalized config until onReady loads the real one.
 		this.cfg = validateConfig({}).config;
 	}
@@ -76,18 +79,31 @@ class AutomaticPondAeration extends utils.Adapter {
 	 */
 	async onReady() {
 		await this.setConnected(false);
+		this.sysLang = await this.detectLanguage();
+		this.log.debug(`System language for INFO messages: "${this.sysLang}".`);
 
 		// Validate & normalize the configuration (pure, see lib/config.js).
 		const { config, errors, warnings } = validateConfig(this.config);
 		this.cfg = config;
 
+		this.log.debug(
+			`Configuration: backend=${config.controlBackend}, points=${config.points.length}, groups=${config.groups.length}, ` +
+				`schedules=${config.schedules.length}, roundRobin=${config.roundRobinEnabled} (dwell ${config.roundRobinDwellSec}s), ` +
+				`pump=${config.pumpObjectId || 'none'} (${config.pumpControllable ? 'controllable' : 'observed'}), ` +
+				`emergency=${config.emergencyObjectId || 'none'} (${config.emergencyValveType}, ${config.emergencyNormallyOpen ? 'NO' : 'NC'}), ` +
+				`minOpenValves=${config.minOpenValves}, watchdog=${config.watchdogIntervalSec}s.`,
+		);
+		config.points.forEach((p, i) =>
+			this.log.debug(
+				`  point[${i}] "${p.name}" id=${p.id} ${p.enabled ? 'enabled' : 'disabled'} backend=${p.backendType} state=${p.objectId || '(none)'}`,
+			),
+		);
+
 		warnings.forEach(w => this.log.warn(w));
 		errors.forEach(e => this.log.error(e));
 
 		if (!config.masterEnable) {
-			this.log.info(
-				'Adapter is disabled via configuration (masterEnable = false). Objects are kept in sync, no control is performed.',
-			);
+			this.logInfo('adapterDisabled');
 		}
 
 		// Create the desired objects and remove obsolete ones (rule 8).
@@ -126,9 +142,37 @@ class AutomaticPondAeration extends utils.Adapter {
 		await this.controlTick('startup');
 
 		await this.setConnected(true);
-		this.log.info(
-			`Automatic Pond Aeration started: ${config.points.length} aeration point(s), ${config.groups.length} group(s), mode "${this.mode}".`,
-		);
+		this.logInfo('adapterStarted', { points: config.points.length, groups: config.groups.length, mode: this.mode });
+	}
+
+	/**
+	 * Detect the ioBroker system language (system.config.common.language) for localized INFO
+	 * messages. Falls back to English when unset or unsupported.
+	 *
+	 * @returns {Promise<string>} a supported language code
+	 */
+	async detectLanguage() {
+		try {
+			const sys = await this.getForeignObjectAsync('system.config');
+			const lang = sys && sys.common && sys.common.language;
+			if (lang && SUPPORTED_LANGUAGES.includes(lang)) {
+				return lang;
+			}
+		} catch (e) {
+			this.log.debug(`Could not read the system language, using English: ${e.message}`);
+		}
+		return 'en';
+	}
+
+	/**
+	 * Log an INFO message localized to the system language (see lib/messages.js).
+	 *
+	 * @param {string} key - message key
+	 * @param {Record<string, string | number>} [params] - placeholder values
+	 * @returns {void}
+	 */
+	logInfo(key, params) {
+		this.log.info(translate(key, this.sysLang, params));
 	}
 
 	/**
@@ -205,17 +249,21 @@ class AutomaticPondAeration extends utils.Adapter {
 	}
 
 	/**
-	 * Execute a control.* command. The full arbiter (priorities, schedule, round-robin,
-	 * groups) follows in M4; for now this routes the manual valve commands to the backend.
+	 * Execute a control.* command by updating the runtime state and re-running the control
+	 * tick (the arbiter then drives the valves). INFO milestones are localized; the detailed
+	 * per-command trace is on debug.
 	 *
 	 * @param {string} local - namespace-relative state id
 	 * @param {ioBroker.State} state - the command state (ack === false)
 	 * @returns {Promise<void>}
 	 */
 	async handleCommand(local, state) {
+		this.log.debug(`Command received: ${local} = ${state.val}.`);
+
 		if (local === 'control.enabled') {
 			this.runtimeEnabled = Boolean(state.val);
 			await this.setStateAsync(local, { val: this.runtimeEnabled, ack: true });
+			this.logInfo(this.runtimeEnabled ? 'masterSwitchOn' : 'masterSwitchOff');
 			await this.controlTick('enable');
 			return;
 		}
@@ -223,15 +271,16 @@ class AutomaticPondAeration extends utils.Adapter {
 		if (local === 'control.mode') {
 			this.mode = ['auto', 'manual', 'off'].includes(String(state.val)) ? String(state.val) : 'auto';
 			await this.setStateAsync(local, { val: this.mode, ack: true });
+			this.logInfo('modeChanged', { mode: this.mode });
 			await this.controlTick('mode');
 			return;
 		}
 
 		if (local === 'control.allOff') {
-			this.log.info('Command: close all valves (switching to mode "off").');
 			this.mode = 'off';
 			await this.setStateAsync('control.mode', { val: 'off', ack: true });
 			await this.setStateAsync(local, { val: false, ack: true });
+			this.logInfo('allValvesClosed');
 			await this.controlTick('allOff');
 			return;
 		}
@@ -241,10 +290,9 @@ class AutomaticPondAeration extends utils.Adapter {
 			const index = Number(pointMatch[1]);
 			this.manualValves[index] = Boolean(state.val);
 			await this.setStateAsync(local, { val: Boolean(state.val), ack: true });
+			this.log.debug(`Manual valve ${index} set to ${Boolean(state.val)} (current mode "${this.mode}").`);
 			if (this.mode !== 'manual') {
-				this.log.info(
-					`Manual valve command stored; it takes effect in mode "manual" (current mode: "${this.mode}").`,
-				);
+				this.logInfo('manualStored', { mode: this.mode });
 			}
 			await this.controlTick('manual');
 			return;
@@ -255,12 +303,13 @@ class AutomaticPondAeration extends utils.Adapter {
 			const index = Number(groupMatch[1]);
 			this.groupActive[index] = Boolean(state.val);
 			await this.setStateAsync(local, { val: Boolean(state.val), ack: true });
+			this.log.debug(`Group ${index} activation set to ${Boolean(state.val)}.`);
 			await this.controlTick('group');
 			return;
 		}
 
 		await this.setStateAsync(local, { val: state.val, ack: true });
-		this.log.debug(`Command ${local} = ${state.val} acknowledged.`);
+		this.log.debug(`Command ${local} = ${state.val} acknowledged (no specific handler).`);
 	}
 
 	/**
@@ -293,6 +342,9 @@ class AutomaticPondAeration extends utils.Adapter {
 		});
 
 		const cur = this.backend.getCurrentState();
+		this.log.silly(
+			`Control tick (${source}): mode=${this.mode}, enabled=${this.runtimeEnabled}, desired=[${desired.map(Number)}], current=[${cur.valves.map(Number)}].`,
+		);
 		const { open, close } = planValveTransition(cur.valves, desired);
 		// make-before-break: open the new valves before closing the ones no longer needed.
 		for (const i of open) {
@@ -302,7 +354,7 @@ class AutomaticPondAeration extends utils.Adapter {
 			await this.backend.setValve(i, false);
 		}
 		if (open.length || close.length) {
-			this.log.debug(`Control tick (${source}): opened [${open}], closed [${close}].`);
+			this.log.debug(`Control tick (${source}): opened [${open}], closed [${close}] (mode "${this.mode}").`);
 		}
 
 		// Reflect the program's intent into aeration.point.<n>.active (only on change).
@@ -355,7 +407,9 @@ class AutomaticPondAeration extends utils.Adapter {
 		if (interlockChanged && decision.interlockActive) {
 			this.log.error(`Safety interlock TRIPPED (${source}): ${decision.tripReason}`);
 		} else if (interlockChanged && !decision.interlockActive) {
-			this.log.info('Safety interlock cleared.');
+			this.logInfo('interlockCleared');
+		} else if (decision.interlockActive) {
+			this.log.silly(`Safety interlock still active (${source}); ${decision.openValveCount} valve(s) open.`);
 		}
 		this.interlockWasActive = decision.interlockActive;
 
