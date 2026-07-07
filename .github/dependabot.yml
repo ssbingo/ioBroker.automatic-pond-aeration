@@ -1,0 +1,56 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      # custom cron (distributes load vs. a fixed monthly time); times are Europe/Berlin
+      interval: cron
+      cronjob: "17 3 6 * *"
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 15
+    assignees:
+      - ssbingo
+    versioning-strategy: increase
+    # reduce supply-chain risk: wait a few days before opening update PRs
+    cooldown:
+      default-days: 7
+    ignore:
+      # do not bump @types/node across major versions (tied to the Node engine)
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      # the admin UI stack is pinned by @iobroker/adapter-react-v5 (React 18 / MUI 6):
+      # major upgrades of these break the configuration page (npm ERESOLVE / build)
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@mui/material"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@mui/icons-material"
+        update-types: ["version-update:semver-major"]
+      # @mui/x-date-pickers >= 8 requires @mui/material >= 7 (we are pinned to MUI 6),
+      # so keep it on the 7.x line until adapter-react-v5 moves to MUI 7 / React 19
+      - dependency-name: "@mui/x-date-pickers"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-leaflet"
+        update-types: ["version-update:semver-major"]
+      # keep TypeScript on 5.x for toolchain (eslint-config / adapter-dev) compatibility
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      # custom cron (distributes load vs. a fixed monthly time); times are Europe/Berlin
+      interval: cron
+      cronjob: "42 5 20 * *"
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 15
+    assignees:
+      - ssbingo
+    cooldown:
+      default-days: 7

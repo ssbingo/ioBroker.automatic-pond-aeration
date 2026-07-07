@@ -1,0 +1,26 @@
+# No dot-directories except github/vscode
+.*/
+!.vscode/
+!.github/
+!.devcontainer/
+
+*.code-workspace
+node_modules
+nbproject
+
+# compiled admin UI: the bundle must be committed so installs from GitHub work,
+# but the large source maps are not needed at runtime
+admin/build/*.map
+
+# npm package files
+iobroker.*.tgz
+
+Thumbs.db
+.commitinfo
+
+# i18n intermediate files
+admin/i18n/flat.txt
+admin/i18n/*/flat.txt
+
+# local scratch: VIS project exports / import ZIPs (not part of the adapter)
+tmp/

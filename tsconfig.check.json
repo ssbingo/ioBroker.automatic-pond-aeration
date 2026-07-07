@@ -1,0 +1,9 @@
+// Specialized tsconfig for type-checking js files
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {},
+	"include": ["**/*.js", "**/*.d.ts"],
+	// test files use mocha globals and are not part of the adapter type-check
+	// (they are also excluded from linting in eslint.config.mjs)
+	"exclude": ["**/build", "node_modules/", "widgets/", "**/*.test.js", "test/**"]
+}

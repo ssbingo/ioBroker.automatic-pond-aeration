@@ -1,0 +1,5 @@
+{
+	"General settings": "Impostazioni generali",
+	"Master enable": "Attivazione principale",
+	"scaffold_notice": "Questa è una struttura preliminare. La configurazione completa (punti di aerazione, gruppi, pianificazioni, sensori, backend ESP32 e accoppiamento con l'alimentatore) seguirà nelle prossime tappe."
+}

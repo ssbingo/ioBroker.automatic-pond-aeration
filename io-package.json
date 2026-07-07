@@ -1,0 +1,177 @@
+{
+	"common": {
+		"name": "automatic-pond-aeration",
+		"version": "0.0.1",
+		"news": {
+			"0.0.1": {
+				"en": "Initial release (project scaffold).",
+				"de": "Erste Veröffentlichung (Projektgerüst).",
+				"ru": "Первый выпуск (каркас проекта).",
+				"pt": "Versão inicial (estrutura do projeto).",
+				"nl": "Eerste release (projectstructuur).",
+				"fr": "Version initiale (structure du projet).",
+				"it": "Versione iniziale (struttura del progetto).",
+				"es": "Versión inicial (estructura del proyecto).",
+				"pl": "Pierwsze wydanie (szkielet projektu).",
+				"uk": "Перший випуск (каркас проєкту).",
+				"zh-cn": "首次发布（项目骨架）。"
+			}
+		},
+		"titleLang": {
+			"en": "Automatic Pond Aeration",
+			"de": "Automatische Teichbelüftung",
+			"ru": "Автоматическая аэрация пруда",
+			"pt": "Arejamento automático de lago",
+			"nl": "Automatische vijverbeluchting",
+			"fr": "Aération automatique d'étang",
+			"it": "Aerazione automatica del laghetto",
+			"es": "Aireación automática de estanque",
+			"pl": "Automatyczne napowietrzanie stawu",
+			"uk": "Автоматична аерація ставка",
+			"zh-cn": "自动池塘增氧"
+		},
+		"desc": {
+			"en": "Controls and monitors a pond aeration: switches valves at up to 8 aeration points by schedule, round-robin or groups, with a pump safety interlock and optional oxygen, temperature and pressure monitoring.",
+			"de": "Steuert und überwacht eine Teichbelüftung: schaltet Ventile an bis zu 8 Belüftungsstellen per Zeitplan, Rundlauf oder Gruppen, mit Pumpen-Sicherheitsverriegelung und optionaler Sauerstoff-, Temperatur- und Drucküberwachung.",
+			"ru": "Управляет и контролирует аэрацию пруда: переключает клапаны на 8 точках аэрации по расписанию, циклически или группами, с защитной блокировкой насоса и опциональным контролем кислорода, температуры и давления.",
+			"pt": "Controla e monitoriza o arejamento de um lago: comuta válvulas em até 8 pontos de arejamento por horário, rotação cíclica ou grupos, com bloqueio de segurança da bomba e monitorização opcional de oxigénio, temperatura e pressão.",
+			"nl": "Bestuurt en bewaakt een vijverbeluchting: schakelt kleppen op maximaal 8 beluchtingspunten via schema, cyclische rondgang of groepen, met een veiligheidsvergrendeling voor de pomp en optionele bewaking van zuurstof, temperatuur en druk.",
+			"fr": "Contrôle et surveille l'aération d'un étang : commute des vannes sur jusqu'à 8 points d'aération par horaire, rotation cyclique ou groupes, avec un verrouillage de sécurité de la pompe et une surveillance optionnelle de l'oxygène, de la température et de la pression.",
+			"it": "Controlla e monitora l'aerazione di un laghetto: commuta le valvole in un massimo di 8 punti di aerazione tramite pianificazione, rotazione ciclica o gruppi, con un interblocco di sicurezza della pompa e monitoraggio opzionale di ossigeno, temperatura e pressione.",
+			"es": "Controla y supervisa la aireación de un estanque: conmuta válvulas en hasta 8 puntos de aireación por horario, rotación cíclica o grupos, con un enclavamiento de seguridad de la bomba y supervisión opcional de oxígeno, temperatura y presión.",
+			"pl": "Steruje i monitoruje napowietrzanie stawu: przełącza zawory w maksymalnie 8 punktach napowietrzania według harmonogramu, rotacji cyklicznej lub grup, z blokadą bezpieczeństwa pompy oraz opcjonalnym monitorowaniem tlenu, temperatury i ciśnienia.",
+			"uk": "Керує та контролює аерацію ставка: перемикає клапани на до 8 точок аерації за розкладом, циклічним обходом або групами, із запобіжним блокуванням насоса та опціональним контролем кисню, температури й тиску.",
+			"zh-cn": "控制并监测池塘增氧：通过计划、循环轮换或分组方式切换最多 8 个增氧点的阀门，具备水泵安全联锁以及可选的溶氧、温度和压力监测。"
+		},
+		"authors": [
+			"ssbingo <s.sternitzke@online.de>"
+		],
+		"keywords": [
+			"pond",
+			"aeration",
+			"Teich",
+			"Belüftung",
+			"valve",
+			"oxygen",
+			"Koi"
+		],
+		"licenseInformation": {
+			"type": "free",
+			"license": "MIT"
+		},
+		"platform": "Javascript/Node.js",
+		"icon": "automatic-pond-aeration.png",
+		"enabled": true,
+		"extIcon": "https://raw.githubusercontent.com/ssbingo/ioBroker.automatic-pond-aeration/main/admin/automatic-pond-aeration.png",
+		"readme": "https://github.com/ssbingo/ioBroker.automatic-pond-aeration/blob/main/README.md",
+		"loglevel": "info",
+		"tier": 3,
+		"mode": "daemon",
+		"type": "garden",
+		"compact": true,
+		"messagebox": true,
+		"connectionType": "local",
+		"dataSource": "push",
+		"adminUI": {
+			"config": "materialize"
+		},
+		"eraseOnUpload": true,
+		"dependencies": [
+			{
+				"js-controller": ">=6.0.11"
+			}
+		],
+		"globalDependencies": [
+			{
+				"admin": ">=7.6.20"
+			}
+		]
+	},
+	"native": {
+		"masterEnable": true,
+		"controlBackend": "iobroker",
+		"esp32Host": "",
+		"esp32Port": 80,
+		"esp32UseWebsocket": true,
+		"esp32AuthToken": "",
+		"pollIntervalSec": 30,
+
+		"locationMode": "system",
+		"latitude": "",
+		"longitude": "",
+		"address": "",
+
+		"pumpControllable": false,
+		"pumpObjectId": "",
+		"pumpMinOnSec": 0,
+		"pumpMinOffSec": 0,
+
+		"emergencyObjectId": "",
+		"emergencyNormallyOpen": true,
+
+		"minOpenValves": 1,
+		"watchdogIntervalSec": 5,
+		"overlapSec": 2,
+
+		"roundRobinEnabled": false,
+		"roundRobinDwellSec": 60,
+
+		"o2Enabled": false,
+		"o2ObjectId": "",
+		"o2LowThreshold": null,
+		"o2TargetThreshold": null,
+		"o2Hysteresis": 0.5,
+
+		"airTempEnabled": false,
+		"airTempObjectId": "",
+		"waterTempEnabled": false,
+		"waterTempObjectId": "",
+
+		"pressureEnabled": false,
+		"pressureObjectId": "",
+		"pressureMin": null,
+		"pressureMax": null,
+
+		"winterEnabled": false,
+		"winterStart": "11-01",
+		"winterEnd": "03-15",
+
+		"feederEnabled": false,
+		"feederInstance": "",
+		"feederSwitches": [],
+		"feederOffsetSec": 60,
+		"feederDurationMode": "measure",
+		"feederAffectedPoints": [],
+
+		"notifyEnabled": false,
+		"messagingInstance": "",
+
+		"points": [],
+		"groups": [],
+		"schedules": []
+	},
+	"objects": [],
+	"instanceObjects": [
+		{
+			"_id": "info",
+			"type": "channel",
+			"common": {
+				"name": "Information"
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.connection",
+			"type": "state",
+			"common": {
+				"role": "indicator.connected",
+				"name": "Adapter running / configuration valid",
+				"type": "boolean",
+				"read": true,
+				"write": false,
+				"def": false
+			},
+			"native": {}
+		}
+	]
+}

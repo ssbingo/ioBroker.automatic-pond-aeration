@@ -1,0 +1,5 @@
+{
+	"General settings": "常规设置",
+	"Master enable": "总开关",
+	"scaffold_notice": "这是早期骨架。完整配置（增氧点、分组、计划、传感器、ESP32 后端以及与喂食器的联动）将在后续里程碑中加入。"
+}

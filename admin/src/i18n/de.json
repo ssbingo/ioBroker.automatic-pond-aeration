@@ -1,0 +1,5 @@
+{
+	"General settings": "Allgemeine Einstellungen",
+	"Master enable": "Hauptschalter",
+	"scaffold_notice": "Dies ist ein frühes Gerüst. Die vollständige Konfiguration (Belüftungsstellen, Gruppen, Zeitpläne, Sensoren, ESP32-Backend und Feeder-Kopplung) folgt in den nächsten Meilensteinen."
+}

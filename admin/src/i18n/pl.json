@@ -1,0 +1,5 @@
+{
+	"General settings": "Ustawienia ogólne",
+	"Master enable": "Główny włącznik",
+	"scaffold_notice": "To wczesny szkielet. Pełna konfiguracja (punkty napowietrzania, grupy, harmonogramy, czujniki, backend ESP32 i sprzężenie z karmnikiem) pojawi się w kolejnych etapach."
+}

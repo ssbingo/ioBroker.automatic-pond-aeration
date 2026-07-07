@@ -1,0 +1,5 @@
+{
+	"General settings": "Configurações gerais",
+	"Master enable": "Ativação principal",
+	"scaffold_notice": "Esta é uma estrutura inicial. A configuração completa (pontos de arejamento, grupos, horários, sensores, backend ESP32 e ligação ao alimentador) segue nos próximos marcos."
+}

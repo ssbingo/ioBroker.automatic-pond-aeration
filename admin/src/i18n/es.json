@@ -1,0 +1,5 @@
+{
+	"General settings": "Configuración general",
+	"Master enable": "Activación principal",
+	"scaffold_notice": "Esta es una estructura inicial. La configuración completa (puntos de aireación, grupos, horarios, sensores, backend ESP32 y acoplamiento con el comedero) llegará en los próximos hitos."
+}

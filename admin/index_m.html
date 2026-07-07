@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+
+	<!-- Load ioBroker scripts and styles-->
+	<link rel="stylesheet" type="text/css" href="../../css/adapter.css" />
+	<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+
+	<!-- Load our own files -->
+	<link rel="stylesheet" type="text/css" href="style.css" />
+
+	<!-- give the React app a defined height so its content area can scroll -->
+	<style>
+		html,
+		body {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+		}
+		#root {
+			height: 100%;
+		}
+	</style>
+
+</head>
+
+<body>
+
+	<!-- this is where the React components are loaded into -->
+	<div class="m adapter-container" id="root"></div>
+
+	<!-- load compiled React scripts -->
+	<script type="text/javascript" src="build/index.js"></script>
+
+</body>
+
+</html>

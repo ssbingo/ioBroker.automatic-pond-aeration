@@ -1,0 +1,5 @@
+{
+	"General settings": "General settings",
+	"Master enable": "Master enable",
+	"scaffold_notice": "This is an early scaffold. The full configuration (aeration points, groups, schedules, sensors, ESP32 backend and feeder coupling) follows in the next milestones."
+}

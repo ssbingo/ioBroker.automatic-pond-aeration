@@ -1,0 +1,5 @@
+{
+	"General settings": "Paramètres généraux",
+	"Master enable": "Activation principale",
+	"scaffold_notice": "Ceci est une ébauche préliminaire. La configuration complète (points d'aération, groupes, horaires, capteurs, backend ESP32 et couplage au distributeur) suivra dans les prochaines étapes."
+}
