@@ -21,10 +21,14 @@ Opcionalmente puede supervisar el **oxígeno disuelto**, la **temperatura del ai
 aireación seleccionados durante la alimentación cuando
 [ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder) está instalado.
 
-> ⚠️ **Estado del proyecto: trabajo en curso.** El modelo de configuración y el modelo completo de
-> puntos de datos ya están listos: el adaptador valida tu configuración y crea (y limpia) todos sus
-> objetos en consecuencia. El motor de control, los backends de hardware y las funciones de
-> supervisión se van añadiendo hito a hito. Todavía no está pensada para uso en producción.
+> ⚠️ **Estado del proyecto.** Totalmente implementado y configurable desde el admin: el control de las
+> válvulas (horario programado, ciclo rotativo round-robin, grupos), el **enclavamiento de seguridad**
+> contra el dead-heading, la **supervisión** (oxígeno, temperatura aire/agua, presión con alarmas),
+> las **horas astronómicas y la geolocalización** y el **acoplamiento con el feeder**. **Aún
+> planificados:** el backend de hardware **ESP32** directo y el **modo invierno / libre de hielo** (las
+> opciones correspondientes ya aparecen en la configuración, pero todavía no están activas). Hasta que
+> llegue el backend ESP32, las válvulas y la bomba se controlan a través de estados de ioBroker
+> existentes.
 
 ---
 
@@ -34,7 +38,7 @@ aireación seleccionados durante la alimentación cuando
 2. [Concepto de seguridad](#2-concepto-de-seguridad)
 3. [Requisitos](#3-requisitos)
 4. [Instalación](#4-instalación)
-5. [Resumen de la configuración](#5-resumen-de-la-configuración)
+5. [Configuración](#5-configuración)
 6. [Objetos / puntos de datos](#6-objetos--puntos-de-datos)
 7. [Hoja de ruta](#7-hoja-de-ruta)
 
@@ -52,9 +56,9 @@ válvula:
   tiempo de permanencia configurable.
 * **Grupos** – controlar varios puntos juntos; **nunca puede haber más grupos que puntos**.
 
-Las válvulas y la bomba se pueden controlar bien a través de **estados de ioBroker existentes** (de
-cualquier adaptador que exponga los interruptores) o **directamente en un ESP32** que ejecute el
-firmware complementario.
+Las válvulas y la bomba se controlan a través de **estados de ioBroker existentes** (de cualquier
+adaptador que exponga los interruptores). Está previsto un backend de hardware **ESP32** directo (sin
+una instancia adicional de ioBroker).
 
 ## 2. Concepto de seguridad
 
@@ -78,19 +82,86 @@ ya que esto provoca sobrepresión y puede dañar la bomba. Por eso:
 
 * Node.js ≥ 22
 * js-controller ≥ 6.0.11, admin ≥ 7.6.20
-* Una o varias válvulas accesibles como estados de ioBroker, o un ESP32 con el firmware
-  complementario.
+* Una o varias válvulas accesibles como estados de ioBroker (p. ej. un adaptador de relé/enchufe
+  inteligente).
 
 ## 4. Instalación
 
 Instala el adaptador desde el admin de ioBroker (o, durante el desarrollo, desde el repositorio de
 GitHub) y crea una instancia. Abre los ajustes de la instancia para configurarlo.
 
-## 5. Resumen de la configuración
+## 5. Configuración
 
-La página de ajustes crece con los hitos. Secciones previstas: general/backend, puntos de aireación,
-control (horario/round-robin/grupos), sensores, astro y ubicación, acoplamiento con el feeder,
-seguridad y notificaciones. Consulta [PROJECT_PLAN.md](../../PROJECT_PLAN.md) para el diseño completo.
+La página de ajustes está organizada en pestañas. No tienes que rellenarlo todo, solo las partes que
+uses.
+
+### General
+- **Habilitación principal** – el interruptor de encendido/apagado de todo el adaptador. Cuando está
+  apagado, no se controla nada.
+- **Backend de hardware** – `Estados de ioBroker existentes` (predeterminado) controla tus
+  válvulas/bomba a través de estados de otros adaptadores. `ESP32 (directo)` está *previsto* (M7) y
+  todavía no está activo.
+- **Intervalo de sondeo (s)** – con qué frecuencia se consulta el estado del backend (p. ej. `30`).
+
+### Puntos de aireación
+El núcleo de la configuración. Añade **hasta 8** puntos; cada punto es una válvula. Por cada punto:
+- **Nombre** – p. ej. `Pier`, `Deep zone`.
+- **Habilitado** – incluir este punto en el control.
+- **Backend** – `ioBroker` (un estado externo) o `ESP32` (un canal de relé, previsto).
+- **Estado de válvula / canal** – para el backend ioBroker, elige el estado interruptor que abre la
+  válvula (mediante el explorador de objetos); para ESP32, el número de canal.
+
+### Grupos
+Agrupa puntos para conmutarlos juntos (p. ej. un botón abre varios difusores). Da un nombre al grupo
+y marca sus puntos miembros. **Nunca puede haber más grupos que puntos.**
+
+### Control
+- **Ciclo rotativo (round-robin)** – recorrer los puntos por turnos, cada uno abierto durante el
+  **tiempo de permanencia** (segundos).
+- **Horarios** – abrir puntos/grupos seleccionados durante una franja horaria por día de la semana
+  (`Desde`/`Hasta`, p. ej. `08:00`–`18:00`; se admiten franjas nocturnas como `22:00`–`06:00`). Un
+  horario activo tiene **prioridad sobre el round-robin**.
+
+### Sensores
+Supervisión opcional. Para cada sensor marca **Habilitado** y elige el **estado de origen**:
+- **Oxígeno disuelto** – con un umbral bajo (activa `sensors.oxygenAlarm`), un valor objetivo y una
+  histéresis; el **% de saturación** de oxígeno se calcula a partir de la temperatura del agua.
+- **Temperatura del aire/agua**.
+- **Presión** – con mín/máx (fuera de rango activa `sensors.pressureAlarm`).
+
+### Ubicación
+Necesaria para las horas astronómicas (amanecer/atardecer/noche).
+- **Origen de la ubicación** – `Ubicación del sistema ioBroker` (usa las coordenadas de tu sistema) o
+  `Ubicación personalizada`. Para una ubicación personalizada, escribe una dirección y pulsa
+  **Buscar** (geocodificada a demanda mediante OpenStreetMap/Nominatim) o haz clic/arrastra el
+  marcador en el mapa.
+
+### Feeder
+Pausar puntos seleccionados mientras
+[ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder) está alimentando,
+para que la comida no se disperse.
+- Elige la **instancia del feeder** (detectada automáticamente) y marca los **interruptores del
+  feeder** a vigilar.
+- **Modo de duración** – `Medir` vigila el interruptor (pausa = alimentación + desfase, sin conocer de
+  antemano la duración de la alimentación); `Pulso` usa una duración de alimentación fija.
+- **Desfase (s)** – pausa adicional después de que termine la alimentación. **Debería ser al menos el
+  tiempo medio que los animales necesitan para comer** (ejemplo: 15 s de alimentación + 60 s de
+  desfase ⇒ 75 s de aireación en pausa).
+- **Puntos afectados** – qué puntos se pausan durante la alimentación.
+
+### Seguridad
+- **Válvulas abiertas mín. mientras la bomba funciona** – la protección contra el dead-heading
+  (predeterminado `1`).
+- **Intervalo del watchdog (s)** y **solapamiento make-before-break (s)**.
+- **Bomba** – si es controlable (entonces el enclavamiento puede apagarla), su estado y los tiempos
+  mínimos de encendido/apagado contra el ciclado demasiado frecuente.
+- **Válvula de emergencia** – su estado, si es **normalmente abierta** (a prueba de fallos), el
+  **tipo** de válvula (electroválvula o válvula de bola motorizada) y, para una válvula motorizada, su
+  **tiempo de recorrido**.
+
+### Notificaciones
+Habilita las notificaciones y elige una **instancia de mensajería** (cualquier adaptador de tipo
+`messaging`, p. ej. Telegram). *(El envío está preparado para un hito posterior.)*
 
 ## 6. Objetos / puntos de datos
 
@@ -186,9 +257,15 @@ automáticamente.
 
 ## 7. Hoja de ruta
 
-Consulta [PROJECT_PLAN.md](../../PROJECT_PLAN.md) para el plan de implementación completo basado en
-hitos (motor de control, backends HAL, firmware ESP32, supervisión, acoplamiento con el feeder, modo
-invierno y el posterior adaptador de widgets vis-2).
+Hecho: interfaz de configuración, control de válvulas (horario/round-robin/grupos), el enclavamiento
+de seguridad contra el dead-heading, la supervisión, astro y geolocalización y el acoplamiento con el
+feeder. **Todavía pendiente:**
+
+* el backend de hardware **ESP32** directo + firmware de referencia (Waveshare ESP32-S3-POE-ETH-8DI-8RO);
+* el **modo invierno / libre de hielo**;
+* un posterior **adaptador de widgets vis-2** para el manejo y la supervisión.
+
+Consulta [PROJECT_PLAN.md](../../PROJECT_PLAN.md) para el plan completo basado en hitos.
 
 ---
 

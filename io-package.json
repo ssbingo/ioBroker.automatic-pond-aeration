@@ -1,20 +1,20 @@
 {
 	"common": {
 		"name": "automatic-pond-aeration",
-		"version": "0.0.11",
+		"version": "0.0.12",
 		"news": {
-			"0.0.11": {
-				"en": "Address search: clearer diagnostics — it now distinguishes \"no answer from the running instance\" from \"no result\", and logs the response for troubleshooting.",
-				"de": "Adresssuche: klarere Diagnose — unterscheidet jetzt „keine Antwort der laufenden Instanz\" von „kein Treffer\" und protokolliert die Antwort zur Fehlersuche.",
-				"ru": "Поиск адреса: понятнее диагностика — теперь различает «нет ответа от запущенного экземпляра» и «нет результата», и логирует ответ для отладки.",
-				"pt": "Pesquisa de endereço: diagnóstico mais claro — agora distingue «sem resposta da instância em execução» de «sem resultado» e regista a resposta para diagnóstico.",
-				"nl": "Adres zoeken: duidelijkere diagnose — onderscheidt nu 'geen antwoord van de draaiende instantie' van 'geen resultaat' en logt het antwoord voor probleemoplossing.",
-				"fr": "Recherche d'adresse : diagnostic plus clair — distingue désormais « aucune réponse de l'instance en cours » de « aucun résultat » et journalise la réponse pour le dépannage.",
-				"it": "Ricerca indirizzo: diagnostica più chiara — ora distingue «nessuna risposta dall'istanza in esecuzione» da «nessun risultato» e registra la risposta per la risoluzione dei problemi.",
-				"es": "Búsqueda de dirección: diagnóstico más claro — ahora distingue «sin respuesta de la instancia en ejecución» de «sin resultado» y registra la respuesta para la solución de problemas.",
-				"pl": "Wyszukiwanie adresu: czytelniejsza diagnostyka — rozróżnia teraz „brak odpowiedzi od działającej instancji\" od „brak wyniku\" i loguje odpowiedź do diagnozy.",
-				"uk": "Пошук адреси: чіткіша діагностика — тепер розрізняє «немає відповіді від запущеного екземпляра» та «немає результату» і логує відповідь для діагностики.",
-				"zh-cn": "地址搜索：更清晰的诊断——现在区分“运行中的实例无响应”和“无结果”，并记录响应以便排查。"
+			"0.0.12": {
+				"en": "Documentation and release hardening: a full multi-language manual with a detailed per-tab configuration guide, corrected io-package schema (encryptedNative/protectedNative), a new icon and changelog housekeeping.",
+				"de": "Doku- und Release-Härtung: vollständiges mehrsprachiges Handbuch mit detaillierter Konfigurationsanleitung, korrigiertes io-package-Schema (encryptedNative/protectedNative), neues Icon und Changelog-Pflege.",
+				"ru": "Документация и подготовка к релизу: полное многоязычное руководство с подробной инструкцией по настройке, исправленная схема io-package (encryptedNative/protectedNative), новый значок и упорядочивание журнала изменений.",
+				"pt": "Documentação e preparação para o lançamento: manual multilíngue completo com um guia de configuração detalhado, esquema io-package corrigido (encryptedNative/protectedNative), novo ícone e organização do changelog.",
+				"nl": "Documentatie en release-hardening: volledig meertalig handboek met een gedetailleerde configuratiegids, gecorrigeerd io-package-schema (encryptedNative/protectedNative), nieuw pictogram en changelog-onderhoud.",
+				"fr": "Documentation et préparation de la version : manuel multilingue complet avec un guide de configuration détaillé, schéma io-package corrigé (encryptedNative/protectedNative), nouvelle icône et entretien du changelog.",
+				"it": "Documentazione e preparazione al rilascio: manuale multilingue completo con una guida di configurazione dettagliata, schema io-package corretto (encryptedNative/protectedNative), nuova icona e manutenzione del changelog.",
+				"es": "Documentación y preparación de la versión: manual multilingüe completo con una guía de configuración detallada, esquema io-package corregido (encryptedNative/protectedNative), nuevo icono y mantenimiento del registro de cambios.",
+				"pl": "Dokumentacja i przygotowanie wydania: pełny wielojęzyczny podręcznik ze szczegółowym przewodnikiem konfiguracji, poprawiony schemat io-package (encryptedNative/protectedNative), nowa ikona i porządki w changelogu.",
+				"uk": "Документація та підготовка до випуску: повний багатомовний посібник із докладною інструкцією з налаштування, виправлена схема io-package (encryptedNative/protectedNative), нова іконка та впорядкування журналу змін.",
+				"zh-cn": "文档与发布加固：完整的多语言手册及详细的配置指南，修正 io-package 结构（encryptedNative/protectedNative），新图标，并整理更新日志。"
 			}
 		},
 		"titleLang": {
@@ -76,12 +76,6 @@
 			"config": "materialize"
 		},
 		"eraseOnUpload": true,
-		"encryptedNative": [
-			"esp32AuthToken"
-		],
-		"protectedNative": [
-			"esp32AuthToken"
-		],
 		"dependencies": [
 			{
 				"js-controller": ">=6.0.11"
@@ -159,6 +153,12 @@
 		"groups": [],
 		"schedules": []
 	},
+	"encryptedNative": [
+		"esp32AuthToken"
+	],
+	"protectedNative": [
+		"esp32AuthToken"
+	],
 	"objects": [],
 	"instanceObjects": [
 		{

@@ -20,10 +20,13 @@ sprzętem **bezpośrednio na ESP32** (bez dodatkowej instancji ioBroker) oraz ws
 napowietrzania podczas karmienia, gdy zainstalowany jest
 [ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder).
 
-> ⚠️ **Status projektu: prace w toku.** Model konfiguracji i kompletny model punktów danych są
-> gotowe: adapter sprawdza Twoją konfigurację i odpowiednio tworzy (oraz czyści) wszystkie swoje
-> obiekty. Silnik sterowania, backendy sprzętowe i funkcje monitorowania są dodawane etap po etapie
-> (kamień milowy po kamieniu milowym). Nie jest jeszcze przeznaczona do użytku produkcyjnego.
+> ⚠️ **Status projektu.** W pełni zaimplementowane i konfigurowalne z panelu admin: sterowanie
+> zaworami (harmonogram, cykliczna rotacja round-robin, grupy), **blokada bezpieczeństwa** przeciw
+> pracy przy zamkniętych zaworach (dead-heading), **monitorowanie** (tlen, temperatura
+> powietrza/wody, ciśnienie z alarmami), **czasy astronomiczne i geolokalizacja** oraz **sprzężenie z
+> feederem**. **Wciąż planowane:** bezpośredni sprzętowy backend **ESP32** oraz **tryb zimowy / bez
+> lodu** (odpowiednie opcje już pojawiają się w konfiguracji, ale nie są jeszcze aktywne). Dopóki
+> backend ESP32 nie zostanie wydany, zawory i pompa są sterowane przez istniejące stany ioBroker.
 
 ---
 
@@ -33,7 +36,7 @@ napowietrzania podczas karmienia, gdy zainstalowany jest
 2. [Koncepcja bezpieczeństwa](#2-koncepcja-bezpieczeństwa)
 3. [Wymagania](#3-wymagania)
 4. [Instalacja](#4-instalacja)
-5. [Przegląd konfiguracji](#5-przegląd-konfiguracji)
+5. [Konfiguracja](#5-konfiguracja)
 6. [Obiekty / punkty danych](#6-obiekty--punkty-danych)
 7. [Plan rozwoju](#7-plan-rozwoju)
 
@@ -50,8 +53,9 @@ otwiera się każdy zawór:
   konfigurowalny czas przetrzymania.
 * **Grupy** – sterowanie kilkoma punktami razem; **nigdy nie może być więcej grup niż punktów**.
 
-Zaworami i pompą można sterować albo przez **istniejące stany ioBroker** (z dowolnego adaptera
-udostępniającego przełączniki), albo **bezpośrednio na ESP32** z towarzyszącym firmware.
+Zawory i pompa są sterowane przez **istniejące stany ioBroker** (z dowolnego adaptera
+udostępniającego przełączniki). Bezpośredni sprzętowy backend **ESP32** (bez dodatkowej instancji
+ioBroker) jest planowany.
 
 ## 2. Koncepcja bezpieczeństwa
 
@@ -72,19 +76,82 @@ powoduje to nadciśnienie i może uszkodzić pompę. Dlatego:
 
 * Node.js ≥ 22
 * js-controller ≥ 6.0.11, admin ≥ 7.6.20
-* Jeden lub więcej zaworów dostępnych jako stany ioBroker albo ESP32 z towarzyszącym firmware.
+* Jeden lub więcej zaworów dostępnych jako stany ioBroker (np. adapter przekaźnika/inteligentnego gniazdka).
 
 ## 4. Instalacja
 
 Zainstaluj adapter z panelu admin ioBroker (lub, na etapie rozwoju, z repozytorium GitHub) i utwórz
 instancję. Otwórz ustawienia instancji, aby ją skonfigurować.
 
-## 5. Przegląd konfiguracji
+## 5. Konfiguracja
 
-Strona ustawień rozrasta się wraz z kolejnymi kamieniami milowymi. Planowane sekcje: ogólne/backend,
-punkty napowietrzania, sterowanie (harmonogram/round-robin/grupy), czujniki, astro i lokalizacja,
-sprzężenie z feederem, bezpieczeństwo i powiadomienia. Pełny projekt znajdziesz w
-[PROJECT_PLAN.md](../../PROJECT_PLAN.md).
+Strona ustawień jest podzielona na karty (zakładki). Nie musisz wypełniać wszystkiego – tylko te
+części, których używasz.
+
+### Ogólne
+- **Główne włączenie** – przełącznik wł./wył. całego adaptera. Gdy jest wyłączony, nic nie jest
+  sterowane.
+- **Backend sprzętowy** – `Istniejące stany ioBroker` (domyślnie) steruje Twoimi zaworami/pompą przez
+  stany innych adapterów. `ESP32 (bezpośrednio)` jest *planowany* (M7) i jeszcze nieaktywny.
+- **Interwał odpytywania (s)** – jak często odpytywany jest status backendu (np. `30`).
+
+### Punkty napowietrzania
+Serce konfiguracji. Dodaj **do 8** punktów; każdy punkt to jeden zawór. Dla każdego punktu:
+- **Nazwa** – np. `Pier`, `Deep zone`.
+- **Włączony** – uwzględnij ten punkt w sterowaniu.
+- **Backend** – `ioBroker` (obcy stan) lub `ESP32` (kanał przekaźnika, planowany).
+- **Stan zaworu / kanał** – dla backendu ioBroker wybierz stan przełącznika, który otwiera zawór
+  (przez przeglądarkę obiektów); dla ESP32 numer kanału.
+
+### Grupy
+Grupuj punkty, aby przełączać je razem (np. jeden przycisk otwiera kilka dyfuzorów). Nadaj grupie
+nazwę i zaznacz jej punkty składowe. **Nigdy nie może być więcej grup niż punktów.**
+
+### Sterowanie
+- **Cykliczna rotacja (round-robin)** – kolejne przełączanie punktów, każdy otwarty przez **czas
+  przetrzymania** (sekundy).
+- **Harmonogramy** – otwieranie wybranych punktów/grup w oknie czasowym dla dnia tygodnia (`Od`/`Do`,
+  np. `08:00`–`18:00`; okna przechodzące przez noc, takie jak `22:00`–`06:00`, są obsługiwane).
+  Aktywny harmonogram ma **priorytet nad rotacją round-robin**.
+
+### Czujniki
+Opcjonalne monitorowanie. Dla każdego czujnika zaznacz **Włączony** i wybierz **stan źródłowy**:
+- **Rozpuszczony tlen** – z dolnym progiem (wyzwala `sensors.oxygenAlarm`), wartością docelową i
+  histerezą; **nasycenie tlenem %** jest obliczane z temperatury wody.
+- **Temperatura powietrza/wody**.
+- **Ciśnienie** – z min/maks (poza zakresem wyzwala `sensors.pressureAlarm`).
+
+### Lokalizacja
+Potrzebna do czasów astronomicznych (wschód/zachód słońca/noc).
+- **Źródło lokalizacji** – `Lokalizacja systemowa ioBroker` (używa współrzędnych systemu) lub `Własna
+  lokalizacja`. Dla własnej lokalizacji wpisz adres i naciśnij **Szukaj** (geokodowany na żądanie
+  przez OpenStreetMap/Nominatim) albo kliknij/przeciągnij znacznik na mapie.
+
+### Feeder
+Wstrzymuj wybrane punkty, gdy
+[ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder) karmi, aby karma
+nie była rozdmuchiwana.
+- Wybierz **instancję feedera** (wykrywaną automatycznie) i zaznacz monitorowane **przełączniki
+  feedera**.
+- **Tryb czasu trwania** – `Pomiar` obserwuje przełącznik (pauza = karmienie + offset, bez
+  wcześniejszej znajomości czasu karmienia); `Impuls` używa stałego czasu karmienia.
+- **Offset (s)** – dodatkowa pauza po zakończeniu karmienia. **Powinien wynosić co najmniej średni
+  czas, jakiego zwierzęta potrzebują na jedzenie** (przykład: 15 s karmienia + 60 s offsetu ⇒ 75 s
+  wstrzymanego napowietrzania).
+- **Punkty, których dotyczy** – które punkty są wstrzymywane podczas karmienia.
+
+### Bezpieczeństwo
+- **Min. otwartych zaworów przy pracującej pompie** – zabezpieczenie przed pracą przy zamkniętych
+  zaworach (domyślnie `1`).
+- **Interwał watchdoga (s)** oraz **nakładanie make-before-break (s)**.
+- **Pompa** – czy jest sterowalna (wtedy blokada może ją wyłączyć), jej stan oraz minimalne czasy
+  wł./wył. przeciw zbyt częstemu taktowaniu.
+- **Zawór awaryjny** – jego stan, czy jest **normalnie otwarty** (fail-safe), **typ** zaworu
+  (elektrozawór lub silnikowy zawór kulowy) oraz, dla zaworu silnikowego, jego **czas przejścia**.
+
+### Powiadomienia
+Włącz powiadomienia i wybierz **instancję messaging** (dowolny adapter typu `messaging`, np.
+Telegram). *(Wysyłka jest przygotowana na późniejszy kamień milowy.)*
 
 ## 6. Obiekty / punkty danych
 
@@ -179,9 +246,15 @@ czyszczone.
 
 ## 7. Plan rozwoju
 
-Pełny, oparty na kamieniach milowych plan wdrożenia (silnik sterowania, backendy HAL, firmware ESP32,
-monitorowanie, sprzężenie z feederem, tryb zimowy oraz następujący po nim adapter widżetów vis-2)
-znajdziesz w [PROJECT_PLAN.md](../../PROJECT_PLAN.md).
+Gotowe: interfejs konfiguracji, sterowanie zaworami (harmonogram/round-robin/grupy), blokada
+bezpieczeństwa przeciw pracy przy zamkniętych zaworach, monitorowanie, astro i geolokalizacja oraz
+sprzężenie z feederem. **Wciąż przed nami:**
+
+* bezpośredni sprzętowy backend **ESP32** + referencyjne oprogramowanie układowe (Waveshare ESP32-S3-POE-ETH-8DI-8RO);
+* **tryb zimowy / bez lodu**;
+* kolejny **adapter widżetów vis-2** do obsługi i monitorowania.
+
+Pełny, oparty na kamieniach milowych plan znajdziesz w [PROJECT_PLAN.md](../../PROJECT_PLAN.md).
 
 ---
 

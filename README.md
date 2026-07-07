@@ -32,10 +32,13 @@ compute **astronomical times** from your **geolocation**, drive the hardware **d
 (no additional ioBroker instance required), and pause selected aeration points during feeding when
 [ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder) is installed.
 
-> ⚠️ **Project status: work in progress.** The configuration model and the complete data-point
-> model are in place: the adapter validates your configuration and creates (and cleans up) all of
-> its objects accordingly. The control engine, hardware backends and the monitoring features are
-> being added milestone by milestone. It is not yet meant for production use.
+> ⚠️ **Project status.** Fully implemented and configurable from the admin: valve control
+> (schedule, cyclic round-robin, groups), the dead-head **safety interlock**, **monitoring**
+> (oxygen, air/water temperature, pressure with alarms), **astronomical times & geolocation**, and
+> the **feeder coupling**. **Still planned:** the direct **ESP32** hardware backend and the
+> **winter / ice-free mode** (the corresponding options already appear in the configuration but are
+> not active yet). Until the ESP32 backend ships, valves and the pump are driven through existing
+> ioBroker states.
 
 > 🇩🇪 Deutsche Anleitung: [doc/de/README.md](doc/de/README.md) · other languages: see
 > [Documentation](#documentation) at the bottom.
@@ -48,7 +51,7 @@ compute **astronomical times** from your **geolocation**, drive the hardware **d
 2. [Safety concept](#2-safety-concept)
 3. [Requirements](#3-requirements)
 4. [Installation](#4-installation)
-5. [Configuration overview](#5-configuration-overview)
+5. [Configuration](#5-configuration)
 6. [Objects / data points](#6-objects--data-points)
 7. [Roadmap](#7-roadmap)
 
@@ -63,8 +66,8 @@ receive air is decided by **solenoid valves**. This adapter decides **when** eac
 * **Cyclic round-robin** – rotate through the points, each open for a configurable dwell time.
 * **Groups** – control several points together; there can **never be more groups than points**.
 
-The valves and the pump can be driven either through **existing ioBroker states** (from any adapter
-that exposes the switches) or **directly on an ESP32** running the companion firmware.
+The valves and the pump are driven through **existing ioBroker states** (from any adapter that
+exposes the switches). A direct **ESP32** hardware backend (no extra ioBroker instance) is planned.
 
 ## 2. Safety concept
 
@@ -85,18 +88,76 @@ overpressure and can damage the pump. Therefore:
 
 * Node.js ≥ 22
 * js-controller ≥ 6.0.11, admin ≥ 7.6.20
-* One or more valves reachable as ioBroker states, or an ESP32 with the companion firmware.
+* One or more valves reachable as ioBroker states (e.g. a relay/smart-plug adapter).
 
 ## 4. Installation
 
 Install the adapter from the ioBroker admin (or, during development, from the GitHub repository)
 and create an instance. Open the instance settings to configure it.
 
-## 5. Configuration overview
+## 5. Configuration
 
-The settings page grows with the milestones. Planned sections: general/backend, aeration points,
-control (schedule/round-robin/groups), sensors, astro & location, feeder coupling, safety and
-notifications. See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the full design.
+The settings page is organised into tabs. You do not have to fill in everything — only the parts
+you use.
+
+### General
+- **Master enable** – the on/off switch for the whole adapter. When off, nothing is controlled.
+- **Hardware backend** – `Existing ioBroker states` (default) drives your valves/pump through states
+  of other adapters. `ESP32 (direct)` is *planned* (M7) and not active yet.
+- **Poll interval (s)** – how often the backend status is polled (e.g. `30`).
+
+### Aeration points
+The heart of the configuration. Add **up to 8** points; each one is one valve. Per point:
+- **Name** – e.g. `Pier`, `Deep zone`.
+- **Enabled** – include this point in the control.
+- **Backend** – `ioBroker` (a foreign state) or `ESP32` (a relay channel, planned).
+- **Valve state / channel** – for the ioBroker backend, pick the switch state that opens the valve
+  (via the object browser); for ESP32, the channel number.
+
+### Groups
+Group points to switch them together (e.g. one button opens several diffusers). Give the group a
+name and tick its member points. **There can never be more groups than points.**
+
+### Control
+- **Cyclic round-robin** – rotate through the points, each open for the **dwell time** (seconds).
+- **Schedules** – open selected points/groups during a weekday time window (`From`/`To`, e.g.
+  `08:00`–`18:00`; overnight windows like `22:00`–`06:00` are supported). An active schedule has
+  **priority over the round-robin**.
+
+### Sensors
+Optional monitoring. For each sensor tick **Enabled** and pick the **source state**:
+- **Dissolved oxygen** – with a low threshold (raises `sensors.oxygenAlarm`), a target and a
+  hysteresis; the oxygen **saturation %** is computed from the water temperature.
+- **Air / water temperature**.
+- **Pressure** – with min/max (out of range raises `sensors.pressureAlarm`).
+
+### Location
+Needed for the astronomical times (sunrise/sunset/night).
+- **Location source** – `ioBroker system location` (uses your system coordinates) or
+  `Custom location`. For a custom location, type an address and press **Search** (geocoded via
+  OpenStreetMap/Nominatim on demand) or click/drag the marker on the map.
+
+### Feeder
+Pause selected points while [ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder)
+is feeding, so the food is not blown around.
+- Pick the **feeder instance** (auto-discovered) and tick the **feeder switches** to watch.
+- **Duration mode** – `Measure` watches the switch (pause = feeding + offset, without knowing the
+  feeding duration in advance); `Pulse` uses a fixed feeding duration.
+- **Offset (s)** – extra pause after feeding ends. **It should be at least the average time the
+  animals need to eat** (example: 15 s feeding + 60 s offset ⇒ 75 s of paused aeration).
+- **Affected points** – which points pause during feeding.
+
+### Safety
+- **Min. open valves while pump runs** – the dead-head protection (default `1`).
+- **Watchdog interval (s)** and **make-before-break overlap (s)**.
+- **Pump** – whether it is controllable (then the interlock can switch it off), its state, and
+  anti short-cycle min on/off times.
+- **Emergency valve** – its state, whether it is **normally open** (fail-safe), the valve **type**
+  (solenoid or motorized ball valve) and, for a motor valve, its **travel time**.
+
+### Notifications
+Enable notifications and pick a **messaging instance** (any adapter of type `messaging`, e.g.
+Telegram). *(Sending is prepared for a later milestone.)*
 
 ## 6. Objects / data points
 
@@ -191,15 +252,23 @@ automatically.
 
 ## 7. Roadmap
 
-See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based implementation plan
-(control engine, HAL backends, ESP32 firmware, monitoring, feeder coupling, winter mode and the
-follow-up vis-2 widget adapter).
+Done: configuration UI, valve control (schedule/round-robin/groups), the dead-head safety
+interlock, monitoring, astro & geolocation and the feeder coupling. **Still to come:**
+
+* the direct **ESP32** hardware backend + reference firmware (Waveshare ESP32-S3-POE-ETH-8DI-8RO);
+* the **winter / ice-free mode**;
+* a follow-up **vis-2 widget adapter** for operation and monitoring.
+
+See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ## Changelog
 <!--
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.0.12 (2026-07-07)
+* (ssbingo) Documentation & release hardening: the README and all 10 translated docs are now a full manual with a per-tab configuration guide; fixed the io-package.json placement of `encryptedNative`/`protectedNative` (root instead of `common`); new adapter icon; changelog trimmed to the 10 most recent entries (older ones moved to `CHANGELOG_OLD.md`)
+
 ### 0.0.11 (2026-07-07)
 * (ssbingo) Address search diagnostics: the location search now distinguishes "no answer from the running instance" from "no result for the address", logs the raw response to the browser console and the geocode request to the adapter log — so a failing search (e.g. the instance is stopped, or an old adapter version is running) is easy to pinpoint
 
@@ -230,9 +299,6 @@ follow-up vis-2 widget adapter).
 ### 0.0.2 (2026-07-07)
 * (ssbingo) Configuration validation/normalization and the complete data-point model: all objects are created from the configuration and obsolete ones are cleaned up automatically
 * (ssbingo) Enforced hard rule "never more groups than aeration points"; configurable emergency valve type (solenoid / motorized ball valve)
-
-### 0.0.1 (2026-07-07)
-* (ssbingo) Initial release (project scaffold)
 
 ---
 

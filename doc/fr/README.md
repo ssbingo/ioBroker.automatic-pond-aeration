@@ -21,10 +21,13 @@ piloter le matériel **directement sur un ESP32** (sans instance ioBroker suppl�
 pause certains points d'aération pendant la distribution de nourriture lorsque
 [ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder) est installé.
 
-> ⚠️ **État du projet : travail en cours.** Le modèle de configuration et le modèle complet des
-> points de données sont en place : l'adaptateur valide ta configuration et crée (et nettoie) tous
-> ses objets en conséquence. Le moteur de commande, les backends matériels et les fonctions de
-> surveillance sont ajoutés étape par étape. Elle n'est pas encore destinée à un usage en production.
+> ⚠️ **État du projet.** Entièrement implémenté et configurable depuis l'admin : la commande des
+> vannes (planning, cycle en rotation round-robin, groupes), le **verrouillage de sécurité** contre le
+> dead-heading, la **surveillance** (oxygène, température air/eau, pression avec alarmes), les
+> **heures astronomiques & la géolocalisation** ainsi que le **couplage au feeder**. **Encore prévu :**
+> le backend matériel **ESP32** direct et le **mode hiver / hors-gel** (les options correspondantes
+> apparaissent déjà dans la configuration mais ne sont pas encore actives). Tant que le backend ESP32
+> n'est pas livré, les vannes et la pompe sont pilotées via des états ioBroker existants.
 
 ---
 
@@ -34,7 +37,7 @@ pause certains points d'aération pendant la distribution de nourriture lorsque
 2. [Concept de sécurité](#2-concept-de-sécurité)
 3. [Prérequis](#3-prérequis)
 4. [Installation](#4-installation)
-5. [Aperçu de la configuration](#5-aperçu-de-la-configuration)
+5. [Configuration](#5-configuration)
 6. [Objets / points de données](#6-objets--points-de-données)
 7. [Feuille de route](#7-feuille-de-route)
 
@@ -53,9 +56,9 @@ chaque vanne s'ouvre :
 * **Groupes** – commander plusieurs points ensemble ; il ne peut **jamais y avoir plus de groupes que
   de points**.
 
-Les vannes et la pompe peuvent être pilotées soit via des **états ioBroker existants** (de n'importe
-quel adaptateur qui expose les commutateurs), soit **directement sur un ESP32** exécutant le firmware
-compagnon.
+Les vannes et la pompe sont pilotées via des **états ioBroker existants** (de n'importe quel
+adaptateur qui expose les commutateurs). Un backend matériel **ESP32** direct (sans instance ioBroker
+supplémentaire) est prévu.
 
 ## 2. Concept de sécurité
 
@@ -78,20 +81,87 @@ heading) – cela provoque une surpression et peut endommager la pompe. C'est po
 
 * Node.js ≥ 22
 * js-controller ≥ 6.0.11, admin ≥ 7.6.20
-* Une ou plusieurs vannes accessibles en tant qu'états ioBroker, ou un ESP32 avec le firmware
-  compagnon.
+* Une ou plusieurs vannes accessibles en tant qu'états ioBroker (p. ex. un adaptateur de relais/prise
+  connectée).
 
 ## 4. Installation
 
 Installe l'adaptateur depuis l'admin ioBroker (ou, en phase de développement, depuis le dépôt GitHub)
 et crée une instance. Ouvre les paramètres de l'instance pour la configurer.
 
-## 5. Aperçu de la configuration
+## 5. Configuration
 
-La page de configuration s'étoffe au fil des étapes. Sections prévues : général/backend, points
-d'aération, commande (planning/round-robin/groupes), capteurs, astro & emplacement, couplage au
-feeder, sécurité et notifications. Voir [PROJECT_PLAN.md](../../PROJECT_PLAN.md) pour la conception
-complète.
+La page de paramètres est organisée en onglets. Tu n'es pas obligé de tout remplir – seulement les
+parties que tu utilises.
+
+### Général
+- **Activation principale** – l'interrupteur marche/arrêt de tout l'adaptateur. À l'arrêt, rien n'est
+  commandé.
+- **Backend matériel** – `États ioBroker existants` (par défaut) pilote tes vannes/ta pompe via les
+  états d'autres adaptateurs. `ESP32 (direct)` est *prévu* (M7) et pas encore actif.
+- **Intervalle d'interrogation (s)** – à quelle fréquence l'état du backend est interrogé (p. ex.
+  `30`).
+
+### Points d'aération
+Le cœur de la configuration. Ajoute **jusqu'à 8** points ; chaque point est une vanne. Par point :
+- **Nom** – p. ex. `Pier`, `Deep zone`.
+- **Activé** – inclure ce point dans la commande.
+- **Backend** – `ioBroker` (un état étranger) ou `ESP32` (un canal de relais, prévu).
+- **État de vanne / canal** – pour le backend ioBroker, choisis l'état commutateur qui ouvre la vanne
+  (via l'explorateur d'objets) ; pour ESP32, le numéro de canal.
+
+### Groupes
+Regroupe des points pour les commuter ensemble (p. ex. un bouton ouvre plusieurs diffuseurs). Donne
+un nom au groupe et coche ses points membres. **Il ne peut jamais y avoir plus de groupes que de
+points.**
+
+### Commande
+- **Cycle en rotation (round-robin)** – parcourir les points à tour de rôle, chacun ouvert pendant la
+  **durée de maintien** (secondes).
+- **Plannings** – ouvrir des points/groupes sélectionnés pendant une plage horaire par jour de
+  semaine (`De`/`À`, p. ex. `08:00`–`18:00` ; les plages de nuit comme `22:00`–`06:00` sont prises en
+  charge). Un planning actif est **prioritaire sur le round-robin**.
+
+### Capteurs
+Surveillance facultative. Pour chaque capteur, coche **Activé** et choisis l'**état source** :
+- **Oxygène dissous** – avec un seuil bas (déclenche `sensors.oxygenAlarm`), une consigne et une
+  hystérésis ; le **% de saturation** en oxygène est calculé à partir de la température de l'eau.
+- **Température air/eau**.
+- **Pression** – avec min/max (hors plage, déclenche `sensors.pressureAlarm`).
+
+### Emplacement
+Nécessaire pour les heures astronomiques (lever/coucher du soleil/nuit).
+- **Source d'emplacement** – `Emplacement système ioBroker` (utilise les coordonnées de ton système)
+  ou `Emplacement personnalisé`. Pour un emplacement personnalisé, saisis une adresse et appuie sur
+  **Rechercher** (géocodée à la demande via OpenStreetMap/Nominatim) ou clique/fais glisser le
+  marqueur sur la carte.
+
+### Feeder
+Mettre en pause des points sélectionnés pendant que
+[ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder) distribue la
+nourriture, afin qu'elle ne soit pas dispersée.
+- Choisis l'**instance feeder** (détectée automatiquement) et coche les **commutateurs feeder** à
+  surveiller.
+- **Mode de durée** – `Mesurer` surveille le commutateur (pause = distribution + décalage, sans
+  connaître à l'avance la durée de distribution) ; `Impulsion` utilise une durée de distribution fixe.
+- **Décalage (s)** – pause supplémentaire après la fin de la distribution. **Il devrait être au moins
+  égal au temps moyen dont les animaux ont besoin pour manger** (exemple : 15 s de distribution + 60 s
+  de décalage ⇒ 75 s d'aération en pause).
+- **Points concernés** – quels points se mettent en pause pendant la distribution.
+
+### Sécurité
+- **Vannes ouvertes min. pendant que la pompe tourne** – la protection contre le dead-heading (par
+  défaut `1`).
+- **Intervalle du watchdog (s)** et **chevauchement make-before-break (s)**.
+- **Pompe** – si elle est commandable (le verrouillage peut alors l'arrêter), son état et les durées
+  min. de marche/arrêt contre les cycles trop courts.
+- **Vanne de secours** – son état, si elle est **normalement ouverte** (fail-safe), le **type** de
+  vanne (électrovanne ou vanne à bille motorisée) et, pour une vanne motorisée, son **temps de
+  course**.
+
+### Notifications
+Active les notifications et choisis une **instance de messagerie** (n'importe quel adaptateur de type
+`messaging`, p. ex. Telegram). *(L'envoi est préparé pour une étape ultérieure.)*
 
 ## 6. Objets / points de données
 
@@ -187,9 +257,15 @@ automatiquement.
 
 ## 7. Feuille de route
 
-Voir [PROJECT_PLAN.md](../../PROJECT_PLAN.md) pour le plan d'implémentation complet, basé sur des
-étapes (moteur de commande, backends HAL, firmware ESP32, surveillance, couplage au feeder, mode
-hivernal et l'adaptateur de widgets vis-2 qui suivra).
+Terminé : interface de configuration, commande des vannes (planning/round-robin/groupes), le
+verrouillage de sécurité contre le dead-heading, la surveillance, l'astro & la géolocalisation et le
+couplage au feeder. **Encore à venir :**
+
+* le backend matériel **ESP32** direct + le firmware de référence (Waveshare ESP32-S3-POE-ETH-8DI-8RO) ;
+* le **mode hiver / hors-gel** ;
+* un **adaptateur de widgets vis-2** ultérieur pour l'exploitation et la surveillance.
+
+Voir [PROJECT_PLAN.md](../../PROJECT_PLAN.md) pour le plan complet, basé sur des étapes.
 
 ---
 

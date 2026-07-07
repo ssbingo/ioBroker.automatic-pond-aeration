@@ -20,10 +20,13 @@ einem ESP32** ansteuern (ohne zusätzliche ioBroker-Instanz) und ausgewählte Be
 der Fütterung pausieren, wenn
 [ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder) installiert ist.
 
-> ⚠️ **Projektstatus: in Arbeit.** Das Konfigurationsmodell und das vollständige Datenpunkt-Modell
-> stehen: Der Adapter validiert deine Konfiguration und erstellt (und bereinigt) entsprechend alle
-> seine Objekte. Die Steuerungslogik, die Hardware-Backends und die Überwachungsfunktionen werden
-> Meilenstein für Meilenstein ergänzt. Für den Produktiveinsatz ist die Version noch nicht gedacht.
+> ⚠️ **Projektstatus.** Vollständig implementiert und über den Admin konfigurierbar: die
+> Ventilsteuerung (Zeitplan, zyklischer Round-Robin, Gruppen), die **Sicherheitsverriegelung** gegen
+> Nullförderung, die **Überwachung** (Sauerstoff, Luft-/Wassertemperatur, Druck mit Alarmen),
+> **astronomische Zeiten & Geoposition** sowie die **Feeder-Kopplung**. **Noch geplant:** das direkte
+> **ESP32**-Hardware-Backend und der **Winter-/Eisfrei-Modus** (die entsprechenden Optionen erscheinen
+> bereits in der Konfiguration, sind aber noch nicht aktiv). Bis das ESP32-Backend verfügbar ist,
+> werden Ventile und Pumpe über vorhandene ioBroker-States angesteuert.
 
 ---
 
@@ -33,7 +36,7 @@ der Fütterung pausieren, wenn
 2. [Sicherheitskonzept](#2-sicherheitskonzept)
 3. [Voraussetzungen](#3-voraussetzungen)
 4. [Installation](#4-installation)
-5. [Konfigurationsübersicht](#5-konfigurationsübersicht)
+5. [Konfiguration](#5-konfiguration)
 6. [Objekte / Datenpunkte](#6-objekte--datenpunkte)
 7. [Roadmap](#7-roadmap)
 
@@ -50,9 +53,9 @@ Ventil öffnet:
   einstellbare Verweildauer geöffnet.
 * **Gruppen** – mehrere Punkte gemeinsam steuern; es kann **nie mehr Gruppen als Punkte geben**.
 
-Die Ventile und die Pumpe lassen sich entweder über **vorhandene ioBroker-States** (aus einem
-beliebigen Adapter, der die Schalter bereitstellt) oder **direkt auf einem ESP32** mit der
-zugehörigen Firmware ansteuern.
+Die Ventile und die Pumpe werden über **vorhandene ioBroker-States** angesteuert (aus einem
+beliebigen Adapter, der die Schalter bereitstellt). Ein direktes **ESP32**-Hardware-Backend (ohne
+zusätzliche ioBroker-Instanz) ist geplant.
 
 ## 2. Sicherheitskonzept
 
@@ -76,8 +79,7 @@ Dead-Heading) – das erzeugt Überdruck und kann die Pumpe beschädigen. Deshal
 
 * Node.js ≥ 22
 * js-controller ≥ 6.0.11, admin ≥ 7.6.20
-* Ein oder mehrere Ventile, erreichbar als ioBroker-States, oder ein ESP32 mit der zugehörigen
-  Firmware.
+* Ein oder mehrere Ventile, erreichbar als ioBroker-States (z. B. ein Relais-/Steckdosen-Adapter).
 
 ## 4. Installation
 
@@ -85,12 +87,76 @@ Installiere den Adapter über den ioBroker-Admin (oder, während der Entwicklung
 GitHub-Repository) und lege eine Instanz an. Öffne die Instanz-Einstellungen, um ihn zu
 konfigurieren.
 
-## 5. Konfigurationsübersicht
+## 5. Konfiguration
 
-Die Einstellungsseite wächst mit den Meilensteinen. Geplante Abschnitte: Allgemein/Backend,
-Belüftungspunkte, Steuerung (Zeitplan/Round-Robin/Gruppen), Sensoren, Astro & Standort,
-Feeder-Kopplung, Sicherheit und Benachrichtigungen. Die vollständige Planung findest du in
-[PROJECT_PLAN.md](../../PROJECT_PLAN.md).
+Die Einstellungsseite ist in Registerkarten (Tabs) gegliedert. Du musst nicht alles ausfüllen – nur
+die Teile, die du tatsächlich nutzt.
+
+### Allgemein
+- **Hauptfreigabe** – der Ein/Aus-Schalter für den gesamten Adapter. Ist er aus, wird nichts
+  gesteuert.
+- **Hardware-Backend** – `Vorhandene ioBroker-States` (Standard) steuert deine Ventile/Pumpe über
+  States anderer Adapter. `ESP32 (direkt)` ist *geplant* (M7) und noch nicht aktiv.
+- **Abfrageintervall (s)** – wie oft der Backend-Status abgefragt wird (z. B. `30`).
+
+### Belüftungspunkte
+Das Herzstück der Konfiguration. Füge **bis zu 8** Punkte hinzu; jeder Punkt ist ein Ventil. Pro
+Punkt:
+- **Name** – z. B. `Pier`, `Deep zone`.
+- **Aktiviert** – diesen Punkt in die Steuerung einbeziehen.
+- **Backend** – `ioBroker` (ein fremder State) oder `ESP32` (ein Relaiskanal, geplant).
+- **Ventil-State / Kanal** – für das ioBroker-Backend den Schalter-State wählen, der das Ventil
+  öffnet (über den Objektbrowser); für ESP32 die Kanalnummer.
+
+### Gruppen
+Punkte zu Gruppen zusammenfassen, um sie gemeinsam zu schalten (z. B. öffnet eine Schaltfläche
+mehrere Ausströmer). Gib der Gruppe einen Namen und hake ihre Mitgliedspunkte an. **Es kann nie mehr
+Gruppen als Punkte geben.**
+
+### Steuerung
+- **Zyklischer Round-Robin** – reihum durch die Punkte schalten, jeder für die **Verweildauer**
+  (Sekunden) geöffnet.
+- **Zeitpläne** – ausgewählte Punkte/Gruppen während eines Wochentags-Zeitfensters öffnen
+  (`Von`/`Bis`, z. B. `08:00`–`18:00`; über Nacht reichende Fenster wie `22:00`–`06:00` werden
+  unterstützt). Ein aktiver Zeitplan hat **Vorrang vor dem Round-Robin**.
+
+### Sensoren
+Optionale Überwachung. Für jeden Sensor **Aktiviert** anhaken und den **Quell-State** wählen:
+- **Gelöster Sauerstoff** – mit einem unteren Schwellenwert (löst `sensors.oxygenAlarm` aus), einem
+  Zielwert und einer Hysterese; die **Sauerstoffsättigung %** wird aus der Wassertemperatur berechnet.
+- **Luft-/Wassertemperatur**.
+- **Druck** – mit Min/Max (außerhalb des Bereichs löst `sensors.pressureAlarm` aus).
+
+### Standort
+Wird für die astronomischen Zeiten benötigt (Sonnenaufgang/Sonnenuntergang/Nacht).
+- **Standortquelle** – `ioBroker-Systemstandort` (nutzt deine Systemkoordinaten) oder `Eigener
+  Standort`. Für einen eigenen Standort eine Adresse eingeben und **Suchen** drücken (bei Bedarf über
+  OpenStreetMap/Nominatim geokodiert) oder den Marker auf der Karte anklicken/ziehen.
+
+### Feeder
+Ausgewählte Punkte pausieren, während
+[ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder) füttert, damit das
+Futter nicht verwirbelt wird.
+- Die **Feeder-Instanz** wählen (automatisch erkannt) und die zu überwachenden **Feeder-Schalter**
+  anhaken.
+- **Dauermodus** – `Messen` überwacht den Schalter (Pause = Fütterung + Offset, ohne die Fütterdauer
+  vorab zu kennen); `Puls` nutzt eine feste Fütterdauer.
+- **Offset (s)** – zusätzliche Pause nach Fütterungsende. **Er sollte mindestens der
+  durchschnittlichen Fresszeit der Tiere entsprechen** (Beispiel: 15 s Fütterung + 60 s Offset ⇒ 75 s
+  pausierte Belüftung).
+- **Betroffene Punkte** – welche Punkte während der Fütterung pausieren.
+
+### Sicherheit
+- **Min. offene Ventile bei laufender Pumpe** – der Schutz gegen Nullförderung (Standard `1`).
+- **Watchdog-Intervall (s)** und **Make-before-break-Überlappung (s)**.
+- **Pumpe** – ob sie steuerbar ist (dann kann die Verriegelung sie abschalten), ihr State sowie
+  Mindest-Ein-/Ausschaltzeiten gegen zu häufiges Takten.
+- **Notventil** – sein State, ob es **stromlos offen** ist (fail-safe), der Ventil**typ** (Magnetventil
+  oder motorisierter Kugelhahn) und, bei einem Motorventil, seine **Laufzeit**.
+
+### Benachrichtigungen
+Benachrichtigungen aktivieren und eine **Messaging-Instanz** wählen (ein beliebiger Adapter vom Typ
+`messaging`, z. B. Telegram). *(Der Versand ist für einen späteren Meilenstein vorbereitet.)*
 
 ## 6. Objekte / Datenpunkte
 
@@ -185,9 +251,15 @@ automatisch bereinigt.
 
 ## 7. Roadmap
 
-Der vollständige, meilensteinbasierte Umsetzungsplan (Steuerungslogik, HAL-Backends, ESP32-Firmware,
-Überwachung, Feeder-Kopplung, Wintermodus und der darauf folgende vis-2-Widget-Adapter) steht in
-[PROJECT_PLAN.md](../../PROJECT_PLAN.md).
+Fertig: Konfigurations-UI, Ventilsteuerung (Zeitplan/Round-Robin/Gruppen), die
+Sicherheitsverriegelung gegen Nullförderung, Überwachung, Astro & Geoposition sowie die
+Feeder-Kopplung. **Noch ausstehend:**
+
+* das direkte **ESP32**-Hardware-Backend + Referenz-Firmware (Waveshare ESP32-S3-POE-ETH-8DI-8RO);
+* der **Winter-/Eisfrei-Modus**;
+* ein nachgelagerter **vis-2-Widget-Adapter** für Bedienung und Überwachung.
+
+Den vollständigen, meilensteinbasierten Plan findest du in [PROJECT_PLAN.md](../../PROJECT_PLAN.md).
 
 ---
 

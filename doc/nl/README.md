@@ -20,10 +20,13 @@ aansturen (zonder extra ioBroker-instantie) en geselecteerde beluchtingspunten p
 voeren wanneer [ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder) is
 geïnstalleerd.
 
-> ⚠️ **Projectstatus: werk in uitvoering.** Het configuratiemodel en het volledige datapuntmodel
-> zijn aanwezig: de adapter valideert je configuratie en maakt al zijn objecten dienovereenkomstig
-> aan (en ruimt ze op). De besturingslogica, de hardware-backends en de bewakingsfuncties worden
-> mijlpaal voor mijlpaal toegevoegd. Voor productiegebruik is deze versie nog niet bedoeld.
+> ⚠️ **Projectstatus.** Volledig geïmplementeerd en configureerbaar vanuit de admin: de
+> klepbesturing (tijdschema, cyclische roundrobin, groepen), de **veiligheidsvergrendeling** tegen
+> dead-heading, de **bewaking** (zuurstof, lucht-/watertemperatuur, druk met alarmen),
+> **astronomische tijden & geolocatie** en de **feeder-koppeling**. **Nog gepland:** de directe
+> **ESP32**-hardware-backend en de **winter-/ijsvrijmodus** (de bijbehorende opties verschijnen al in
+> de configuratie, maar zijn nog niet actief). Totdat de ESP32-backend er is, worden kleppen en pomp
+> aangestuurd via bestaande ioBroker-states.
 
 ---
 
@@ -33,7 +36,7 @@ geïnstalleerd.
 2. [Veiligheidsconcept](#2-veiligheidsconcept)
 3. [Vereisten](#3-vereisten)
 4. [Installatie](#4-installatie)
-5. [Configuratieoverzicht](#5-configuratieoverzicht)
+5. [Configuratie](#5-configuratie)
 6. [Objecten / datapunten](#6-objecten--datapunten)
 7. [Roadmap](#7-roadmap)
 
@@ -50,8 +53,9 @@ klep opent:
   instelbare verblijftijd.
 * **Groepen** – meerdere punten samen aansturen; er kunnen **nooit meer groepen dan punten** zijn.
 
-De kleppen en de pomp kunnen worden aangestuurd via **bestaande ioBroker-states** (van elke adapter
-die de schakelaars beschikbaar stelt) of **rechtstreeks op een ESP32** met de bijbehorende firmware.
+De kleppen en de pomp worden aangestuurd via **bestaande ioBroker-states** (van elke adapter die de
+schakelaars beschikbaar stelt). Een directe **ESP32**-hardware-backend (zonder extra
+ioBroker-instantie) is gepland.
 
 ## 2. Veiligheidsconcept
 
@@ -72,20 +76,80 @@ veroorzaakt overdruk en kan de pomp beschadigen. Daarom:
 
 * Node.js ≥ 22
 * js-controller ≥ 6.0.11, admin ≥ 7.6.20
-* Eén of meer kleppen die als ioBroker-states bereikbaar zijn, of een ESP32 met de bijbehorende
-  firmware.
+* Eén of meer kleppen die als ioBroker-states bereikbaar zijn (bijv. een relais-/stekkeradapter).
 
 ## 4. Installatie
 
 Installeer de adapter via de ioBroker-admin (of, tijdens de ontwikkeling, vanuit de
 GitHub-repository) en maak een instantie aan. Open de instantie-instellingen om hem te configureren.
 
-## 5. Configuratieoverzicht
+## 5. Configuratie
 
-De instellingenpagina groeit mee met de mijlpalen. Geplande secties: algemeen/backend,
-beluchtingspunten, besturing (tijdschema/roundrobin/groepen), sensoren, astro & locatie,
-feeder-koppeling, veiligheid en meldingen. Zie [PROJECT_PLAN.md](../../PROJECT_PLAN.md) voor het
-volledige ontwerp.
+De instellingenpagina is ingedeeld in tabbladen. Je hoeft niet alles in te vullen – alleen de
+onderdelen die je gebruikt.
+
+### Algemeen
+- **Hoofdvrijgave** – de aan/uit-schakelaar voor de hele adapter. Als deze uit staat, wordt er niets
+  aangestuurd.
+- **Hardware-backend** – `Bestaande ioBroker-states` (standaard) stuurt je kleppen/pomp aan via
+  states van andere adapters. `ESP32 (direct)` is *gepland* (M7) en nog niet actief.
+- **Pollinterval (s)** – hoe vaak de backendstatus wordt opgevraagd (bijv. `30`).
+
+### Beluchtingspunten
+Het hart van de configuratie. Voeg **maximaal 8** punten toe; elk punt is één klep. Per punt:
+- **Naam** – bijv. `Pier`, `Deep zone`.
+- **Ingeschakeld** – dit punt opnemen in de besturing.
+- **Backend** – `ioBroker` (een vreemde state) of `ESP32` (een relaiskanaal, gepland).
+- **Klep-state / kanaal** – kies voor de ioBroker-backend de schakelaar-state die de klep opent (via
+  de objectbrowser); voor ESP32 het kanaalnummer.
+
+### Groepen
+Groepeer punten om ze samen te schakelen (bijv. één knop opent meerdere uitstromers). Geef de groep
+een naam en vink de bijbehorende punten aan. **Er kunnen nooit meer groepen dan punten zijn.**
+
+### Besturing
+- **Cyclische roundrobin** – om de beurt door de punten schakelen, elk geopend gedurende de
+  **verblijftijd** (seconden).
+- **Tijdschema's** – geselecteerde punten/groepen openen tijdens een tijdvenster per weekdag
+  (`Van`/`Tot`, bijv. `08:00`–`18:00`; vensters die over de nacht heen lopen, zoals `22:00`–`06:00`,
+  worden ondersteund). Een actief tijdschema heeft **voorrang op de roundrobin**.
+
+### Sensoren
+Optionele bewaking. Vink voor elke sensor **Ingeschakeld** aan en kies de **bron-state**:
+- **Opgeloste zuurstof** – met een ondergrens (activeert `sensors.oxygenAlarm`), een streefwaarde en
+  een hysterese; het **zuurstofverzadigings-%** wordt berekend uit de watertemperatuur.
+- **Lucht-/watertemperatuur**.
+- **Druk** – met min/max (buiten bereik activeert `sensors.pressureAlarm`).
+
+### Locatie
+Nodig voor de astronomische tijden (zonsopkomst/zonsondergang/nacht).
+- **Locatiebron** – `ioBroker-systeemlocatie` (gebruikt je systeemcoördinaten) of `Eigen locatie`.
+  Typ voor een eigen locatie een adres en druk op **Zoeken** (op aanvraag gegeocodeerd via
+  OpenStreetMap/Nominatim) of klik/sleep de marker op de kaart.
+
+### Feeder
+Geselecteerde punten pauzeren terwijl
+[ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder) aan het voeren is,
+zodat het voer niet wordt weggeblazen.
+- Kies de **feeder-instantie** (automatisch ontdekt) en vink de te bewaken **feeder-schakelaars** aan.
+- **Duurmodus** – `Meten` bewaakt de schakelaar (pauze = voeren + offset, zonder de voedertijd vooraf
+  te kennen); `Puls` gebruikt een vaste voedertijd.
+- **Offset (s)** – extra pauze nadat het voeren stopt. **Deze moet minstens de gemiddelde tijd zijn
+  die de dieren nodig hebben om te eten** (voorbeeld: 15 s voeren + 60 s offset ⇒ 75 s gepauzeerde
+  beluchting).
+- **Betrokken punten** – welke punten tijdens het voeren pauzeren.
+
+### Veiligheid
+- **Min. open kleppen terwijl de pomp draait** – de dead-heading-beveiliging (standaard `1`).
+- **Watchdog-interval (s)** en **make-before-break-overlap (s)**.
+- **Pomp** – of deze bestuurbaar is (dan kan de vergrendeling hem uitschakelen), zijn state en
+  minimale aan-/uittijden tegen te snel schakelen.
+- **Noodklep** – zijn state, of deze **normaal open** is (fail-safe), het klep**type** (magneetklep of
+  gemotoriseerde kogelkraan) en, voor een motorklep, zijn **looptijd**.
+
+### Meldingen
+Schakel meldingen in en kies een **messaging-instantie** (elke adapter van het type `messaging`,
+bijv. Telegram). *(Verzenden is voorbereid voor een latere mijlpaal.)*
 
 ## 6. Objecten / datapunten
 
@@ -180,9 +244,14 @@ objecten automatisch opgeruimd.
 
 ## 7. Roadmap
 
-Zie [PROJECT_PLAN.md](../../PROJECT_PLAN.md) voor het volledige, op mijlpalen gebaseerde
-implementatieplan (besturingslogica, HAL-backends, ESP32-firmware, bewaking, feeder-koppeling,
-wintermodus en de daaropvolgende vis-2-widget-adapter).
+Klaar: configuratie-UI, klepbesturing (tijdschema/roundrobin/groepen), de veiligheidsvergrendeling
+tegen dead-heading, bewaking, astro & geolocatie en de feeder-koppeling. **Nog te komen:**
+
+* de directe **ESP32**-hardware-backend + referentiefirmware (Waveshare ESP32-S3-POE-ETH-8DI-8RO);
+* de **winter-/ijsvrijmodus**;
+* een daaropvolgende **vis-2-widget-adapter** voor bediening en bewaking.
+
+Zie [PROJECT_PLAN.md](../../PROJECT_PLAN.md) voor het volledige, op mijlpalen gebaseerde plan.
 
 ---
 
