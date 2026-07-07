@@ -21,11 +21,11 @@ l'hardware **direttamente su un ESP32** (senza un'ulteriore istanza ioBroker) e 
 determinati punti di aerazione durante l'alimentazione quando è installato
 [ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder).
 
-> ⚠️ **Stato del progetto: prima impalcatura / lavori in corso.** Questa versione predispone lo
-> scheletro dell'adattatore (ciclo di vita, oggetti di base, modello di configurazione e le fondamenta
-> del blocco di sicurezza). Il motore di controllo, i backend hardware e le funzioni di monitoraggio
-> vengono aggiunti passo dopo passo (milestone dopo milestone). Non è ancora destinata all'uso in
-> produzione.
+> ⚠️ **Stato del progetto: lavori in corso.** Il modello di configurazione e il modello completo dei
+> punti dati sono pronti: l'adattatore convalida la tua configurazione e crea (e ripulisce) di
+> conseguenza tutti i suoi oggetti. Il motore di controllo, i backend hardware e le funzioni di
+> monitoraggio vengono aggiunti passo dopo passo (milestone dopo milestone). Non è ancora destinata
+> all'uso in produzione.
 
 ---
 
@@ -93,14 +93,94 @@ feeder, sicurezza e notifiche. Per il progetto completo vedi [PROJECT_PLAN.md](.
 
 ## 6. Oggetti / punti dati
 
+L'adattatore crea i suoi punti dati a partire dalla tua configurazione. Segnaposto: `<n>` = indice
+del punto di aerazione (0–7), `<g>` = indice del gruppo. Gli oggetti contrassegnati con **(w)** sono
+comandi scrivibili; tutti gli altri sono valori di stato in sola lettura aggiornati dall'adattatore.
+
+**Generale**
+
 | Oggetto | Tipo | Ruolo | Descrizione |
 |---------|------|-------|-------------|
 | `info.connection` | boolean | `indicator.connected` | Adattatore in funzione / configurazione valida |
-| `control.enabled` | boolean (scrivibile) | `switch.enable` | Abilitazione principale (comando) |
-| `safety.interlockActive` | boolean | `indicator.alarm` | Blocco di sicurezza attualmente attivo |
+| `info.backend` | string | `text` | Backend hardware attivo (`iobroker` o `esp32`) |
+| `info.activeMode` | string | `text` | Modalità operativa corrente |
 
-Altri punti dati (per punto di aerazione, gruppi, sensori, sicurezza e statistiche) vengono aggiunti
-man mano che le relative funzioni vengono implementate; ogni nuovo stato sarà documentato qui.
+**Controllo (comandi scrivibili)**
+
+| Oggetto | Tipo | Ruolo | Descrizione |
+|---------|------|-------|-------------|
+| `control.enabled` | boolean (w) | `switch.enable` | Abilitazione principale |
+| `control.mode` | string (w) | `text` | Modalità operativa: `auto`, `manual` o `off` |
+| `control.allOff` | boolean (w) | `button` | Chiudere tutte le valvole |
+| `control.point.<n>.open` | boolean (w) | `switch` | Aprire manualmente la valvola del punto `<n>` |
+| `control.group.<g>.active` | boolean (w) | `switch` | Attivare manualmente il gruppo `<g>` |
+
+**Punti di aerazione** (un canale per ogni punto configurato, denominato in base al punto)
+
+| Oggetto | Tipo | Ruolo | Descrizione |
+|---------|------|-------|-------------|
+| `aeration.point.<n>.valveState` | boolean | `indicator` | La valvola è aperta |
+| `aeration.point.<n>.active` | boolean | `indicator` | Il punto sta aerando |
+| `aeration.point.<n>.runtimeTodaySec` | number | `value` | Tempo di funzionamento odierno (secondi) |
+| `aeration.point.<n>.runtimeTotalH` | number | `value` | Tempo di funzionamento totale (ore, per la manutenzione) |
+| `aeration.point.<n>.lastChange` | number | `value.time` | Marca temporale dell'ultimo cambio valvola |
+| `aeration.point.<n>.error` | string | `text` | Ultimo errore per questo punto |
+
+**Gruppi**
+
+| Oggetto | Tipo | Ruolo | Descrizione |
+|---------|------|-------|-------------|
+| `groups.<g>.members` | string | `json` | Indici dei punti membri |
+| `groups.<g>.active` | boolean | `indicator` | Il gruppo è attualmente attivo |
+
+**Sicurezza**
+
+| Oggetto | Tipo | Ruolo | Descrizione |
+|---------|------|-------|-------------|
+| `safety.interlockActive` | boolean | `indicator.alarm` | Blocco di sicurezza attualmente attivo |
+| `safety.emergencyValve` | boolean | `indicator` | La valvola di emergenza è aperta |
+| `safety.pumpRunning` | boolean | `indicator` | La pompa è in funzione |
+| `safety.openValveCount` | number | `value` | Numero di valvole aperte |
+| `safety.lastTripReason` | string | `text` | Motivo dell'ultimo intervento del blocco |
+
+**Sensori** (creati solo quando il relativo monitoraggio è abilitato)
+
+| Oggetto | Tipo | Ruolo | Descrizione |
+|---------|------|-------|-------------|
+| `sensors.oxygen` | number | `value` | Ossigeno disciolto (mg/l) |
+| `sensors.oxygenSaturation` | number | `value` | Saturazione di ossigeno (%) |
+| `sensors.oxygenAlarm` | boolean | `indicator.alarm` | Ossigeno sotto la soglia minima |
+| `sensors.airTemperature` | number | `value.temperature` | Temperatura dell'aria (°C) |
+| `sensors.waterTemperature` | number | `value.temperature` | Temperatura dell'acqua (°C) |
+| `sensors.pressure` | number | `value.pressure` | Pressione del sistema (bar) |
+| `sensors.pressureAlarm` | boolean | `indicator.alarm` | Pressione fuori intervallo |
+
+**Astronomia e posizione**
+
+| Oggetto | Tipo | Ruolo | Descrizione |
+|---------|------|-------|-------------|
+| `astro.sunrise` / `astro.sunset` / `astro.solarNoon` | string | `text` | Orari solari per la posizione |
+| `astro.isNight` | boolean | `indicator` | È attualmente notte |
+| `location.latitude` / `location.longitude` | number | `value.gps.*` | Coordinate risolte |
+| `location.resolvedAddress` | string | `text` | Indirizzo risolto |
+
+**Accoppiamento con il feeder** (creato solo quando l'accoppiamento con il feeder è abilitato)
+
+| Oggetto | Tipo | Ruolo | Descrizione |
+|---------|------|-------|-------------|
+| `feeder.pauseActive` | boolean | `indicator` | Aerazione in pausa per l'alimentazione |
+| `feeder.pauseUntil` | number | `value.time` | Pausa attiva fino a |
+| `feeder.lastFeedStart` | number | `value.time` | Ultimo inizio dell'alimentazione |
+
+**Statistiche**
+
+| Oggetto | Tipo | Ruolo | Descrizione |
+|---------|------|-------|-------------|
+| `statistics.compressorRuntimeTodayH` | number | `value` | Tempo di funzionamento del compressore odierno (ore) |
+| `statistics.switchCyclesToday` | number | `value` | Cicli di commutazione delle valvole odierni |
+
+Quando un punto, un gruppo o un sensore viene rimosso dalla configurazione, i suoi oggetti vengono
+ripuliti automaticamente.
 
 ## 7. Roadmap
 

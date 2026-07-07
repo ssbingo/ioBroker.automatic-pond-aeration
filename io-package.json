@@ -1,20 +1,20 @@
 {
 	"common": {
 		"name": "automatic-pond-aeration",
-		"version": "0.0.1",
+		"version": "0.0.2",
 		"news": {
-			"0.0.1": {
-				"en": "Initial release (project scaffold).",
-				"de": "Erste Veröffentlichung (Projektgerüst).",
-				"ru": "Первый выпуск (каркас проекта).",
-				"pt": "Versão inicial (estrutura do projeto).",
-				"nl": "Eerste release (projectstructuur).",
-				"fr": "Version initiale (structure du projet).",
-				"it": "Versione iniziale (struttura del progetto).",
-				"es": "Versión inicial (estructura del proyecto).",
-				"pl": "Pierwsze wydanie (szkielet projektu).",
-				"uk": "Перший випуск (каркас проєкту).",
-				"zh-cn": "首次发布（项目骨架）。"
+			"0.0.2": {
+				"en": "Configuration validation and the complete data-point model: all objects are created from the configuration and obsolete ones are cleaned up. Enforced \"never more groups than aeration points\"; configurable emergency valve type.",
+				"de": "Konfigurationsprüfung und vollständiges Datenpunkt-Modell: alle Objekte werden aus der Konfiguration erzeugt und veraltete aufgeräumt. Harte Regel \"nie mehr Gruppen als Belüftungsstellen\"; konfigurierbarer Notventiltyp.",
+				"ru": "Проверка конфигурации и полная модель точек данных: все объекты создаются из конфигурации, устаревшие удаляются. Введено правило «групп не больше, чем точек аэрации»; настраиваемый тип аварийного клапана.",
+				"pt": "Validação da configuração e modelo completo de pontos de dados: todos os objetos são criados a partir da configuração e os obsoletos são removidos. Regra \"nunca mais grupos do que pontos de arejamento\"; tipo de válvula de emergência configurável.",
+				"nl": "Configuratievalidatie en het volledige datapuntmodel: alle objecten worden op basis van de configuratie aangemaakt en verouderde opgeruimd. Regel \"nooit meer groepen dan beluchtingspunten\"; instelbaar noodklep-type.",
+				"fr": "Validation de la configuration et modèle complet de points de données : tous les objets sont créés à partir de la configuration et les obsolètes sont supprimés. Règle « jamais plus de groupes que de points d'aération » ; type de vanne de secours configurable.",
+				"it": "Validazione della configurazione e modello completo dei punti dati: tutti gli oggetti sono creati dalla configurazione e quelli obsoleti vengono rimossi. Regola \"mai più gruppi che punti di aerazione\"; tipo di valvola di emergenza configurabile.",
+				"es": "Validación de la configuración y modelo completo de puntos de datos: todos los objetos se crean a partir de la configuración y los obsoletos se eliminan. Regla \"nunca más grupos que puntos de aireación\"; tipo de válvula de emergencia configurable.",
+				"pl": "Walidacja konfiguracji i pełny model punktów danych: wszystkie obiekty są tworzone z konfiguracji, a nieaktualne usuwane. Reguła \"nigdy więcej grup niż punktów napowietrzania\"; konfigurowalny typ zaworu awaryjnego.",
+				"uk": "Перевірка конфігурації та повна модель точок даних: усі об'єкти створюються з конфігурації, застарілі видаляються. Правило «груп не більше, ніж точок аерації»; налаштовуваний тип аварійного клапана.",
+				"zh-cn": "配置校验与完整的数据点模型：所有对象根据配置创建，过时对象将被清理。强制“分组数量不超过增氧点”；可配置的应急阀类型。"
 			}
 		},
 		"titleLang": {
@@ -114,6 +114,8 @@
 
 		"emergencyObjectId": "",
 		"emergencyNormallyOpen": true,
+		"emergencyValveType": "solenoid",
+		"emergencyMotorTravelSec": 5,
 
 		"minOpenValves": 1,
 		"watchdogIntervalSec": 5,

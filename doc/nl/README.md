@@ -20,10 +20,10 @@ aansturen (zonder extra ioBroker-instantie) en geselecteerde beluchtingspunten p
 voeren wanneer [ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder) is
 geïnstalleerd.
 
-> ⚠️ **Projectstatus: vroeg raamwerk / werk in uitvoering.** Deze versie legt het adapterskelet aan
-> (levenscyclus, basisobjecten, configuratiemodel en de basis van de veiligheidsvergrendeling). De
-> besturingslogica, de hardware-backends en de bewakingsfuncties worden mijlpaal voor mijlpaal
-> toegevoegd. Voor productiegebruik is deze versie nog niet bedoeld.
+> ⚠️ **Projectstatus: werk in uitvoering.** Het configuratiemodel en het volledige datapuntmodel
+> zijn aanwezig: de adapter valideert je configuratie en maakt al zijn objecten dienovereenkomstig
+> aan (en ruimt ze op). De besturingslogica, de hardware-backends en de bewakingsfuncties worden
+> mijlpaal voor mijlpaal toegevoegd. Voor productiegebruik is deze versie nog niet bedoeld.
 
 ---
 
@@ -89,15 +89,94 @@ volledige ontwerp.
 
 ## 6. Objecten / datapunten
 
+De adapter maakt zijn datapunten aan op basis van je configuratie. Plaatshouders: `<n>` = index van
+het beluchtingspunt (0–7), `<g>` = groepsindex. Objecten gemarkeerd met **(w)** zijn beschrijfbare
+commando's; alle andere zijn alleen-lezen statuswaarden die door de adapter worden bijgewerkt.
+
+**Algemeen**
+
 | Object | Type | Rol | Beschrijving |
 |--------|------|-----|--------------|
 | `info.connection` | boolean | `indicator.connected` | Adapter draait / configuratie geldig |
-| `control.enabled` | boolean (beschrijfbaar) | `switch.enable` | Hoofdvrijgave (commando) |
-| `safety.interlockActive` | boolean | `indicator.alarm` | Veiligheidsvergrendeling momenteel actief |
+| `info.backend` | string | `text` | Actieve hardware-backend (`iobroker` of `esp32`) |
+| `info.activeMode` | string | `text` | Huidige bedrijfsmodus |
 
-Meer datapunten (per beluchtingspunt, groepen, sensoren, veiligheid en statistieken) worden
-toegevoegd naarmate de bijbehorende functies worden geïmplementeerd; elke nieuwe state wordt hier
-gedocumenteerd.
+**Besturing (beschrijfbare commando's)**
+
+| Object | Type | Rol | Beschrijving |
+|--------|------|-----|--------------|
+| `control.enabled` | boolean (w) | `switch.enable` | Hoofdvrijgave |
+| `control.mode` | string (w) | `text` | Bedrijfsmodus: `auto`, `manual` of `off` |
+| `control.allOff` | boolean (w) | `button` | Alle kleppen sluiten |
+| `control.point.<n>.open` | boolean (w) | `switch` | De klep van punt `<n>` handmatig openen |
+| `control.group.<g>.active` | boolean (w) | `switch` | Groep `<g>` handmatig activeren |
+
+**Beluchtingspunten** (één kanaal per geconfigureerd punt, genoemd naar het punt)
+
+| Object | Type | Rol | Beschrijving |
+|--------|------|-----|--------------|
+| `aeration.point.<n>.valveState` | boolean | `indicator` | Klep is geopend |
+| `aeration.point.<n>.active` | boolean | `indicator` | Punt belucht momenteel |
+| `aeration.point.<n>.runtimeTodaySec` | number | `value` | Looptijd vandaag (seconden) |
+| `aeration.point.<n>.runtimeTotalH` | number | `value` | Totale looptijd (uren, voor onderhoud) |
+| `aeration.point.<n>.lastChange` | number | `value.time` | Tijdstip van de laatste klepwijziging |
+| `aeration.point.<n>.error` | string | `text` | Laatste fout voor dit punt |
+
+**Groepen**
+
+| Object | Type | Rol | Beschrijving |
+|--------|------|-----|--------------|
+| `groups.<g>.members` | string | `json` | Indexen van de leden-punten |
+| `groups.<g>.active` | boolean | `indicator` | Groep is momenteel actief |
+
+**Veiligheid**
+
+| Object | Type | Rol | Beschrijving |
+|--------|------|-----|--------------|
+| `safety.interlockActive` | boolean | `indicator.alarm` | Veiligheidsvergrendeling momenteel actief |
+| `safety.emergencyValve` | boolean | `indicator` | Noodklep is geopend |
+| `safety.pumpRunning` | boolean | `indicator` | Pomp draait |
+| `safety.openValveCount` | number | `value` | Aantal open kleppen |
+| `safety.lastTripReason` | string | `text` | Reden van de laatste vergrendelingsactivering |
+
+**Sensoren** (alleen aangemaakt wanneer de bijbehorende bewaking is ingeschakeld)
+
+| Object | Type | Rol | Beschrijving |
+|--------|------|-----|--------------|
+| `sensors.oxygen` | number | `value` | Opgeloste zuurstof (mg/l) |
+| `sensors.oxygenSaturation` | number | `value` | Zuurstofverzadiging (%) |
+| `sensors.oxygenAlarm` | boolean | `indicator.alarm` | Zuurstof onder de ondergrens |
+| `sensors.airTemperature` | number | `value.temperature` | Luchttemperatuur (°C) |
+| `sensors.waterTemperature` | number | `value.temperature` | Watertemperatuur (°C) |
+| `sensors.pressure` | number | `value.pressure` | Systeemdruk (bar) |
+| `sensors.pressureAlarm` | boolean | `indicator.alarm` | Druk buiten bereik |
+
+**Astronomie & locatie**
+
+| Object | Type | Rol | Beschrijving |
+|--------|------|-----|--------------|
+| `astro.sunrise` / `astro.sunset` / `astro.solarNoon` | string | `text` | Zontijden voor de locatie |
+| `astro.isNight` | boolean | `indicator` | Het is momenteel nacht |
+| `location.latitude` / `location.longitude` | number | `value.gps.*` | Bepaalde coördinaten |
+| `location.resolvedAddress` | string | `text` | Bepaald adres |
+
+**Feeder-koppeling** (alleen aangemaakt wanneer de feeder-koppeling is ingeschakeld)
+
+| Object | Type | Rol | Beschrijving |
+|--------|------|-----|--------------|
+| `feeder.pauseActive` | boolean | `indicator` | Beluchting gepauzeerd voor het voeren |
+| `feeder.pauseUntil` | number | `value.time` | Pauze actief tot |
+| `feeder.lastFeedStart` | number | `value.time` | Laatste voederstart |
+
+**Statistieken**
+
+| Object | Type | Rol | Beschrijving |
+|--------|------|-----|--------------|
+| `statistics.compressorRuntimeTodayH` | number | `value` | Compressorlooptijd vandaag (uren) |
+| `statistics.switchCyclesToday` | number | `value` | Klepschakelcycli vandaag |
+
+Wanneer een punt, groep of sensor uit de configuratie wordt verwijderd, worden de bijbehorende
+objecten automatisch opgeruimd.
 
 ## 7. Roadmap
 

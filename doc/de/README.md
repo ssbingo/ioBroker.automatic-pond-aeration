@@ -20,10 +20,10 @@ einem ESP32** ansteuern (ohne zusätzliche ioBroker-Instanz) und ausgewählte Be
 der Fütterung pausieren, wenn
 [ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder) installiert ist.
 
-> ⚠️ **Projektstatus: frühes Grundgerüst / in Arbeit.** Diese Version legt das Adapter-Gerüst an
-> (Lebenszyklus, Basisobjekte, Konfigurationsmodell und die Grundlage der Sicherheitsverriegelung).
-> Die Steuerungslogik, die Hardware-Backends und die Überwachungsfunktionen werden Meilenstein für
-> Meilenstein ergänzt. Für den Produktiveinsatz ist die Version noch nicht gedacht.
+> ⚠️ **Projektstatus: in Arbeit.** Das Konfigurationsmodell und das vollständige Datenpunkt-Modell
+> stehen: Der Adapter validiert deine Konfiguration und erstellt (und bereinigt) entsprechend alle
+> seine Objekte. Die Steuerungslogik, die Hardware-Backends und die Überwachungsfunktionen werden
+> Meilenstein für Meilenstein ergänzt. Für den Produktiveinsatz ist die Version noch nicht gedacht.
 
 ---
 
@@ -94,14 +94,94 @@ Feeder-Kopplung, Sicherheit und Benachrichtigungen. Die vollständige Planung fi
 
 ## 6. Objekte / Datenpunkte
 
+Der Adapter erstellt seine Datenpunkte aus deiner Konfiguration. Platzhalter: `<n>` = Index des
+Belüftungspunkts (0–7), `<g>` = Gruppenindex. Mit **(w)** markierte Objekte sind beschreibbare
+Befehle; alle anderen sind schreibgeschützte Statuswerte, die der Adapter aktualisiert.
+
+**Allgemein**
+
 | Objekt | Typ | Rolle | Beschreibung |
 |--------|-----|-------|--------------|
 | `info.connection` | boolean | `indicator.connected` | Adapter läuft / Konfiguration gültig |
-| `control.enabled` | boolean (beschreibbar) | `switch.enable` | Hauptfreigabe (Befehl) |
-| `safety.interlockActive` | boolean | `indicator.alarm` | Sicherheitsverriegelung derzeit aktiv |
+| `info.backend` | string | `text` | Aktives Hardware-Backend (`iobroker` oder `esp32`) |
+| `info.activeMode` | string | `text` | Aktueller Betriebsmodus |
 
-Weitere Datenpunkte (pro Belüftungspunkt, Gruppen, Sensoren, Sicherheit und Statistik) kommen hinzu,
-sobald die entsprechenden Funktionen umgesetzt werden; jeder neue State wird hier dokumentiert.
+**Steuerung (beschreibbare Befehle)**
+
+| Objekt | Typ | Rolle | Beschreibung |
+|--------|-----|-------|--------------|
+| `control.enabled` | boolean (w) | `switch.enable` | Hauptfreigabe |
+| `control.mode` | string (w) | `text` | Betriebsmodus: `auto`, `manual` oder `off` |
+| `control.allOff` | boolean (w) | `button` | Alle Ventile schließen |
+| `control.point.<n>.open` | boolean (w) | `switch` | Ventil von Punkt `<n>` manuell öffnen |
+| `control.group.<g>.active` | boolean (w) | `switch` | Gruppe `<g>` manuell aktivieren |
+
+**Belüftungspunkte** (ein Kanal pro konfiguriertem Punkt, benannt nach dem Punkt)
+
+| Objekt | Typ | Rolle | Beschreibung |
+|--------|-----|-------|--------------|
+| `aeration.point.<n>.valveState` | boolean | `indicator` | Ventil ist geöffnet |
+| `aeration.point.<n>.active` | boolean | `indicator` | Punkt belüftet gerade |
+| `aeration.point.<n>.runtimeTodaySec` | number | `value` | Heutige Laufzeit (Sekunden) |
+| `aeration.point.<n>.runtimeTotalH` | number | `value` | Gesamtlaufzeit (Stunden, für Wartung) |
+| `aeration.point.<n>.lastChange` | number | `value.time` | Zeitstempel der letzten Ventiländerung |
+| `aeration.point.<n>.error` | string | `text` | Letzter Fehler für diesen Punkt |
+
+**Gruppen**
+
+| Objekt | Typ | Rolle | Beschreibung |
+|--------|-----|-------|--------------|
+| `groups.<g>.members` | string | `json` | Indizes der Mitgliedspunkte |
+| `groups.<g>.active` | boolean | `indicator` | Gruppe ist gerade aktiv |
+
+**Sicherheit**
+
+| Objekt | Typ | Rolle | Beschreibung |
+|--------|-----|-------|--------------|
+| `safety.interlockActive` | boolean | `indicator.alarm` | Sicherheitsverriegelung derzeit aktiv |
+| `safety.emergencyValve` | boolean | `indicator` | Notventil ist geöffnet |
+| `safety.pumpRunning` | boolean | `indicator` | Pumpe läuft |
+| `safety.openValveCount` | number | `value` | Anzahl offener Ventile |
+| `safety.lastTripReason` | string | `text` | Grund der letzten Auslösung der Verriegelung |
+
+**Sensoren** (nur angelegt, wenn die entsprechende Überwachung aktiviert ist)
+
+| Objekt | Typ | Rolle | Beschreibung |
+|--------|-----|-------|--------------|
+| `sensors.oxygen` | number | `value` | Gelöster Sauerstoff (mg/l) |
+| `sensors.oxygenSaturation` | number | `value` | Sauerstoffsättigung (%) |
+| `sensors.oxygenAlarm` | boolean | `indicator.alarm` | Sauerstoff unter dem unteren Schwellenwert |
+| `sensors.airTemperature` | number | `value.temperature` | Lufttemperatur (°C) |
+| `sensors.waterTemperature` | number | `value.temperature` | Wassertemperatur (°C) |
+| `sensors.pressure` | number | `value.pressure` | Systemdruck (bar) |
+| `sensors.pressureAlarm` | boolean | `indicator.alarm` | Druck außerhalb des Bereichs |
+
+**Astronomie & Standort**
+
+| Objekt | Typ | Rolle | Beschreibung |
+|--------|-----|-------|--------------|
+| `astro.sunrise` / `astro.sunset` / `astro.solarNoon` | string | `text` | Sonnenzeiten für den Standort |
+| `astro.isNight` | boolean | `indicator` | Es ist gerade Nacht |
+| `location.latitude` / `location.longitude` | number | `value.gps.*` | Ermittelte Koordinaten |
+| `location.resolvedAddress` | string | `text` | Ermittelte Adresse |
+
+**Feeder-Kopplung** (nur angelegt, wenn die Feeder-Kopplung aktiviert ist)
+
+| Objekt | Typ | Rolle | Beschreibung |
+|--------|-----|-------|--------------|
+| `feeder.pauseActive` | boolean | `indicator` | Belüftung für die Fütterung pausiert |
+| `feeder.pauseUntil` | number | `value.time` | Pause aktiv bis |
+| `feeder.lastFeedStart` | number | `value.time` | Letzter Fütterungsbeginn |
+
+**Statistik**
+
+| Objekt | Typ | Rolle | Beschreibung |
+|--------|-----|-------|--------------|
+| `statistics.compressorRuntimeTodayH` | number | `value` | Heutige Kompressorlaufzeit (Stunden) |
+| `statistics.switchCyclesToday` | number | `value` | Heutige Ventilschaltzyklen |
+
+Wird ein Punkt, eine Gruppe oder ein Sensor aus der Konfiguration entfernt, werden dessen Objekte
+automatisch bereinigt.
 
 ## 7. Roadmap
 

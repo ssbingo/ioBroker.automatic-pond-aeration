@@ -32,10 +32,10 @@ compute **astronomical times** from your **geolocation**, drive the hardware **d
 (no additional ioBroker instance required), and pause selected aeration points during feeding when
 [ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder) is installed.
 
-> ⚠️ **Project status: early scaffold / work in progress.** This version establishes the adapter
-> skeleton (lifecycle, base objects, configuration model and the safety-interlock foundation). The
-> control engine, hardware backends and the monitoring features are being added milestone by
-> milestone. It is not yet meant for production use.
+> ⚠️ **Project status: work in progress.** The configuration model and the complete data-point
+> model are in place: the adapter validates your configuration and creates (and cleans up) all of
+> its objects accordingly. The control engine, hardware backends and the monitoring features are
+> being added milestone by milestone. It is not yet meant for production use.
 
 > 🇩🇪 Deutsche Anleitung: [doc/de/README.md](doc/de/README.md) · other languages: see
 > [Documentation](#documentation) at the bottom.
@@ -100,14 +100,94 @@ notifications. See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the full design.
 
 ## 6. Objects / data points
 
+The adapter creates its data points from your configuration. Placeholders: `<n>` = aeration point
+index (0–7), `<g>` = group index. Objects marked **(w)** are writable commands; all others are
+read-only status values updated by the adapter.
+
+**General**
+
 | Object | Type | Role | Description |
 |--------|------|------|-------------|
 | `info.connection` | boolean | `indicator.connected` | Adapter running / configuration valid |
-| `control.enabled` | boolean (writable) | `switch.enable` | Master enable (command) |
-| `safety.interlockActive` | boolean | `indicator.alarm` | Safety interlock currently active |
+| `info.backend` | string | `text` | Active hardware backend (`iobroker` or `esp32`) |
+| `info.activeMode` | string | `text` | Current operating mode |
 
-More data points (per aeration point, groups, sensors, safety and statistics) are added as the
-corresponding features are implemented; each new state will be documented here.
+**Control (writable commands)**
+
+| Object | Type | Role | Description |
+|--------|------|------|-------------|
+| `control.enabled` | boolean (w) | `switch.enable` | Master enable |
+| `control.mode` | string (w) | `text` | Operating mode: `auto`, `manual` or `off` |
+| `control.allOff` | boolean (w) | `button` | Close all valves |
+| `control.point.<n>.open` | boolean (w) | `switch` | Manually open the valve of point `<n>` |
+| `control.group.<g>.active` | boolean (w) | `switch` | Manually activate group `<g>` |
+
+**Aeration points** (one channel per configured point, named after the point)
+
+| Object | Type | Role | Description |
+|--------|------|------|-------------|
+| `aeration.point.<n>.valveState` | boolean | `indicator` | Valve is open |
+| `aeration.point.<n>.active` | boolean | `indicator` | Point is currently aerating |
+| `aeration.point.<n>.runtimeTodaySec` | number | `value` | Runtime today (seconds) |
+| `aeration.point.<n>.runtimeTotalH` | number | `value` | Total runtime (hours, for maintenance) |
+| `aeration.point.<n>.lastChange` | number | `value.time` | Timestamp of the last valve change |
+| `aeration.point.<n>.error` | string | `text` | Last error for this point |
+
+**Groups**
+
+| Object | Type | Role | Description |
+|--------|------|------|-------------|
+| `groups.<g>.members` | string | `json` | Member point indices |
+| `groups.<g>.active` | boolean | `indicator` | Group is currently active |
+
+**Safety**
+
+| Object | Type | Role | Description |
+|--------|------|------|-------------|
+| `safety.interlockActive` | boolean | `indicator.alarm` | Safety interlock currently active |
+| `safety.emergencyValve` | boolean | `indicator` | Emergency valve is open |
+| `safety.pumpRunning` | boolean | `indicator` | Pump is running |
+| `safety.openValveCount` | number | `value` | Number of open valves |
+| `safety.lastTripReason` | string | `text` | Reason of the last interlock trip |
+
+**Sensors** (only created when the corresponding monitoring is enabled)
+
+| Object | Type | Role | Description |
+|--------|------|------|-------------|
+| `sensors.oxygen` | number | `value` | Dissolved oxygen (mg/l) |
+| `sensors.oxygenSaturation` | number | `value` | Oxygen saturation (%) |
+| `sensors.oxygenAlarm` | boolean | `indicator.alarm` | Oxygen below the low threshold |
+| `sensors.airTemperature` | number | `value.temperature` | Air temperature (°C) |
+| `sensors.waterTemperature` | number | `value.temperature` | Water temperature (°C) |
+| `sensors.pressure` | number | `value.pressure` | System pressure (bar) |
+| `sensors.pressureAlarm` | boolean | `indicator.alarm` | Pressure out of range |
+
+**Astronomy & location**
+
+| Object | Type | Role | Description |
+|--------|------|------|-------------|
+| `astro.sunrise` / `astro.sunset` / `astro.solarNoon` | string | `text` | Sun times for the location |
+| `astro.isNight` | boolean | `indicator` | It is currently night |
+| `location.latitude` / `location.longitude` | number | `value.gps.*` | Resolved coordinates |
+| `location.resolvedAddress` | string | `text` | Resolved address |
+
+**Feeder coupling** (only created when the feeder coupling is enabled)
+
+| Object | Type | Role | Description |
+|--------|------|------|-------------|
+| `feeder.pauseActive` | boolean | `indicator` | Aeration paused for feeding |
+| `feeder.pauseUntil` | number | `value.time` | Pause active until |
+| `feeder.lastFeedStart` | number | `value.time` | Last feeding start |
+
+**Statistics**
+
+| Object | Type | Role | Description |
+|--------|------|------|-------------|
+| `statistics.compressorRuntimeTodayH` | number | `value` | Compressor runtime today (hours) |
+| `statistics.switchCyclesToday` | number | `value` | Valve switch cycles today |
+
+When a point, group or sensor is removed from the configuration, its objects are cleaned up
+automatically.
 
 ## 7. Roadmap
 
@@ -120,6 +200,10 @@ follow-up vis-2 widget adapter).
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.0.2 (2026-07-07)
+* (ssbingo) Configuration validation/normalization and the complete data-point model: all objects are created from the configuration and obsolete ones are cleaned up automatically
+* (ssbingo) Enforced hard rule "never more groups than aeration points"; configurable emergency valve type (solenoid / motorized ball valve)
+
 ### 0.0.1 (2026-07-07)
 * (ssbingo) Initial release (project scaffold)
 

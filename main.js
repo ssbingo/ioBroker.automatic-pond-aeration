@@ -9,8 +9,9 @@
  * monitoring, astronomical times and geolocation, plus a coupling to
  * ioBroker.automatic-feeder that pauses selected points during feeding.
  *
- * This is the M0 scaffold: lifecycle, base objects and configuration guards are in
- * place; the control engine, HAL backends and monitoring follow in later milestones.
+ * Milestone M1: full configuration validation and the complete object/data-point
+ * model are in place; objects are created and obsolete ones removed on every start.
+ * The control engine, HAL backends and monitoring follow in later milestones.
  *
  * Logging levels used (configurable per instance in the ioBroker admin):
  *   error  - failures that need attention (write failed, unexpected exception)
@@ -21,9 +22,8 @@
  */
 
 const utils = require('@iobroker/adapter-core');
-
-/** Hard upper limit on the number of aeration points (product requirement). */
-const MAX_AERATION_POINTS = 8;
+const { validateConfig } = require('./lib/config');
+const { buildObjectModel, computeObsolete } = require('./lib/objects');
 
 class AutomaticPondAeration extends utils.Adapter {
 	/**
@@ -39,6 +39,8 @@ class AutomaticPondAeration extends utils.Adapter {
 		this.on('stateChange', this.onStateChange.bind(this));
 		this.on('message', this.onMessage.bind(this));
 		this.on('unload', this.onUnload.bind(this));
+
+		this.objectModel = [];
 	}
 
 	/**
@@ -47,98 +49,65 @@ class AutomaticPondAeration extends utils.Adapter {
 	async onReady() {
 		await this.setConnected(false);
 
-		if (!this.validateConfig()) {
-			// Keep the instance alive but not "connected" so the misconfiguration is visible.
-			this.log.warn('Configuration is incomplete or invalid – waiting for a valid configuration.');
-			return;
+		// Validate & normalize the configuration (pure, see lib/config.js).
+		const { config, errors, warnings } = validateConfig(this.config);
+		this.cfg = config;
+
+		warnings.forEach(w => this.log.warn(w));
+		errors.forEach(e => this.log.error(e));
+
+		if (!config.masterEnable) {
+			this.log.info(
+				'Adapter is disabled via configuration (masterEnable = false). Objects are kept in sync, no control is performed.',
+			);
 		}
 
-		await this.ensureBaseObjects();
+		// Create the desired objects and remove obsolete ones (rule 8).
+		const removed = await this.syncObjects(config);
+		this.log.debug(`Object model synced: ${this.objectModel.length} objects, ${removed} obsolete removed.`);
+
+		await this.setStateAsync('info.backend', { val: config.controlBackend, ack: true });
+		await this.setStateAsync('info.activeMode', { val: config.masterEnable ? 'idle' : 'disabled', ack: true });
+
+		// Only our own command states; actuation follows in M4.
 		this.subscribeStates('control.*');
 
 		await this.setConnected(true);
-		this.log.info('Automatic Pond Aeration started (scaffold – control engine follows in later milestones).');
+		this.log.info(
+			`Automatic Pond Aeration started: ${config.points.length} aeration point(s), ${config.groups.length} group(s). Control engine follows in later milestones.`,
+		);
 	}
 
 	/**
-	 * Validate the essential parts of the configuration. Full validation and object
-	 * cleanup are added in milestone M1.
+	 * Create/update every object of the current model and delete obsolete managed objects.
 	 *
-	 * @returns {boolean} true if the configuration is usable
+	 * @param {ioBroker.AdapterConfig} config - the normalized configuration
+	 * @returns {Promise<number>} number of obsolete objects removed
 	 */
-	validateConfig() {
-		const cfg = this.config;
+	async syncObjects(config) {
+		this.objectModel = buildObjectModel(config);
+		const desiredIds = new Set(this.objectModel.map(m => m.id));
 
-		if (!cfg.masterEnable) {
-			this.log.info('Adapter is disabled via configuration (masterEnable = false).');
+		for (const { id, obj } of this.objectModel) {
+			await this.setObjectNotExistsAsync(id, obj);
+			// Keep container names in sync when a point/group was renamed (extend = merge, keeps custom settings).
+			if (obj.type === 'channel' || obj.type === 'folder') {
+				await this.extendObjectAsync(id, { common: { name: obj.common.name } });
+			}
 		}
 
-		const points = Array.isArray(cfg.points) ? cfg.points : [];
-		const groups = Array.isArray(cfg.groups) ? cfg.groups : [];
-
-		if (points.length > MAX_AERATION_POINTS) {
-			this.log.warn(
-				`Configured ${points.length} aeration points, but the maximum is ${MAX_AERATION_POINTS}. Extra points are ignored.`,
-			);
+		const existing = await this.getAdapterObjectsAsync();
+		const existingRel = Object.keys(existing).map(full => full.substring(this.namespace.length + 1));
+		const obsolete = computeObsolete(existingRel, desiredIds);
+		for (const id of obsolete) {
+			try {
+				await this.delObjectAsync(id, { recursive: true });
+				this.log.debug(`Removed obsolete object ${id}`);
+			} catch (e) {
+				this.log.debug(`Could not remove obsolete object ${id}: ${e.message}`);
+			}
 		}
-
-		// Hard product rule: there must never be more groups than aeration points.
-		if (groups.length > points.length) {
-			this.log.warn(
-				`There are more groups (${groups.length}) than aeration points (${points.length}); groups must never exceed points.`,
-			);
-		}
-
-		if (cfg.minOpenValves < 1) {
-			this.log.warn(
-				`minOpenValves is ${cfg.minOpenValves}; at least 1 valve must stay open while the pump runs. Using 1.`,
-			);
-		}
-
-		return true;
-	}
-
-	/**
-	 * Create the base objects that always exist (info is created via instanceObjects;
-	 * control/safety are created here so they can grow with the configuration).
-	 */
-	async ensureBaseObjects() {
-		await this.setObjectNotExistsAsync('control', {
-			type: 'channel',
-			common: { name: 'Control' },
-			native: {},
-		});
-		await this.setObjectNotExistsAsync('control.enabled', {
-			type: 'state',
-			common: {
-				name: 'Master enable',
-				role: 'switch.enable',
-				type: 'boolean',
-				read: true,
-				write: true,
-				def: true,
-			},
-			native: {},
-		});
-
-		await this.setObjectNotExistsAsync('safety', {
-			type: 'channel',
-			common: { name: 'Safety' },
-			native: {},
-		});
-		await this.setObjectNotExistsAsync('safety.interlockActive', {
-			type: 'state',
-			common: {
-				name: 'Safety interlock active',
-				role: 'indicator.alarm',
-				type: 'boolean',
-				read: true,
-				write: false,
-				def: false,
-			},
-			native: {},
-		});
-		await this.setStateAsync('safety.interlockActive', { val: false, ack: true });
+		return obsolete.length;
 	}
 
 	/**
@@ -163,12 +132,20 @@ class AutomaticPondAeration extends utils.Adapter {
 		}
 
 		const local = id.startsWith(`${this.namespace}.`) ? id.substring(this.namespace.length + 1) : id;
-
-		if (local === 'control.enabled') {
-			this.log.debug(`control.enabled command received: ${state.val}`);
-			// Acknowledge the command; the control engine (M4) will act on it.
-			this.setState('control.enabled', { val: !!state.val, ack: true });
+		if (!local.startsWith('control.')) {
+			return;
 		}
+
+		// The control engine (M4) will act on these commands. For now we acknowledge them
+		// so the UI reflects the accepted value and no command stays pending.
+		if (local === 'control.allOff') {
+			this.log.info('Command received: close all valves (will be executed by the control engine).');
+			this.setState(local, { val: false, ack: true });
+			return;
+		}
+
+		this.setState(local, { val: state.val, ack: true });
+		this.log.debug(`Command ${local} = ${state.val} acknowledged (control engine follows in a later milestone).`);
 	}
 
 	/**

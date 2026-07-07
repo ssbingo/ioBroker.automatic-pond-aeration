@@ -83,6 +83,14 @@ declare global {
 			emergencyObjectId: string;
 			/** Emergency valve is wired normally-open (opens on power loss / failsafe). */
 			emergencyNormallyOpen: boolean;
+			/**
+			 * Emergency valve technology. A solenoid opens/closes practically instantly;
+			 * a motorized ball valve (e.g. CWX-15N) needs a travel time and cannot be
+			 * relied upon to open immediately.
+			 */
+			emergencyValveType: 'solenoid' | 'motorBallValve';
+			/** Travel time in seconds for a motorized ball valve (emergencyValveType = "motorBallValve"). */
+			emergencyMotorTravelSec: number;
 
 			/** Minimum number of valves that must stay open while the pump runs (>= 1). */
 			minOpenValves: number;

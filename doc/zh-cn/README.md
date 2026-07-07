@@ -15,7 +15,7 @@
 硬件（无需额外的 ioBroker 实例），并在安装了
 [ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder) 时，于投喂期间暂停选定的增氧点。
 
-> ⚠️ **项目状态：早期框架 / 开发进行中。** 此版本搭建了适配器的骨架（生命周期、基础对象、配置模型以及安全联锁的基础）。
+> ⚠️ **项目状态：开发进行中。** 配置模型和完整的数据点模型均已就绪：适配器会校验你的配置，并据此创建（以及清理）它的所有对象。
 > 控制引擎、硬件后端和监测功能正在按里程碑逐步添加。目前尚不适用于生产环境。
 
 ---
@@ -70,13 +70,91 @@ feeder 联动、安全和通知。完整设计参见 [PROJECT_PLAN.md](../../PRO
 
 ## 6. 对象 / 数据点
 
+适配器会根据你的配置创建其数据点。占位符：`<n>` = 增氧点索引（0–7），`<g>` = 分组索引。标有 **(w)** 的对象是可写命令；其余均为由适配器更新的只读状态值。
+
+**常规**
+
 | 对象 | 类型 | 角色 | 说明 |
 |------|------|------|------|
 | `info.connection` | boolean | `indicator.connected` | 适配器正在运行 / 配置有效 |
-| `control.enabled` | boolean（可写） | `switch.enable` | 主使能（命令） |
-| `safety.interlockActive` | boolean | `indicator.alarm` | 安全联锁当前已激活 |
+| `info.backend` | string | `text` | 当前硬件后端（`iobroker` 或 `esp32`） |
+| `info.activeMode` | string | `text` | 当前运行模式 |
 
-随着相应功能的实现，还会添加更多数据点（每个增氧点、分组、传感器、安全和统计）；每个新状态都会在此处记录。
+**控制（可写命令）**
+
+| 对象 | 类型 | 角色 | 说明 |
+|------|------|------|------|
+| `control.enabled` | boolean (w) | `switch.enable` | 主使能 |
+| `control.mode` | string (w) | `text` | 运行模式：`auto`、`manual` 或 `off` |
+| `control.allOff` | boolean (w) | `button` | 关闭所有阀门 |
+| `control.point.<n>.open` | boolean (w) | `switch` | 手动打开点 `<n>` 的阀门 |
+| `control.group.<g>.active` | boolean (w) | `switch` | 手动激活组 `<g>` |
+
+**增氧点**（每个已配置的点一个通道，以该点命名）
+
+| 对象 | 类型 | 角色 | 说明 |
+|------|------|------|------|
+| `aeration.point.<n>.valveState` | boolean | `indicator` | 阀门已打开 |
+| `aeration.point.<n>.active` | boolean | `indicator` | 该点当前正在增氧 |
+| `aeration.point.<n>.runtimeTodaySec` | number | `value` | 今日运行时长（秒） |
+| `aeration.point.<n>.runtimeTotalH` | number | `value` | 总运行时长（小时，用于维护） |
+| `aeration.point.<n>.lastChange` | number | `value.time` | 上次阀门变更的时间戳 |
+| `aeration.point.<n>.error` | string | `text` | 该点的最近错误 |
+
+**分组**
+
+| 对象 | 类型 | 角色 | 说明 |
+|------|------|------|------|
+| `groups.<g>.members` | string | `json` | 成员点的索引 |
+| `groups.<g>.active` | boolean | `indicator` | 该组当前处于激活状态 |
+
+**安全**
+
+| 对象 | 类型 | 角色 | 说明 |
+|------|------|------|------|
+| `safety.interlockActive` | boolean | `indicator.alarm` | 安全联锁当前已激活 |
+| `safety.emergencyValve` | boolean | `indicator` | 应急阀已打开 |
+| `safety.pumpRunning` | boolean | `indicator` | 气泵正在运行 |
+| `safety.openValveCount` | number | `value` | 打开的阀门数量 |
+| `safety.lastTripReason` | string | `text` | 上次联锁触发的原因 |
+
+**传感器**（仅在启用相应监测时创建）
+
+| 对象 | 类型 | 角色 | 说明 |
+|------|------|------|------|
+| `sensors.oxygen` | number | `value` | 溶解氧（mg/l） |
+| `sensors.oxygenSaturation` | number | `value` | 氧饱和度（%） |
+| `sensors.oxygenAlarm` | boolean | `indicator.alarm` | 氧含量低于下限阈值 |
+| `sensors.airTemperature` | number | `value.temperature` | 气温（°C） |
+| `sensors.waterTemperature` | number | `value.temperature` | 水温（°C） |
+| `sensors.pressure` | number | `value.pressure` | 系统压力（bar） |
+| `sensors.pressureAlarm` | boolean | `indicator.alarm` | 压力超出范围 |
+
+**天文与位置**
+
+| 对象 | 类型 | 角色 | 说明 |
+|------|------|------|------|
+| `astro.sunrise` / `astro.sunset` / `astro.solarNoon` | string | `text` | 该位置的太阳时刻 |
+| `astro.isNight` | boolean | `indicator` | 当前为夜间 |
+| `location.latitude` / `location.longitude` | number | `value.gps.*` | 解析出的坐标 |
+| `location.resolvedAddress` | string | `text` | 解析出的地址 |
+
+**feeder 联动**（仅在启用 feeder 联动时创建）
+
+| 对象 | 类型 | 角色 | 说明 |
+|------|------|------|------|
+| `feeder.pauseActive` | boolean | `indicator` | 因投喂而暂停增氧 |
+| `feeder.pauseUntil` | number | `value.time` | 暂停持续至 |
+| `feeder.lastFeedStart` | number | `value.time` | 上次投喂开始时间 |
+
+**统计**
+
+| 对象 | 类型 | 角色 | 说明 |
+|------|------|------|------|
+| `statistics.compressorRuntimeTodayH` | number | `value` | 今日压缩机运行时长（小时） |
+| `statistics.switchCyclesToday` | number | `value` | 今日阀门切换次数 |
+
+当从配置中移除某个点、组或传感器时，其对象会被自动清理。
 
 ## 7. 路线图
 

@@ -20,10 +20,10 @@ sprzętem **bezpośrednio na ESP32** (bez dodatkowej instancji ioBroker) oraz ws
 napowietrzania podczas karmienia, gdy zainstalowany jest
 [ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder).
 
-> ⚠️ **Status projektu: wczesny szkielet / prace w toku.** Ta wersja tworzy szkielet adaptera (cykl
-> życia, obiekty podstawowe, model konfiguracji oraz podstawę blokady bezpieczeństwa). Silnik
-> sterowania, backendy sprzętowe i funkcje monitorowania są dodawane etap po etapie (kamień milowy po
-> kamieniu milowym). Nie jest jeszcze przeznaczona do użytku produkcyjnego.
+> ⚠️ **Status projektu: prace w toku.** Model konfiguracji i kompletny model punktów danych są
+> gotowe: adapter sprawdza Twoją konfigurację i odpowiednio tworzy (oraz czyści) wszystkie swoje
+> obiekty. Silnik sterowania, backendy sprzętowe i funkcje monitorowania są dodawane etap po etapie
+> (kamień milowy po kamieniu milowym). Nie jest jeszcze przeznaczona do użytku produkcyjnego.
 
 ---
 
@@ -88,14 +88,94 @@ sprzężenie z feederem, bezpieczeństwo i powiadomienia. Pełny projekt znajdzi
 
 ## 6. Obiekty / punkty danych
 
+Adapter tworzy swoje punkty danych na podstawie Twojej konfiguracji. Symbole zastępcze: `<n>` =
+indeks punktu napowietrzania (0–7), `<g>` = indeks grupy. Obiekty oznaczone **(w)** to polecenia
+zapisywalne; wszystkie pozostałe to wartości stanu tylko do odczytu aktualizowane przez adapter.
+
+**Ogólne**
+
 | Obiekt | Typ | Rola | Opis |
 |--------|-----|------|------|
 | `info.connection` | boolean | `indicator.connected` | Adapter działa / konfiguracja prawidłowa |
-| `control.enabled` | boolean (zapisywalny) | `switch.enable` | Główne włączenie (polecenie) |
-| `safety.interlockActive` | boolean | `indicator.alarm` | Blokada bezpieczeństwa obecnie aktywna |
+| `info.backend` | string | `text` | Aktywny backend sprzętowy (`iobroker` lub `esp32`) |
+| `info.activeMode` | string | `text` | Bieżący tryb pracy |
 
-Kolejne punkty danych (dla każdego punktu napowietrzania, grup, czujników, bezpieczeństwa i statystyk)
-będą dodawane w miarę wdrażania odpowiednich funkcji; każdy nowy stan zostanie tutaj udokumentowany.
+**Sterowanie (polecenia zapisywalne)**
+
+| Obiekt | Typ | Rola | Opis |
+|--------|-----|------|------|
+| `control.enabled` | boolean (w) | `switch.enable` | Główne włączenie |
+| `control.mode` | string (w) | `text` | Tryb pracy: `auto`, `manual` lub `off` |
+| `control.allOff` | boolean (w) | `button` | Zamknij wszystkie zawory |
+| `control.point.<n>.open` | boolean (w) | `switch` | Ręcznie otwórz zawór punktu `<n>` |
+| `control.group.<g>.active` | boolean (w) | `switch` | Ręcznie aktywuj grupę `<g>` |
+
+**Punkty napowietrzania** (jeden kanał na każdy skonfigurowany punkt, nazwany według punktu)
+
+| Obiekt | Typ | Rola | Opis |
+|--------|-----|------|------|
+| `aeration.point.<n>.valveState` | boolean | `indicator` | Zawór jest otwarty |
+| `aeration.point.<n>.active` | boolean | `indicator` | Punkt obecnie napowietrza |
+| `aeration.point.<n>.runtimeTodaySec` | number | `value` | Dzisiejszy czas pracy (sekundy) |
+| `aeration.point.<n>.runtimeTotalH` | number | `value` | Całkowity czas pracy (godziny, do konserwacji) |
+| `aeration.point.<n>.lastChange` | number | `value.time` | Znacznik czasu ostatniej zmiany zaworu |
+| `aeration.point.<n>.error` | string | `text` | Ostatni błąd dla tego punktu |
+
+**Grupy**
+
+| Obiekt | Typ | Rola | Opis |
+|--------|-----|------|------|
+| `groups.<g>.members` | string | `json` | Indeksy punktów należących do grupy |
+| `groups.<g>.active` | boolean | `indicator` | Grupa jest obecnie aktywna |
+
+**Bezpieczeństwo**
+
+| Obiekt | Typ | Rola | Opis |
+|--------|-----|------|------|
+| `safety.interlockActive` | boolean | `indicator.alarm` | Blokada bezpieczeństwa obecnie aktywna |
+| `safety.emergencyValve` | boolean | `indicator` | Zawór awaryjny jest otwarty |
+| `safety.pumpRunning` | boolean | `indicator` | Pompa pracuje |
+| `safety.openValveCount` | number | `value` | Liczba otwartych zaworów |
+| `safety.lastTripReason` | string | `text` | Powód ostatniego zadziałania blokady |
+
+**Czujniki** (tworzone tylko przy włączonym odpowiednim monitorowaniu)
+
+| Obiekt | Typ | Rola | Opis |
+|--------|-----|------|------|
+| `sensors.oxygen` | number | `value` | Rozpuszczony tlen (mg/l) |
+| `sensors.oxygenSaturation` | number | `value` | Nasycenie tlenem (%) |
+| `sensors.oxygenAlarm` | boolean | `indicator.alarm` | Tlen poniżej dolnego progu |
+| `sensors.airTemperature` | number | `value.temperature` | Temperatura powietrza (°C) |
+| `sensors.waterTemperature` | number | `value.temperature` | Temperatura wody (°C) |
+| `sensors.pressure` | number | `value.pressure` | Ciśnienie w systemie (bar) |
+| `sensors.pressureAlarm` | boolean | `indicator.alarm` | Ciśnienie poza zakresem |
+
+**Astronomia i lokalizacja**
+
+| Obiekt | Typ | Rola | Opis |
+|--------|-----|------|------|
+| `astro.sunrise` / `astro.sunset` / `astro.solarNoon` | string | `text` | Czasy słońca dla lokalizacji |
+| `astro.isNight` | boolean | `indicator` | Obecnie jest noc |
+| `location.latitude` / `location.longitude` | number | `value.gps.*` | Ustalone współrzędne |
+| `location.resolvedAddress` | string | `text` | Ustalony adres |
+
+**Sprzężenie z feederem** (tworzone tylko przy włączonym sprzężeniu z feederem)
+
+| Obiekt | Typ | Rola | Opis |
+|--------|-----|------|------|
+| `feeder.pauseActive` | boolean | `indicator` | Napowietrzanie wstrzymane na czas karmienia |
+| `feeder.pauseUntil` | number | `value.time` | Pauza aktywna do |
+| `feeder.lastFeedStart` | number | `value.time` | Ostatni początek karmienia |
+
+**Statystyki**
+
+| Obiekt | Typ | Rola | Opis |
+|--------|-----|------|------|
+| `statistics.compressorRuntimeTodayH` | number | `value` | Dzisiejszy czas pracy sprężarki (godziny) |
+| `statistics.switchCyclesToday` | number | `value` | Dzisiejsze cykle przełączeń zaworów |
+
+Gdy punkt, grupa lub czujnik zostanie usunięty z konfiguracji, jego obiekty są automatycznie
+czyszczone.
 
 ## 7. Plan rozwoju
 
