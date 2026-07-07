@@ -406,9 +406,11 @@ Tasmota-Zusatzbackend). Der ESP32-Firmware-Teil (M7) läuft als **separates Repo
 
 ---
 
-*Umsetzungsstand (2026-07-07): M0–M5 inkl. M4.1 sind umgesetzt und als 0.0.1–0.0.7 auf GitHub
-(JavaScript, React-Admin, Node ≥ 22). Als Nächstes M6 (Feeder-Kopplung), dann M7 (ESP32, siehe
-Anhang A), M8 (Admin-UI), M9 (Doku/Release).*
+*Umsetzungsstand (2026-07-07): M0–M6 inkl. M4.1 sind umgesetzt und als 0.0.1–0.0.8 auf GitHub
+(JavaScript, React-Admin, Node ≥ 22). **Reihenfolge angepasst:** M8 (Admin-UI) wird vor M7 gebaut,
+damit der bereits implementierte Funktionsumfang interaktiv konfiguriert/getestet werden kann;
+**M7 (ESP32-Firmware, siehe Anhang A) folgt ganz zum Schluss**, wenn alle Funktionen stehen.
+Nach M8: M9 (Doku/Release), M10 (Winter-Modus etc.), zuletzt M7.*
 
 ---
 

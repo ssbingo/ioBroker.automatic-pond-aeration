@@ -1,20 +1,20 @@
 {
 	"common": {
 		"name": "automatic-pond-aeration",
-		"version": "0.0.8",
+		"version": "0.0.9",
 		"news": {
-			"0.0.8": {
-				"en": "Feeder coupling: while ioBroker.automatic-feeder is feeding, the selected aeration points are paused for the feeding time plus a configurable offset; the feeder switches can be auto-discovered from the admin.",
-				"de": "Feeder-Kopplung: während ioBroker.automatic-feeder füttert, werden die ausgewählten Belüftungsstellen für die Fütterdauer plus einen einstellbaren Offset pausiert; die Feeder-Schalter lassen sich im Admin automatisch auslesen.",
-				"ru": "Связь с кормушкой: пока ioBroker.automatic-feeder кормит, выбранные точки аэрации приостанавливаются на время кормления плюс настраиваемый офсет; переключатели кормушки можно автоматически найти в админке.",
-				"pt": "Ligação ao alimentador: enquanto o ioBroker.automatic-feeder alimenta, os pontos de arejamento selecionados são pausados durante o tempo de alimentação mais um offset configurável; os interruptores do alimentador podem ser detetados automaticamente na administração.",
-				"nl": "Voederautomaat-koppeling: terwijl ioBroker.automatic-feeder voedert, worden de geselecteerde beluchtingspunten gepauzeerd voor de voedertijd plus een instelbare offset; de voederschakelaars kunnen automatisch in de admin worden gevonden.",
-				"fr": "Couplage au distributeur : pendant que ioBroker.automatic-feeder distribue, les points d'aération sélectionnés sont mis en pause pendant la durée de distribution plus un décalage configurable ; les interrupteurs du distributeur peuvent être détectés automatiquement dans l'administration.",
-				"it": "Accoppiamento con l'alimentatore: mentre ioBroker.automatic-feeder alimenta, i punti di aerazione selezionati vengono messi in pausa per la durata dell'alimentazione più un offset configurabile; gli interruttori dell'alimentatore possono essere rilevati automaticamente nell'amministrazione.",
-				"es": "Acoplamiento con el comedero: mientras ioBroker.automatic-feeder alimenta, los puntos de aireación seleccionados se pausan durante el tiempo de alimentación más un desfase configurable; los interruptores del comedero se pueden detectar automáticamente en la administración.",
-				"pl": "Sprzężenie z karmnikiem: gdy ioBroker.automatic-feeder karmi, wybrane punkty napowietrzania są wstrzymywane na czas karmienia plus konfigurowalny offset; przełączniki karmnika można automatycznie wykryć w panelu administracyjnym.",
-				"uk": "Зв'язок із годівницею: поки ioBroker.automatic-feeder годує, вибрані точки аерації призупиняються на час годування плюс налаштовуваний зсув; перемикачі годівниці можна автоматично знайти в адмінці.",
-				"zh-cn": "喂食器联动：当 ioBroker.automatic-feeder 投喂时，所选增氧点在投喂时长加上可配置的偏移时间内暂停；可在管理界面自动发现喂食器开关。"
+			"0.0.9": {
+				"en": "Full configuration UI: a tabbed admin page for aeration points, groups, schedules, sensors, location (map + geocoding), the feeder coupling and safety — so everything can be configured and tested from the admin.",
+				"de": "Vollständige Konfigurations-Oberfläche: eine Tab-Admin-Seite für Belüftungsstellen, Gruppen, Zeitpläne, Sensoren, Standort (Karte + Geocoding), Feeder-Kopplung und Sicherheit — alles im Admin konfigurier- und testbar.",
+				"ru": "Полный интерфейс настройки: вкладки админки для точек аэрации, групп, расписаний, датчиков, местоположения (карта + геокодинг), связи с кормушкой и безопасности — всё настраивается и тестируется из админки.",
+				"pt": "Interface de configuração completa: uma página de administração com separadores para pontos de arejamento, grupos, horários, sensores, localização (mapa + geocodificação), ligação ao alimentador e segurança — tudo configurável e testável na administração.",
+				"nl": "Volledige configuratie-UI: een admin-pagina met tabbladen voor beluchtingspunten, groepen, schema's, sensoren, locatie (kaart + geocoding), voederautomaat-koppeling en veiligheid — alles configureerbaar en testbaar in de admin.",
+				"fr": "Interface de configuration complète : une page d'administration à onglets pour les points d'aération, groupes, horaires, capteurs, localisation (carte + géocodage), couplage au distributeur et sécurité — tout est configurable et testable dans l'administration.",
+				"it": "Interfaccia di configurazione completa: una pagina di amministrazione a schede per punti di aerazione, gruppi, pianificazioni, sensori, posizione (mappa + geocodifica), accoppiamento con l'alimentatore e sicurezza — tutto configurabile e testabile nell'amministrazione.",
+				"es": "Interfaz de configuración completa: una página de administración con pestañas para puntos de aireación, grupos, horarios, sensores, ubicación (mapa + geocodificación), acoplamiento con el comedero y seguridad — todo configurable y probable desde la administración.",
+				"pl": "Pełny interfejs konfiguracji: panel administracyjny z zakładkami dla punktów napowietrzania, grup, harmonogramów, czujników, lokalizacji (mapa + geokodowanie), sprzężenia z karmnikiem i bezpieczeństwa — wszystko konfigurowalne i testowalne w panelu.",
+				"uk": "Повний інтерфейс налаштування: сторінка адміністрування з вкладками для точок аерації, груп, розкладів, датчиків, розташування (карта + геокодування), зв'язку з годівницею та безпеки — усе налаштовується й тестується в адмінці.",
+				"zh-cn": "完整的配置界面：带标签页的管理页面，涵盖增氧点、分组、计划、传感器、位置（地图+地理编码）、喂食器联动和安全——全部可在管理界面中配置和测试。"
 			}
 		},
 		"titleLang": {
