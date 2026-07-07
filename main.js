@@ -9,9 +9,10 @@
  * monitoring, astronomical times and geolocation, plus a coupling to
  * ioBroker.automatic-feeder that pauses selected points during feeding.
  *
- * Milestone M1: full configuration validation and the complete object/data-point
- * model are in place; objects are created and obsolete ones removed on every start.
- * The control engine, HAL backends and monitoring follow in later milestones.
+ * Milestone M2: the hardware abstraction layer (HAL) is in place. The ioBroker backend
+ * drives valves/pump/emergency valve through existing foreign states (rule 1) and mirrors
+ * their status into the adapter's data points. The control engine (arbiter, schedule,
+ * round-robin, groups) and the safety interlock follow in later milestones.
  *
  * Logging levels used (configurable per instance in the ioBroker admin):
  *   error  - failures that need attention (write failed, unexpected exception)
@@ -24,6 +25,10 @@
 const utils = require('@iobroker/adapter-core');
 const { validateConfig } = require('./lib/config');
 const { buildObjectModel, computeObsolete } = require('./lib/objects');
+const { IoBrokerBackend } = require('./lib/hal/iobroker-backend');
+
+/** Matches a per-point manual command id like "control.point.3.open". */
+const POINT_OPEN_RE = /^control\.point\.(\d+)\.open$/;
 
 class AutomaticPondAeration extends utils.Adapter {
 	/**
@@ -41,6 +46,10 @@ class AutomaticPondAeration extends utils.Adapter {
 		this.on('unload', this.onUnload.bind(this));
 
 		this.objectModel = [];
+		// Set in onReady once the configuration is validated.
+		this.backend = null;
+		// A valid (empty) normalized config until onReady loads the real one.
+		this.cfg = validateConfig({}).config;
 	}
 
 	/**
@@ -69,7 +78,12 @@ class AutomaticPondAeration extends utils.Adapter {
 		await this.setStateAsync('info.backend', { val: config.controlBackend, ack: true });
 		await this.setStateAsync('info.activeMode', { val: config.masterEnable ? 'idle' : 'disabled', ack: true });
 
-		// Only our own command states; actuation follows in M4.
+		// Hardware abstraction layer. Only the ioBroker backend exists so far; the ESP32
+		// backend follows in M7.
+		this.backend = new IoBrokerBackend(this, config);
+		await this.backend.init();
+
+		// Our own command states (foreign hardware states are subscribed by the backend).
 		this.subscribeStates('control.*');
 
 		await this.setConnected(true);
@@ -120,32 +134,70 @@ class AutomaticPondAeration extends utils.Adapter {
 	}
 
 	/**
-	 * Is called if a subscribed state changes.
+	 * Is called if a subscribed state changes (our own control.* states as well as the
+	 * subscribed foreign hardware states).
 	 *
 	 * @param {string} id - full state id
 	 * @param {ioBroker.State | null | undefined} state - the new state
 	 */
 	onStateChange(id, state) {
-		// Only react to fresh commands (ack === false); acknowledged states are our own echoes.
-		if (!state || state.ack) {
+		if (!state) {
 			return;
 		}
 
+		// Foreign hardware states → mirror into status data points (any ack).
+		if (this.backend && this.backend.ownsForeignState(id)) {
+			this.backend
+				.handleForeignChange(id, state)
+				.catch(e => this.log.warn(`Reflecting ${id} failed: ${e.message}`));
+			return;
+		}
+
+		// Own command states: only react to fresh commands (ack === false).
+		if (state.ack) {
+			return;
+		}
 		const local = id.startsWith(`${this.namespace}.`) ? id.substring(this.namespace.length + 1) : id;
 		if (!local.startsWith('control.')) {
 			return;
 		}
+		this.handleCommand(local, state).catch(e => this.log.warn(`Command ${local} failed: ${e.message}`));
+	}
 
-		// The control engine (M4) will act on these commands. For now we acknowledge them
-		// so the UI reflects the accepted value and no command stays pending.
+	/**
+	 * Execute a control.* command. The full arbiter (priorities, schedule, round-robin,
+	 * groups) follows in M4; for now this routes the manual valve commands to the backend.
+	 *
+	 * @param {string} local - namespace-relative state id
+	 * @param {ioBroker.State} state - the command state (ack === false)
+	 * @returns {Promise<void>}
+	 */
+	async handleCommand(local, state) {
 		if (local === 'control.allOff') {
-			this.log.info('Command received: close all valves (will be executed by the control engine).');
-			this.setState(local, { val: false, ack: true });
+			this.log.info('Command: close all valves.');
+			for (let i = 0; i < this.cfg.points.length; i++) {
+				await this.backend?.setValve(i, false);
+			}
+			await this.setStateAsync(local, { val: false, ack: true });
 			return;
 		}
 
-		this.setState(local, { val: state.val, ack: true });
-		this.log.debug(`Command ${local} = ${state.val} acknowledged (control engine follows in a later milestone).`);
+		const pointMatch = POINT_OPEN_RE.exec(local);
+		if (pointMatch) {
+			const index = Number(pointMatch[1]);
+			const open = Boolean(state.val);
+			const issued = await this.backend?.setValve(index, open);
+			if (!issued) {
+				this.log.warn(`Aeration point ${index} cannot be switched: no valve state mapped.`);
+			}
+			await this.setStateAsync(local, { val: open, ack: true });
+			return;
+		}
+
+		// Other commands (enabled, mode, group activation) are acknowledged; the control
+		// engine will act on them in M4.
+		await this.setStateAsync(local, { val: state.val, ack: true });
+		this.log.debug(`Command ${local} = ${state.val} acknowledged (control engine follows in M4).`);
 	}
 
 	/**
@@ -179,10 +231,12 @@ class AutomaticPondAeration extends utils.Adapter {
 	 *
 	 * @param {() => void} callback - must be called when cleanup is done
 	 */
-	onUnload(callback) {
+	async onUnload(callback) {
 		try {
-			// Timers/intervals started by later milestones are cleared here.
-			this.setState('info.connection', { val: false, ack: true });
+			if (this.backend) {
+				await this.backend.destroy();
+			}
+			await this.setStateAsync('info.connection', { val: false, ack: true });
 			callback();
 		} catch {
 			callback();
