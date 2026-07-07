@@ -23,10 +23,11 @@ der Fütterung pausieren, wenn
 > ⚠️ **Projektstatus.** Vollständig implementiert und über den Admin konfigurierbar: die
 > Ventilsteuerung (Zeitplan, zyklischer Round-Robin, Gruppen), die **Sicherheitsverriegelung** gegen
 > Nullförderung, die **Überwachung** (Sauerstoff, Luft-/Wassertemperatur, Druck mit Alarmen),
-> **astronomische Zeiten & Geoposition** sowie die **Feeder-Kopplung**. **Noch geplant:** das direkte
-> **ESP32**-Hardware-Backend und der **Winter-/Eisfrei-Modus** (die entsprechenden Optionen erscheinen
-> bereits in der Konfiguration, sind aber noch nicht aktiv). Bis das ESP32-Backend verfügbar ist,
-> werden Ventile und Pumpe über vorhandene ioBroker-States angesteuert.
+> **astronomische Zeiten & Geoposition**, die **Feeder-Kopplung**, der **Winter-/Eisfrei-Modus**, der
+> **Sauerstoff-Regelkreis**, **Benachrichtigungen über einen Messaging-Adapter**, die
+> **Laufzeitstatistik** sowie ein **Trockenlauf-Testmodus**. **Noch geplant:** das direkte
+> **ESP32**-Hardware-Backend. Bis das ESP32-Backend verfügbar ist, werden Ventile und Pumpe über
+> vorhandene ioBroker-States angesteuert.
 
 ---
 
@@ -95,6 +96,10 @@ die Teile, die du tatsächlich nutzt.
 ### Allgemein
 - **Hauptfreigabe** – der Ein/Aus-Schalter für den gesamten Adapter. Ist er aus, wird nichts
   gesteuert.
+- **Trockenlauf (nur protokollieren, keine Hardware schalten)** – die gesamte Steuerlogik läuft und
+  die Datenpunkte werden aktualisiert, aber Ventil-/Pumpenbefehle werden nur ins Log geschrieben
+  (`[DRY-RUN] would …`) statt in die echten States. Ideal für die Inbetriebnahme und zum Testen einer
+  Konfiguration, bevor sie verdrahtet wird.
 - **Hardware-Backend** – `Vorhandene ioBroker-States` (Standard) steuert deine Ventile/Pumpe über
   States anderer Adapter. `ESP32 (direkt)` ist *geplant* (M7) und noch nicht aktiv.
 - **Abfrageintervall (s)** – wie oft der Backend-Status abgefragt wird (z. B. `30`).
@@ -119,11 +124,24 @@ Gruppen als Punkte geben.**
 - **Zeitpläne** – ausgewählte Punkte/Gruppen während eines Wochentags-Zeitfensters öffnen
   (`Von`/`Bis`, z. B. `08:00`–`18:00`; über Nacht reichende Fenster wie `22:00`–`06:00` werden
   unterstützt). Ein aktiver Zeitplan hat **Vorrang vor dem Round-Robin**.
+- **Winter-/Eisfrei-Modus** – während der konfigurierten Saison (**Start**/**Ende** als
+  wiederkehrendes `MM-DD`, z. B. `11-01`–`03-15`, über den Jahreswechsel hinweg) werden die
+  ausgewählten Punkte zwangsweise eingeschaltet, um ein eisfreies Loch offen zu halten. Optional **Nur
+  wenn es kalt ist (Frostschutz)** anhaken und einen **Lufttemperatur-Schwellenwert** setzen, damit
+  der Teich nur belüftet wird, solange es tatsächlich friert (dazu wird die Lufttemperatur-Überwachung
+  benötigt). Lasse **Offen gehaltene Punkte** leer, um den ganzen Teich zu belüften. Der Winter-Modus
+  läuft im Betriebsmodus `auto` und weicht wie jedes Programm weiterhin der Sicherheitsverriegelung
+  und einer Feeder-Pause.
 
 ### Sensoren
 Optionale Überwachung. Für jeden Sensor **Aktiviert** anhaken und den **Quell-State** wählen:
 - **Gelöster Sauerstoff** – mit einem unteren Schwellenwert (löst `sensors.oxygenAlarm` aus), einem
   Zielwert und einer Hysterese; die **Sauerstoffsättigung %** wird aus der Wassertemperatur berechnet.
+  - **Sauerstoff-Regelkreis** – ist er aktiviert, **schaltet der Adapter die Belüftung zwangsweise
+    ein**, solange der Sauerstoff unter dem unteren Schwellenwert liegt, und hält sie ein, bis er sich
+    auf den Zielwert erholt hat (oder auf `low + hysteresis`, wenn kein Zielwert gesetzt ist). Lasse
+    **Verstärkte Punkte** leer, um den ganzen Teich zu verstärken. Wie der Winter-Modus läuft der
+    Regelkreis im Modus `auto` und weicht der Sicherheitsverriegelung und Feeder-Pausen.
 - **Luft-/Wassertemperatur**.
 - **Druck** – mit Min/Max (außerhalb des Bereichs löst `sensors.pressureAlarm` aus).
 
@@ -156,7 +174,9 @@ Futter nicht verwirbelt wird.
 
 ### Benachrichtigungen
 Benachrichtigungen aktivieren und eine **Messaging-Instanz** wählen (ein beliebiger Adapter vom Typ
-`messaging`, z. B. Telegram). *(Der Versand ist für einen späteren Meilenstein vorbereitet.)*
+`messaging`, z. B. Telegram oder Pushover). Der Adapter sendet dann eine kurze, lokalisierte
+Nachricht, wenn die Sicherheitsverriegelung auslöst oder wieder freigibt, wenn der Sauerstoffalarm
+ausgelöst wird oder sich erholt und wenn der Druck seinen Bereich verlässt oder wieder erreicht.
 
 ## 6. Objekte / Datenpunkte
 
@@ -171,6 +191,7 @@ Befehle; alle anderen sind schreibgeschützte Statuswerte, die der Adapter aktua
 | `info.connection` | boolean | `indicator.connected` | Adapter läuft / Konfiguration gültig |
 | `info.backend` | string | `text` | Aktives Hardware-Backend (`iobroker` oder `esp32`) |
 | `info.activeMode` | string | `text` | Aktueller Betriebsmodus |
+| `info.dryRun` | boolean | `indicator` | Trockenlauf aktiv (es wird keine Hardware geschaltet) |
 
 **Steuerung (beschreibbare Befehle)**
 
@@ -217,6 +238,7 @@ Befehle; alle anderen sind schreibgeschützte Statuswerte, die der Adapter aktua
 | `sensors.oxygen` | number | `value` | Gelöster Sauerstoff (mg/l) |
 | `sensors.oxygenSaturation` | number | `value` | Sauerstoffsättigung (%) |
 | `sensors.oxygenAlarm` | boolean | `indicator.alarm` | Sauerstoff unter dem unteren Schwellenwert |
+| `sensors.oxygenBoostActive` | boolean | `indicator` | Sauerstoff-Regelkreis erzwingt die Belüftung (nur bei aktiviertem Regelkreis) |
 | `sensors.airTemperature` | number | `value.temperature` | Lufttemperatur (°C) |
 | `sensors.waterTemperature` | number | `value.temperature` | Wassertemperatur (°C) |
 | `sensors.pressure` | number | `value.pressure` | Systemdruck (bar) |
@@ -239,10 +261,19 @@ Befehle; alle anderen sind schreibgeschützte Statuswerte, die der Adapter aktua
 | `feeder.pauseUntil` | number | `value.time` | Pause aktiv bis |
 | `feeder.lastFeedStart` | number | `value.time` | Letzter Fütterungsbeginn |
 
+**Winter-/Eisfrei-Modus** (nur angelegt, wenn der Winter-Modus aktiviert ist)
+
+| Objekt | Typ | Rolle | Beschreibung |
+|--------|-----|-------|--------------|
+| `winter.active` | boolean | `indicator` | Winter-Modus erzwingt derzeit die Belüftung |
+| `winter.frostActive` | boolean | `indicator` | Frostschutz ist aktiv (kalt genug) |
+
 **Statistik**
 
 | Objekt | Typ | Rolle | Beschreibung |
 |--------|-----|-------|--------------|
+| `aeration.point.<n>.runtimeTodaySec` | number | `value` | Heutige Laufzeit von Punkt `<n>` (Sekunden) |
+| `aeration.point.<n>.runtimeTotalH` | number | `value` | Gesamtlaufzeit von Punkt `<n>` (Stunden) |
 | `statistics.compressorRuntimeTodayH` | number | `value` | Heutige Kompressorlaufzeit (Stunden) |
 | `statistics.switchCyclesToday` | number | `value` | Heutige Ventilschaltzyklen |
 
@@ -252,11 +283,11 @@ automatisch bereinigt.
 ## 7. Roadmap
 
 Fertig: Konfigurations-UI, Ventilsteuerung (Zeitplan/Round-Robin/Gruppen), die
-Sicherheitsverriegelung gegen Nullförderung, Überwachung, Astro & Geoposition sowie die
-Feeder-Kopplung. **Noch ausstehend:**
+Sicherheitsverriegelung gegen Nullförderung, Überwachung, Astro & Geoposition, die Feeder-Kopplung,
+der **Winter-/Eisfrei-Modus**, der **Sauerstoff-Regelkreis**, **Benachrichtigungen**, die
+**Laufzeitstatistik** sowie der **Trockenlauf-Testmodus**. **Noch ausstehend:**
 
 * das direkte **ESP32**-Hardware-Backend + Referenz-Firmware (Waveshare ESP32-S3-POE-ETH-8DI-8RO);
-* der **Winter-/Eisfrei-Modus**;
 * ein nachgelagerter **vis-2-Widget-Adapter** für Bedienung und Überwachung.
 
 Den vollständigen, meilensteinbasierten Plan findest du in [PROJECT_PLAN.md](../../PROJECT_PLAN.md).

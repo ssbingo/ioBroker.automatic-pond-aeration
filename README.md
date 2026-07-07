@@ -34,11 +34,11 @@ compute **astronomical times** from your **geolocation**, drive the hardware **d
 
 > ⚠️ **Project status.** Fully implemented and configurable from the admin: valve control
 > (schedule, cyclic round-robin, groups), the dead-head **safety interlock**, **monitoring**
-> (oxygen, air/water temperature, pressure with alarms), **astronomical times & geolocation**, and
-> the **feeder coupling**. **Still planned:** the direct **ESP32** hardware backend and the
-> **winter / ice-free mode** (the corresponding options already appear in the configuration but are
-> not active yet). Until the ESP32 backend ships, valves and the pump are driven through existing
-> ioBroker states.
+> (oxygen, air/water temperature, pressure with alarms), **astronomical times & geolocation**, the
+> **feeder coupling**, the **winter / ice-free mode**, the **oxygen closed loop**, **notifications**
+> via a messaging adapter, **runtime statistics** and a **dry-run** test mode. **Still planned:** the
+> direct **ESP32** hardware backend. Until the ESP32 backend ships, valves and the pump are driven
+> through existing ioBroker states.
 
 > 🇩🇪 Deutsche Anleitung: [doc/de/README.md](doc/de/README.md) · other languages: see
 > [Documentation](#documentation) at the bottom.
@@ -102,6 +102,9 @@ you use.
 
 ### General
 - **Master enable** – the on/off switch for the whole adapter. When off, nothing is controlled.
+- **Dry-run (log only, do not switch hardware)** – the whole control engine runs and the data points
+  update, but valve/pump commands are only written to the log (`[DRY-RUN] would …`) instead of the
+  real states. Ideal for commissioning and testing a configuration before wiring it up.
 - **Hardware backend** – `Existing ioBroker states` (default) drives your valves/pump through states
   of other adapters. `ESP32 (direct)` is *planned* (M7) and not active yet.
 - **Poll interval (s)** – how often the backend status is polled (e.g. `30`).
@@ -123,11 +126,22 @@ name and tick its member points. **There can never be more groups than points.**
 - **Schedules** – open selected points/groups during a weekday time window (`From`/`To`, e.g.
   `08:00`–`18:00`; overnight windows like `22:00`–`06:00` are supported). An active schedule has
   **priority over the round-robin**.
+- **Winter / ice-free mode** – during the configured season (**Start**/**End** as recurring `MM-DD`,
+  e.g. `11-01`–`03-15`, wrapping across the new year) the selected points are forced on to keep an
+  ice-free hole open. Optionally tick **Only when it is cold (frost protection)** and set an **air
+  temperature threshold** so the pond is only aerated while it is actually freezing (this needs
+  air-temperature monitoring). Leave **Points kept open** empty to aerate the whole pond. Winter mode
+  runs in the `auto` operating mode and, like every program, still yields to the safety interlock and
+  a feeder pause.
 
 ### Sensors
 Optional monitoring. For each sensor tick **Enabled** and pick the **source state**:
 - **Dissolved oxygen** – with a low threshold (raises `sensors.oxygenAlarm`), a target and a
   hysteresis; the oxygen **saturation %** is computed from the water temperature.
+  - **Oxygen closed loop** – when enabled, the adapter **forces aeration on** while the oxygen is
+    below the low threshold and keeps it on until it recovers to the target (or `low + hysteresis`
+    when no target is set). Leave **Boosted points** empty to boost the whole pond. Like winter mode,
+    the loop runs in the `auto` mode and yields to safety and feeder pauses.
 - **Air / water temperature**.
 - **Pressure** – with min/max (out of range raises `sensors.pressureAlarm`).
 
@@ -157,7 +171,9 @@ is feeding, so the food is not blown around.
 
 ### Notifications
 Enable notifications and pick a **messaging instance** (any adapter of type `messaging`, e.g.
-Telegram). *(Sending is prepared for a later milestone.)*
+Telegram or Pushover). The adapter then sends a short, localized message when the **safety interlock**
+trips or clears, when the **oxygen alarm** raises or recovers, and when the **pressure** leaves or
+re-enters its range.
 
 ## 6. Objects / data points
 
@@ -172,6 +188,7 @@ read-only status values updated by the adapter.
 | `info.connection` | boolean | `indicator.connected` | Adapter running / configuration valid |
 | `info.backend` | string | `text` | Active hardware backend (`iobroker` or `esp32`) |
 | `info.activeMode` | string | `text` | Current operating mode |
+| `info.dryRun` | boolean | `indicator` | Dry-run active (no hardware is switched) |
 
 **Control (writable commands)**
 
@@ -218,6 +235,7 @@ read-only status values updated by the adapter.
 | `sensors.oxygen` | number | `value` | Dissolved oxygen (mg/l) |
 | `sensors.oxygenSaturation` | number | `value` | Oxygen saturation (%) |
 | `sensors.oxygenAlarm` | boolean | `indicator.alarm` | Oxygen below the low threshold |
+| `sensors.oxygenBoostActive` | boolean | `indicator` | Oxygen closed loop is forcing aeration on (only with the loop enabled) |
 | `sensors.airTemperature` | number | `value.temperature` | Air temperature (°C) |
 | `sensors.waterTemperature` | number | `value.temperature` | Water temperature (°C) |
 | `sensors.pressure` | number | `value.pressure` | System pressure (bar) |
@@ -240,10 +258,19 @@ read-only status values updated by the adapter.
 | `feeder.pauseUntil` | number | `value.time` | Pause active until |
 | `feeder.lastFeedStart` | number | `value.time` | Last feeding start |
 
+**Winter / ice-free mode** (only created when winter mode is enabled)
+
+| Object | Type | Role | Description |
+|--------|------|------|-------------|
+| `winter.active` | boolean | `indicator` | Winter mode is currently forcing aeration on |
+| `winter.frostActive` | boolean | `indicator` | Frost protection is engaged (cold enough) |
+
 **Statistics**
 
 | Object | Type | Role | Description |
 |--------|------|------|-------------|
+| `aeration.point.<n>.runtimeTodaySec` | number | `value` | Runtime of point `<n>` today (seconds) |
+| `aeration.point.<n>.runtimeTotalH` | number | `value` | Total runtime of point `<n>` (hours) |
 | `statistics.compressorRuntimeTodayH` | number | `value` | Compressor runtime today (hours) |
 | `statistics.switchCyclesToday` | number | `value` | Valve switch cycles today |
 
@@ -253,10 +280,11 @@ automatically.
 ## 7. Roadmap
 
 Done: configuration UI, valve control (schedule/round-robin/groups), the dead-head safety
-interlock, monitoring, astro & geolocation and the feeder coupling. **Still to come:**
+interlock, monitoring, astro & geolocation, the feeder coupling, the **winter / ice-free mode**, the
+**oxygen closed loop**, **notifications**, **runtime statistics** and the **dry-run** test mode.
+**Still to come:**
 
 * the direct **ESP32** hardware backend + reference firmware (Waveshare ESP32-S3-POE-ETH-8DI-8RO);
-* the **winter / ice-free mode**;
 * a follow-up **vis-2 widget adapter** for operation and monitoring.
 
 See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
@@ -266,6 +294,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.0.13 (2026-07-07)
+* (ssbingo) Winter/ice-free mode, oxygen closed loop, notifications, statistics and a dry-run test mode (M10). Winter mode forces the selected points on during a recurring season (`MM-DD` window, optional air-temperature frost gating). The oxygen closed loop boosts aeration while dissolved oxygen is low until it recovers to the target. Notifications go to any `messaging` adapter (Telegram/Pushover) on interlock, oxygen and pressure edges. Runtime statistics (per-point runtime, compressor hours, switch cycles) are accumulated with a daily reset. Dry-run runs the whole control engine but only logs the intended valve/pump actions. New states `winter.*`, `sensors.oxygenBoostActive`, `info.dryRun`; localized messages and admin strings in 11 languages
+
 ### 0.0.12 (2026-07-07)
 * (ssbingo) Documentation & release hardening: the README and all 10 translated docs are now a full manual with a per-tab configuration guide; fixed the io-package.json placement of `encryptedNative`/`protectedNative` (root instead of `common`); new adapter icon; changelog trimmed to the 10 most recent entries (older ones moved to `CHANGELOG_OLD.md`)
 
@@ -292,13 +323,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.0.4 (2026-07-07)
 * (ssbingo) Dead-head safety interlock with a watchdog: while the pump runs, at least the configured minimum number of valves must stay open, otherwise the emergency valve is opened and (if controllable) the pump is stopped. Adds pure, unit-tested make-before-break and anti short-cycle helpers
-
-### 0.0.3 (2026-07-07)
-* (ssbingo) Hardware abstraction layer with an ioBroker backend: valves, pump and emergency valve are driven through existing ioBroker states (rule 1) and their status is mirrored into the data points; manual valve commands (`control.point.<n>.open`, `control.allOff`) are executed
-
-### 0.0.2 (2026-07-07)
-* (ssbingo) Configuration validation/normalization and the complete data-point model: all objects are created from the configuration and obsolete ones are cleaned up automatically
-* (ssbingo) Enforced hard rule "never more groups than aeration points"; configurable emergency valve type (solenoid / motorized ball valve)
 
 ---
 

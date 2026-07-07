@@ -23,10 +23,10 @@ geïnstalleerd.
 > ⚠️ **Projectstatus.** Volledig geïmplementeerd en configureerbaar vanuit de admin: de
 > klepbesturing (tijdschema, cyclische roundrobin, groepen), de **veiligheidsvergrendeling** tegen
 > dead-heading, de **bewaking** (zuurstof, lucht-/watertemperatuur, druk met alarmen),
-> **astronomische tijden & geolocatie** en de **feeder-koppeling**. **Nog gepland:** de directe
-> **ESP32**-hardware-backend en de **winter-/ijsvrijmodus** (de bijbehorende opties verschijnen al in
-> de configuratie, maar zijn nog niet actief). Totdat de ESP32-backend er is, worden kleppen en pomp
-> aangestuurd via bestaande ioBroker-states.
+> **astronomische tijden & geolocatie**, de **feeder-koppeling**, de **winter-/ijsvrijmodus**, de
+> **zuurstofregelkring**, **meldingen via een messaging-adapter**, **looptijdstatistieken** en een
+> **dry-run-testmodus**. **Nog gepland:** de directe **ESP32**-hardware-backend. Totdat de
+> ESP32-backend er is, worden kleppen en pomp aangestuurd via bestaande ioBroker-states.
 
 ---
 
@@ -91,6 +91,10 @@ onderdelen die je gebruikt.
 ### Algemeen
 - **Hoofdvrijgave** – de aan/uit-schakelaar voor de hele adapter. Als deze uit staat, wordt er niets
   aangestuurd.
+- **Dry-run (alleen loggen, geen hardware schakelen)** – de volledige besturingsengine draait en de
+  datapunten worden bijgewerkt, maar klep-/pompcommando's worden alleen naar het log geschreven
+  (`[DRY-RUN] would …`) in plaats van naar de echte states. Ideaal voor inbedrijfstelling en het
+  testen van een configuratie voordat je alles bedraadt.
 - **Hardware-backend** – `Bestaande ioBroker-states` (standaard) stuurt je kleppen/pomp aan via
   states van andere adapters. `ESP32 (direct)` is *gepland* (M7) en nog niet actief.
 - **Pollinterval (s)** – hoe vaak de backendstatus wordt opgevraagd (bijv. `30`).
@@ -113,11 +117,24 @@ een naam en vink de bijbehorende punten aan. **Er kunnen nooit meer groepen dan 
 - **Tijdschema's** – geselecteerde punten/groepen openen tijdens een tijdvenster per weekdag
   (`Van`/`Tot`, bijv. `08:00`–`18:00`; vensters die over de nacht heen lopen, zoals `22:00`–`06:00`,
   worden ondersteund). Een actief tijdschema heeft **voorrang op de roundrobin**.
+- **Winter-/ijsvrijmodus** – tijdens het ingestelde seizoen (**Start**/**Einde** als terugkerende
+  `MM-DD`, bijv. `11-01`–`03-15`, doorlopend over de jaarwisseling) worden de geselecteerde punten
+  geforceerd ingeschakeld om een ijsvrij wak open te houden. Vink optioneel **Alleen wanneer het koud
+  is (vorstbescherming)** aan en stel een **luchttemperatuurdrempel** in, zodat de vijver alleen wordt
+  belucht wanneer het daadwerkelijk vriest (dit vereist luchttemperatuurbewaking). Laat **Open te
+  houden punten** leeg om de hele vijver te beluchten. De wintermodus draait in de bedrijfsmodus
+  `auto` en wijkt, net als elk programma, nog steeds voor de veiligheidsvergrendeling en een
+  feeder-pauze.
 
 ### Sensoren
 Optionele bewaking. Vink voor elke sensor **Ingeschakeld** aan en kies de **bron-state**:
 - **Opgeloste zuurstof** – met een ondergrens (activeert `sensors.oxygenAlarm`), een streefwaarde en
   een hysterese; het **zuurstofverzadigings-%** wordt berekend uit de watertemperatuur.
+  - **Zuurstofregelkring** – indien ingeschakeld, **forceert de adapter de beluchting aan** zolang de
+    zuurstof onder de ondergrens ligt, en houdt deze aan totdat de streefwaarde weer wordt bereikt (of
+    `low + hysteresis` als er geen streefwaarde is ingesteld). Laat **Geboostte punten** leeg om de
+    hele vijver te boosten. Net als de wintermodus draait de regelkring in de modus `auto` en wijkt
+    voor de veiligheid en feeder-pauzes.
 - **Lucht-/watertemperatuur**.
 - **Druk** – met min/max (buiten bereik activeert `sensors.pressureAlarm`).
 
@@ -149,7 +166,9 @@ zodat het voer niet wordt weggeblazen.
 
 ### Meldingen
 Schakel meldingen in en kies een **messaging-instantie** (elke adapter van het type `messaging`,
-bijv. Telegram). *(Verzenden is voorbereid voor een latere mijlpaal.)*
+bijv. Telegram of Pushover). De adapter stuurt dan een kort, gelokaliseerd bericht wanneer de
+veiligheidsvergrendeling in- of uitschakelt, wanneer het zuurstofalarm afgaat of herstelt, en wanneer
+de druk zijn bereik verlaat of weer binnenkomt.
 
 ## 6. Objecten / datapunten
 
@@ -164,6 +183,7 @@ commando's; alle andere zijn alleen-lezen statuswaarden die door de adapter word
 | `info.connection` | boolean | `indicator.connected` | Adapter draait / configuratie geldig |
 | `info.backend` | string | `text` | Actieve hardware-backend (`iobroker` of `esp32`) |
 | `info.activeMode` | string | `text` | Huidige bedrijfsmodus |
+| `info.dryRun` | boolean | `indicator` | Dry-run actief (er wordt geen hardware geschakeld) |
 
 **Besturing (beschrijfbare commando's)**
 
@@ -210,6 +230,7 @@ commando's; alle andere zijn alleen-lezen statuswaarden die door de adapter word
 | `sensors.oxygen` | number | `value` | Opgeloste zuurstof (mg/l) |
 | `sensors.oxygenSaturation` | number | `value` | Zuurstofverzadiging (%) |
 | `sensors.oxygenAlarm` | boolean | `indicator.alarm` | Zuurstof onder de ondergrens |
+| `sensors.oxygenBoostActive` | boolean | `indicator` | Zuurstofregelkring forceert de beluchting aan (alleen met ingeschakelde regelkring) |
 | `sensors.airTemperature` | number | `value.temperature` | Luchttemperatuur (°C) |
 | `sensors.waterTemperature` | number | `value.temperature` | Watertemperatuur (°C) |
 | `sensors.pressure` | number | `value.pressure` | Systeemdruk (bar) |
@@ -232,10 +253,19 @@ commando's; alle andere zijn alleen-lezen statuswaarden die door de adapter word
 | `feeder.pauseUntil` | number | `value.time` | Pauze actief tot |
 | `feeder.lastFeedStart` | number | `value.time` | Laatste voederstart |
 
+**Winter-/ijsvrijmodus** (alleen aangemaakt wanneer de wintermodus is ingeschakeld)
+
+| Object | Type | Rol | Beschrijving |
+|--------|------|-----|--------------|
+| `winter.active` | boolean | `indicator` | Wintermodus forceert momenteel de beluchting aan |
+| `winter.frostActive` | boolean | `indicator` | Vorstbescherming is actief (koud genoeg) |
+
 **Statistieken**
 
 | Object | Type | Rol | Beschrijving |
 |--------|------|-----|--------------|
+| `aeration.point.<n>.runtimeTodaySec` | number | `value` | Looptijd van punt `<n>` vandaag (seconden) |
+| `aeration.point.<n>.runtimeTotalH` | number | `value` | Totale looptijd van punt `<n>` (uren) |
 | `statistics.compressorRuntimeTodayH` | number | `value` | Compressorlooptijd vandaag (uren) |
 | `statistics.switchCyclesToday` | number | `value` | Klepschakelcycli vandaag |
 
@@ -245,10 +275,10 @@ objecten automatisch opgeruimd.
 ## 7. Roadmap
 
 Klaar: configuratie-UI, klepbesturing (tijdschema/roundrobin/groepen), de veiligheidsvergrendeling
-tegen dead-heading, bewaking, astro & geolocatie en de feeder-koppeling. **Nog te komen:**
+tegen dead-heading, bewaking, astro & geolocatie, de feeder-koppeling, de winter-/ijsvrijmodus, de
+zuurstofregelkring, meldingen, looptijdstatistieken en de dry-run-testmodus. **Nog te komen:**
 
 * de directe **ESP32**-hardware-backend + referentiefirmware (Waveshare ESP32-S3-POE-ETH-8DI-8RO);
-* de **winter-/ijsvrijmodus**;
 * een daaropvolgende **vis-2-widget-adapter** voor bediening en bewaking.
 
 Zie [PROJECT_PLAN.md](../../PROJECT_PLAN.md) voor het volledige, op mijlpalen gebaseerde plan.

@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "automatic-pond-aeration",
-		"version": "0.0.12",
+		"version": "0.0.13",
 		"news": {
+			"0.0.13": {
+				"en": "Winter/ice-free mode, oxygen closed loop, notifications, runtime statistics and a dry-run test mode.",
+				"de": "Winter-/Eisfrei-Modus, Sauerstoff-Regelkreis, Benachrichtigungen, Laufzeitstatistik und ein Testlauf-Modus.",
+				"ru": "Зимний режим, кислородный контур регулирования, уведомления, статистика работы и режим тестового прогона.",
+				"pt": "Modo de inverno/livre de gelo, malha fechada de oxigénio, notificações, estatísticas de funcionamento e um modo de simulação.",
+				"nl": "Winter-/ijsvrij-modus, zuurstofregelkring, meldingen, looptijdstatistieken en een testmodus (dry-run).",
+				"fr": "Mode hiver/sans glace, boucle de régulation d'oxygène, notifications, statistiques de fonctionnement et un mode simulation.",
+				"it": "Modalità invernale/anti-ghiaccio, anello di regolazione dell'ossigeno, notifiche, statistiche di funzionamento e una modalità di prova.",
+				"es": "Modo invierno/sin hielo, lazo cerrado de oxígeno, notificaciones, estadísticas de funcionamiento y un modo de simulación.",
+				"pl": "Tryb zimowy/przeciwoblodzeniowy, pętla regulacji tlenu, powiadomienia, statystyki pracy i tryb testowy.",
+				"uk": "Зимовий режим, контур регулювання кисню, сповіщення, статистика роботи та режим тестового прогону.",
+				"zh-cn": "冬季／防冰模式、溶氧闭环控制、通知、运行统计以及试运行测试模式。"
+			},
 			"0.0.12": {
 				"en": "Documentation and release hardening: a full multi-language manual with a detailed per-tab configuration guide, corrected io-package schema (encryptedNative/protectedNative), a new icon and changelog housekeeping.",
 				"de": "Doku- und Release-Härtung: vollständiges mehrsprachiges Handbuch mit detaillierter Konfigurationsanleitung, korrigiertes io-package-Schema (encryptedNative/protectedNative), neues Icon und Changelog-Pflege.",
@@ -89,6 +102,7 @@
 	},
 	"native": {
 		"masterEnable": true,
+		"dryRun": false,
 		"controlBackend": "iobroker",
 		"esp32Host": "",
 		"esp32Port": 80,
@@ -123,6 +137,8 @@
 		"o2LowThreshold": null,
 		"o2TargetThreshold": null,
 		"o2Hysteresis": 0.5,
+		"o2ControlEnabled": false,
+		"o2AffectedPoints": [],
 
 		"airTempEnabled": false,
 		"airTempObjectId": "",
@@ -137,6 +153,9 @@
 		"winterEnabled": false,
 		"winterStart": "11-01",
 		"winterEnd": "03-15",
+		"winterFrostProtect": false,
+		"winterAirTempThreshold": 2,
+		"winterAffectedPoints": [],
 
 		"feederEnabled": false,
 		"feederInstance": "",

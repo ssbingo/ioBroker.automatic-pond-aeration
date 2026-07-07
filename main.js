@@ -29,6 +29,9 @@ const { buildObjectModel, computeObsolete } = require('./lib/objects');
 const { IoBrokerBackend } = require('./lib/hal/iobroker-backend');
 const { evaluateSafety, planValveTransition } = require('./lib/safety');
 const { resolveDesiredValves } = require('./lib/control/arbiter');
+const { resolveWinter } = require('./lib/control/winter');
+const { resolveOxygenControl } = require('./lib/control/o2-control');
+const { elapsedSec, localDayKey, secToHours } = require('./lib/statistics');
 const { translate, SUPPORTED_LANGUAGES } = require('./lib/messages');
 const { evaluateOxygenAlarm, evaluatePressureAlarm, oxygenSaturationPct } = require('./lib/monitoring/alarms');
 const { computeAstro } = require('./lib/monitoring/astro');
@@ -87,6 +90,14 @@ class AutomaticPondAeration extends utils.Adapter {
 		this.oxygenAlarm = false;
 		this.pressureAlarm = false;
 		this.lastGeocodeMs = 0;
+		// Force-on programs (M10): winter / ice-free mode and the oxygen closed loop.
+		this.winterActive = false;
+		this.winterFrostActive = false;
+		this.oxygenBoosting = false;
+		this.forcedOn = [];
+		// Runtime statistics (M10): accumulated on-time / switch cycles.
+		this.stats = null;
+		this.statsTimer = null;
 		// Feeder coupling runtime state.
 		this.feederSwitchSet = new Set();
 		this.feederFeedingActive = {};
@@ -134,6 +145,10 @@ class AutomaticPondAeration extends utils.Adapter {
 
 		await this.setStateAsync('info.backend', { val: config.controlBackend, ack: true });
 		await this.setStateAsync('info.activeMode', { val: config.masterEnable ? 'idle' : 'disabled', ack: true });
+		await this.setStateAsync('info.dryRun', { val: config.dryRun, ack: true });
+		if (config.dryRun) {
+			this.logInfo('dryRunActive');
+		}
 
 		// Hardware abstraction layer. Only the ioBroker backend exists so far; the ESP32
 		// backend follows in M7.
@@ -156,6 +171,13 @@ class AutomaticPondAeration extends utils.Adapter {
 		this.watchdog = this.setInterval(() => {
 			this.applySafety('watchdog').catch(e => this.log.warn(`Safety watchdog failed: ${e.message}`));
 		}, config.watchdogIntervalSec * 1000);
+
+		// Runtime statistics (M10): seed the cumulative totals from the persisted states so the
+		// counters survive a restart, then sample periodically.
+		await this.initStatistics(config);
+		this.statsTimer = this.setInterval(() => {
+			this.statisticsTick().catch(e => this.log.warn(`Statistics tick failed: ${e.message}`));
+		}, 30000);
 
 		// Control tick: recompute and apply the desired valve states periodically.
 		this.controlTimer = this.setInterval(() => {
@@ -367,6 +389,7 @@ class AutomaticPondAeration extends utils.Adapter {
 			return;
 		}
 		const now = new Date();
+		const forcedOn = await this.computeForcing(now);
 		const desired = resolveDesiredValves({
 			points: this.cfg.points,
 			groups: this.cfg.groups,
@@ -381,6 +404,7 @@ class AutomaticPondAeration extends utils.Adapter {
 			nowDay: now.getDay(),
 			nowMinutes: now.getHours() * 60 + now.getMinutes(),
 			elapsedMs: Date.now() - this.roundRobinStartMs,
+			forcedOn,
 			feederForcedOff: this.getFeederForcedOff(),
 		});
 
@@ -398,6 +422,14 @@ class AutomaticPondAeration extends utils.Adapter {
 		}
 		if (open.length || close.length) {
 			this.log.debug(`Control tick (${source}): opened [${open}], closed [${close}] (mode "${this.mode}").`);
+			// Statistics: count each newly opened valve as a switch cycle, stamp the change time.
+			if (this.stats) {
+				this.stats.cyclesToday += open.length;
+			}
+			const changedNow = Date.now();
+			for (const i of [...open, ...close]) {
+				await this.setStateChangedAsync(`aeration.point.${i}.lastChange`, { val: changedNow, ack: true });
+			}
 		}
 
 		// Reflect the program's intent into aeration.point.<n>.active (only on change).
@@ -449,8 +481,10 @@ class AutomaticPondAeration extends utils.Adapter {
 		const interlockChanged = decision.interlockActive !== this.interlockWasActive;
 		if (interlockChanged && decision.interlockActive) {
 			this.log.error(`Safety interlock TRIPPED (${source}): ${decision.tripReason}`);
+			this.notify('notifyInterlockTripped', { reason: decision.tripReason || '' });
 		} else if (interlockChanged && !decision.interlockActive) {
 			this.logInfo('interlockCleared');
+			this.notify('notifyInterlockCleared');
 		} else if (decision.interlockActive) {
 			this.log.silly(`Safety interlock still active (${source}); ${decision.openValveCount} valve(s) open.`);
 		}
@@ -566,6 +600,7 @@ class AutomaticPondAeration extends utils.Adapter {
 		}
 		const s = this.backend.getSensorValues();
 		if (this.cfg.o2Enabled) {
+			const wasAlarm = this.oxygenAlarm;
 			this.oxygenAlarm = evaluateOxygenAlarm(
 				s.oxygen,
 				this.cfg.o2LowThreshold,
@@ -573,12 +608,18 @@ class AutomaticPondAeration extends utils.Adapter {
 				this.oxygenAlarm,
 			);
 			await this.setStateChangedAsync('sensors.oxygenAlarm', { val: this.oxygenAlarm, ack: true });
+			if (this.oxygenAlarm && !wasAlarm) {
+				this.notify('notifyOxygenLow', { value: Number(s.oxygen), threshold: Number(this.cfg.o2LowThreshold) });
+			} else if (!this.oxygenAlarm && wasAlarm) {
+				this.notify('notifyOxygenRecovered', { value: Number(s.oxygen) });
+			}
 			const sat = oxygenSaturationPct(s.oxygen, s.waterTemp);
 			if (sat !== null) {
 				await this.setStateChangedAsync('sensors.oxygenSaturation', { val: sat, ack: true });
 			}
 		}
 		if (this.cfg.pressureEnabled) {
+			const wasAlarm = this.pressureAlarm;
 			this.pressureAlarm = evaluatePressureAlarm(
 				s.pressure,
 				this.cfg.pressureMin,
@@ -587,7 +628,180 @@ class AutomaticPondAeration extends utils.Adapter {
 				this.pressureAlarm,
 			);
 			await this.setStateChangedAsync('sensors.pressureAlarm', { val: this.pressureAlarm, ack: true });
+			if (this.pressureAlarm && !wasAlarm) {
+				this.notify('notifyPressureAlarm', { value: Number(s.pressure) });
+			} else if (!this.pressureAlarm && wasAlarm) {
+				this.notify('notifyPressureCleared');
+			}
 		}
+	}
+
+	/**
+	 * Compute the combined "force on" mask for the current moment from the two automatic
+	 * programs — winter/ice-free mode and the oxygen closed loop — publish their status states
+	 * and log the edge transitions. The mask is OR-ed into the arbiter result (auto mode only).
+	 *
+	 * @param {Date} now - the current time
+	 * @returns {Promise<boolean[]>} the per-point force-on mask
+	 */
+	async computeForcing(now) {
+		const pointCount = this.cfg.points.length;
+		const sensors =
+			this.backend && typeof this.backend.getSensorValues === 'function' ? this.backend.getSensorValues() : {};
+		const monthDay = `${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+		// --- winter / ice-free mode ---
+		const w = resolveWinter({
+			enabled: this.cfg.winterEnabled,
+			start: this.cfg.winterStart,
+			end: this.cfg.winterEnd,
+			monthDay,
+			frostProtect: this.cfg.winterFrostProtect,
+			airTemp: sensors.airTemp,
+			threshold: this.cfg.winterAirTempThreshold,
+			hysteresis: 1,
+			wasFrostActive: this.winterFrostActive,
+			pointCount,
+			affectedPoints: this.cfg.winterAffectedPoints,
+		});
+		this.winterFrostActive = w.frostActive;
+		if (w.active !== this.winterActive) {
+			this.winterActive = w.active;
+			this.logInfo(w.active ? 'winterModeStart' : 'winterModeEnd');
+			if (this.cfg.winterEnabled) {
+				await this.setStateChangedAsync('winter.active', { val: w.active, ack: true });
+			}
+		}
+		if (this.cfg.winterEnabled) {
+			await this.setStateChangedAsync('winter.frostActive', {
+				val: Boolean(this.cfg.winterFrostProtect && w.frostActive && w.inWindow),
+				ack: true,
+			});
+		}
+
+		// --- oxygen closed loop ---
+		const o = resolveOxygenControl({
+			enabled: this.cfg.o2ControlEnabled,
+			value: sensors.oxygen,
+			low: this.cfg.o2LowThreshold,
+			target: this.cfg.o2TargetThreshold,
+			hysteresis: this.cfg.o2Hysteresis,
+			wasBoosting: this.oxygenBoosting,
+			pointCount,
+			affectedPoints: this.cfg.o2AffectedPoints,
+		});
+		if (o.boosting !== this.oxygenBoosting) {
+			this.oxygenBoosting = o.boosting;
+			this.logInfo(o.boosting ? 'oxygenBoostStart' : 'oxygenBoostEnd');
+			if (this.cfg.o2ControlEnabled) {
+				await this.setStateChangedAsync('sensors.oxygenBoostActive', { val: o.boosting, ack: true });
+			}
+		}
+
+		const combined = new Array(pointCount).fill(false);
+		for (let i = 0; i < pointCount; i++) {
+			combined[i] = Boolean(w.forcedOn[i]) || Boolean(o.forcedOn[i]);
+		}
+		this.forcedOn = combined;
+		return combined;
+	}
+
+	/**
+	 * Send a localized notification through the configured messaging adapter (Telegram,
+	 * Pushover, …). Best-effort and fire-and-forget: both the `text` and `message` keys are
+	 * provided so the common messaging adapters all pick it up. No-op when notifications are off.
+	 *
+	 * @param {string} key - message key from lib/messages.js
+	 * @param {Record<string, string | number>} [params] - placeholder values
+	 * @returns {void}
+	 */
+	notify(key, params) {
+		if (!this.cfg.notifyEnabled || !this.cfg.messagingInstance) {
+			return;
+		}
+		const text = translate(key, this.sysLang, params);
+		try {
+			this.sendTo(this.cfg.messagingInstance, { text, message: text });
+			this.log.debug(`Notification sent to ${this.cfg.messagingInstance}: ${text}`);
+		} catch (e) {
+			this.log.warn(`Notification to ${this.cfg.messagingInstance} failed: ${e.message}`);
+		}
+	}
+
+	/**
+	 * Initialize the runtime statistics: seed the cumulative per-point runtime totals from the
+	 * persisted states so they survive a restart. The daily counters start fresh on each start.
+	 *
+	 * @param {ioBroker.AdapterConfig} config - the normalized configuration
+	 * @returns {Promise<void>}
+	 */
+	async initStatistics(config) {
+		const n = config.points.length;
+		const now = Date.now();
+		this.stats = {
+			lastSampleMs: now,
+			dayKey: localDayKey(now),
+			pointTodaySec: new Array(n).fill(0),
+			pointTotalSec: new Array(n).fill(0),
+			compressorTodaySec: 0,
+			cyclesToday: 0,
+		};
+		for (let i = 0; i < n; i++) {
+			try {
+				const tot = await this.getStateAsync(`aeration.point.${i}.runtimeTotalH`);
+				if (tot && typeof tot.val === 'number' && Number.isFinite(tot.val)) {
+					this.stats.pointTotalSec[i] = tot.val * 3600;
+				}
+			} catch {
+				/* no persisted total yet */
+			}
+		}
+	}
+
+	/**
+	 * Sample the current valve/pump states and accumulate the runtime statistics, resetting the
+	 * daily counters at the local midnight. Runs on a 30 s interval.
+	 *
+	 * @returns {Promise<void>}
+	 */
+	async statisticsTick() {
+		if (!this.backend || !this.stats) {
+			return;
+		}
+		const now = Date.now();
+		const key = localDayKey(now);
+		if (key !== this.stats.dayKey) {
+			this.stats.dayKey = key;
+			this.stats.pointTodaySec.fill(0);
+			this.stats.compressorTodaySec = 0;
+			this.stats.cyclesToday = 0;
+			this.log.debug('Statistics: a new day started, the daily counters were reset.');
+		}
+		const dt = elapsedSec(this.stats.lastSampleMs, now);
+		this.stats.lastSampleMs = now;
+		const cur = this.backend.getCurrentState();
+		for (let i = 0; i < this.cfg.points.length; i++) {
+			if (cur.valves[i]) {
+				this.stats.pointTodaySec[i] += dt;
+				this.stats.pointTotalSec[i] += dt;
+			}
+			await this.setStateChangedAsync(`aeration.point.${i}.runtimeTodaySec`, {
+				val: Math.round(this.stats.pointTodaySec[i]),
+				ack: true,
+			});
+			await this.setStateChangedAsync(`aeration.point.${i}.runtimeTotalH`, {
+				val: secToHours(this.stats.pointTotalSec[i]),
+				ack: true,
+			});
+		}
+		if (cur.pumpRunning) {
+			this.stats.compressorTodaySec += dt;
+		}
+		await this.setStateChangedAsync('statistics.compressorRuntimeTodayH', {
+			val: secToHours(this.stats.compressorTodaySec),
+			ack: true,
+		});
+		await this.setStateChangedAsync('statistics.switchCyclesToday', { val: this.stats.cyclesToday, ack: true });
 	}
 
 	/**
@@ -853,6 +1067,10 @@ class AutomaticPondAeration extends utils.Adapter {
 			if (this.astroTimer) {
 				this.clearInterval(this.astroTimer);
 				this.astroTimer = null;
+			}
+			if (this.statsTimer) {
+				this.clearInterval(this.statsTimer);
+				this.statsTimer = null;
 			}
 			if (this.feederPauseTimer) {
 				this.clearTimeout(this.feederPauseTimer);

@@ -144,12 +144,33 @@ function Settings(props) {
 
 	const toggleInArray = (arr, value) => (arr.includes(value) ? arr.filter(x => x !== value) : [...arr, value]);
 
+	/** A row of point checkboxes bound to an array of 0-based point indices (empty = all). */
+	const PointPicker = ({ selected, onChange }) => (
+		<FormGroup row>
+			{points.map((p, pi) => (
+				<FormControlLabel
+					key={pi}
+					control={<Checkbox size="small" checked={(selected || []).includes(pi)} onChange={() => onChange(toggleInArray(selected || [], pi))} />}
+					label={p.name || `#${pi}`}
+				/>
+			))}
+		</FormGroup>
+	);
+
 	// ================= TAB CONTENTS =================
 	const general = (
 		<Box>
 			<TabTitle>{I18n.t('General')}</TabTitle>
 			<Section>
 				<Sw label={I18n.t('Master enable')} checked={native.masterEnable} onChange={v => set('masterEnable', v)} />
+				<Box sx={{ mt: 1 }}>
+					<Sw label={I18n.t('Dry-run (log only, do not switch hardware)')} checked={native.dryRun} onChange={v => set('dryRun', v)} />
+				</Box>
+				{native.dryRun ? (
+					<Alert severity="warning" sx={{ mt: 1 }}>
+						{I18n.t('In dry-run the adapter only logs the intended valve and pump actions — no hardware is switched.')}
+					</Alert>
+				) : null}
 			</Section>
 			<Section title={I18n.t('Hardware backend')}>
 				<Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
@@ -313,6 +334,28 @@ function Settings(props) {
 					{I18n.t('Add schedule')}
 				</Button>
 			</Section>
+			<Section title={I18n.t('Winter / ice-free mode')} desc={I18n.t('Keep an ice-free hole open during the cold season by forcing the selected points on.')}>
+				<Sw label={I18n.t('Enabled')} checked={native.winterEnabled} onChange={v => set('winterEnabled', v)} />
+				{native.winterEnabled ? (
+					<Box sx={{ mt: 1 }}>
+						<Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+							<TextField variant="standard" label={I18n.t('Start (MM-DD)')} value={native.winterStart || ''} onChange={e => set('winterStart', e.target.value)} sx={{ width: 120 }} />
+							<TextField variant="standard" label={I18n.t('End (MM-DD)')} value={native.winterEnd || ''} onChange={e => set('winterEnd', e.target.value)} sx={{ width: 120 }} />
+						</Box>
+						<Box sx={{ mt: 1, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+							<Sw label={I18n.t('Only when it is cold (frost protection)')} checked={native.winterFrostProtect} onChange={v => set('winterFrostProtect', v)} />
+							{native.winterFrostProtect ? (
+								<Num label={I18n.t('Air temperature threshold (°C)')} value={native.winterAirTempThreshold} onChange={v => set('winterAirTempThreshold', v)} />
+							) : null}
+						</Box>
+						{native.winterFrostProtect && !native.airTempEnabled ? (
+							<Alert severity="warning" sx={{ mt: 1 }}>{I18n.t('Frost protection needs air-temperature monitoring (Sensors tab).')}</Alert>
+						) : null}
+						<Typography variant="caption" sx={{ display: 'block', mt: 1 }}>{I18n.t('Points kept open (empty = all)')}:</Typography>
+						<PointPicker selected={native.winterAffectedPoints} onChange={v => set('winterAffectedPoints', v)} />
+					</Box>
+				) : null}
+			</Section>
 		</Box>
 	);
 
@@ -339,6 +382,17 @@ function Settings(props) {
 					<Num label={I18n.t('Hysteresis')} value={native.o2Hysteresis} onChange={v => set('o2Hysteresis', v)} min={0} />
 				</>
 			))}
+			{native.o2Enabled ? (
+				<Section title={I18n.t('Oxygen closed loop')} desc={I18n.t('Force aeration on while the oxygen is below the low threshold, until it recovers to the target.')}>
+					<Sw label={I18n.t('Enabled')} checked={native.o2ControlEnabled} onChange={v => set('o2ControlEnabled', v)} />
+					{native.o2ControlEnabled ? (
+						<Box sx={{ mt: 1 }}>
+							<Typography variant="caption" sx={{ display: 'block' }}>{I18n.t('Boosted points (empty = all)')}:</Typography>
+							<PointPicker selected={native.o2AffectedPoints} onChange={v => set('o2AffectedPoints', v)} />
+						</Box>
+					) : null}
+				</Section>
+			) : null}
 			{sensorBlock('airTempEnabled', 'airTempObjectId', I18n.t('Air temperature'))}
 			{sensorBlock('waterTempEnabled', 'waterTempObjectId', I18n.t('Water temperature'))}
 			{sensorBlock('pressureEnabled', 'pressureObjectId', I18n.t('Pressure'), (

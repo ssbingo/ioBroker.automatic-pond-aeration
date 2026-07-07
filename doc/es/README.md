@@ -24,11 +24,11 @@ aireación seleccionados durante la alimentación cuando
 > ⚠️ **Estado del proyecto.** Totalmente implementado y configurable desde el admin: el control de las
 > válvulas (horario programado, ciclo rotativo round-robin, grupos), el **enclavamiento de seguridad**
 > contra el dead-heading, la **supervisión** (oxígeno, temperatura aire/agua, presión con alarmas),
-> las **horas astronómicas y la geolocalización** y el **acoplamiento con el feeder**. **Aún
-> planificados:** el backend de hardware **ESP32** directo y el **modo invierno / libre de hielo** (las
-> opciones correspondientes ya aparecen en la configuración, pero todavía no están activas). Hasta que
-> llegue el backend ESP32, las válvulas y la bomba se controlan a través de estados de ioBroker
-> existentes.
+> las **horas astronómicas y la geolocalización**, el **acoplamiento con el feeder**, el **modo
+> invierno / libre de hielo**, el **lazo cerrado de oxígeno**, las **notificaciones a través de un
+> adaptador de mensajería**, las **estadísticas de funcionamiento** y un **modo de prueba dry-run**.
+> **Aún planificado:** el backend de hardware **ESP32** directo. Hasta que llegue el backend ESP32,
+> las válvulas y la bomba se controlan a través de estados de ioBroker existentes.
 
 ---
 
@@ -98,6 +98,10 @@ uses.
 ### General
 - **Habilitación principal** – el interruptor de encendido/apagado de todo el adaptador. Cuando está
   apagado, no se controla nada.
+- **Dry-run (solo registro, no conmutar el hardware)** – todo el motor de control se ejecuta y los
+  puntos de datos se actualizan, pero los comandos de válvula/bomba solo se escriben en el registro
+  (`[DRY-RUN] would …`) en lugar de en los estados reales. Ideal para la puesta en marcha y para
+  probar una configuración antes de cablearla.
 - **Backend de hardware** – `Estados de ioBroker existentes` (predeterminado) controla tus
   válvulas/bomba a través de estados de otros adaptadores. `ESP32 (directo)` está *previsto* (M7) y
   todavía no está activo.
@@ -121,11 +125,24 @@ y marca sus puntos miembros. **Nunca puede haber más grupos que puntos.**
 - **Horarios** – abrir puntos/grupos seleccionados durante una franja horaria por día de la semana
   (`Desde`/`Hasta`, p. ej. `08:00`–`18:00`; se admiten franjas nocturnas como `22:00`–`06:00`). Un
   horario activo tiene **prioridad sobre el round-robin**.
+- **Modo invierno / libre de hielo** – durante la temporada configurada (**Inicio**/**Fin** como
+  `MM-DD` recurrente, p. ej. `11-01`–`03-15`, cruzando el cambio de año) los puntos seleccionados se
+  fuerzan a abrir para mantener un agujero libre de hielo. Opcionalmente marca **Solo cuando hace
+  frío (protección contra heladas)** y define un **umbral de temperatura del aire** para que el
+  estanque solo se airee mientras realmente está helando (esto requiere la supervisión de la
+  temperatura del aire). Deja **Puntos que se mantienen abiertos** vacío para airear todo el
+  estanque. El modo invierno se ejecuta en el modo de funcionamiento `auto` y, como todo programa,
+  sigue cediendo ante el enclavamiento de seguridad y una pausa del feeder.
 
 ### Sensores
 Supervisión opcional. Para cada sensor marca **Habilitado** y elige el **estado de origen**:
 - **Oxígeno disuelto** – con un umbral bajo (activa `sensors.oxygenAlarm`), un valor objetivo y una
   histéresis; el **% de saturación** de oxígeno se calcula a partir de la temperatura del agua.
+  - **Lazo cerrado de oxígeno** – cuando está habilitado, el adaptador **fuerza la aireación**
+    mientras el oxígeno está por debajo del umbral bajo y la mantiene hasta que se recupera hasta el
+    valor objetivo (o `low + hysteresis` cuando no se ha definido un objetivo). Deja **Puntos
+    reforzados** vacío para reforzar todo el estanque. Como el modo invierno, el lazo se ejecuta en
+    el modo `auto` y cede ante la seguridad y las pausas del feeder.
 - **Temperatura del aire/agua**.
 - **Presión** – con mín/máx (fuera de rango activa `sensors.pressureAlarm`).
 
@@ -161,7 +178,9 @@ para que la comida no se disperse.
 
 ### Notificaciones
 Habilita las notificaciones y elige una **instancia de mensajería** (cualquier adaptador de tipo
-`messaging`, p. ej. Telegram). *(El envío está preparado para un hito posterior.)*
+`messaging`, p. ej. Telegram o Pushover). El adaptador envía entonces un mensaje breve y localizado
+cuando el enclavamiento de seguridad se dispara o se libera, cuando la alarma de oxígeno se activa o
+se recupera y cuando la presión sale o vuelve a entrar en su rango.
 
 ## 6. Objetos / puntos de datos
 
@@ -177,6 +196,7 @@ actualiza.
 | `info.connection` | boolean | `indicator.connected` | El adaptador funciona / configuración válida |
 | `info.backend` | string | `text` | Backend de hardware activo (`iobroker` o `esp32`) |
 | `info.activeMode` | string | `text` | Modo de funcionamiento actual |
+| `info.dryRun` | boolean | `indicator` | Dry-run activo (no se conmuta ningún hardware) |
 
 **Control (comandos escribibles)**
 
@@ -223,6 +243,7 @@ actualiza.
 | `sensors.oxygen` | number | `value` | Oxígeno disuelto (mg/l) |
 | `sensors.oxygenSaturation` | number | `value` | Saturación de oxígeno (%) |
 | `sensors.oxygenAlarm` | boolean | `indicator.alarm` | Oxígeno por debajo del umbral bajo |
+| `sensors.oxygenBoostActive` | boolean | `indicator` | El lazo cerrado de oxígeno está forzando la aireación (solo con el lazo habilitado) |
 | `sensors.airTemperature` | number | `value.temperature` | Temperatura del aire (°C) |
 | `sensors.waterTemperature` | number | `value.temperature` | Temperatura del agua (°C) |
 | `sensors.pressure` | number | `value.pressure` | Presión del sistema (bar) |
@@ -245,10 +266,19 @@ actualiza.
 | `feeder.pauseUntil` | number | `value.time` | Pausa activa hasta |
 | `feeder.lastFeedStart` | number | `value.time` | Último inicio de alimentación |
 
+**Modo invierno / libre de hielo** (creado solo cuando el modo invierno está habilitado)
+
+| Objeto | Tipo | Rol | Descripción |
+|--------|------|-----|-------------|
+| `winter.active` | boolean | `indicator` | El modo invierno está forzando actualmente la aireación |
+| `winter.frostActive` | boolean | `indicator` | La protección contra heladas está activada (hace suficiente frío) |
+
 **Estadísticas**
 
 | Objeto | Tipo | Rol | Descripción |
 |--------|------|-----|-------------|
+| `aeration.point.<n>.runtimeTodaySec` | number | `value` | Tiempo de funcionamiento del punto `<n>` de hoy (segundos) |
+| `aeration.point.<n>.runtimeTotalH` | number | `value` | Tiempo de funcionamiento total del punto `<n>` (horas) |
 | `statistics.compressorRuntimeTodayH` | number | `value` | Tiempo de funcionamiento del compresor de hoy (horas) |
 | `statistics.switchCyclesToday` | number | `value` | Ciclos de conmutación de válvulas de hoy |
 
@@ -258,11 +288,11 @@ automáticamente.
 ## 7. Hoja de ruta
 
 Hecho: interfaz de configuración, control de válvulas (horario/round-robin/grupos), el enclavamiento
-de seguridad contra el dead-heading, la supervisión, astro y geolocalización y el acoplamiento con el
-feeder. **Todavía pendiente:**
+de seguridad contra el dead-heading, la supervisión, astro y geolocalización, el acoplamiento con el
+feeder, el modo invierno / libre de hielo, el lazo cerrado de oxígeno, las notificaciones, las
+estadísticas de funcionamiento y el modo de prueba dry-run. **Todavía pendiente:**
 
 * el backend de hardware **ESP32** directo + firmware de referencia (Waveshare ESP32-S3-POE-ETH-8DI-8RO);
-* el **modo invierno / libre de hielo**;
 * un posterior **adaptador de widgets vis-2** para el manejo y la supervisión.
 
 Consulta [PROJECT_PLAN.md](../../PROJECT_PLAN.md) para el plan completo basado en hitos.

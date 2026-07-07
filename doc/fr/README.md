@@ -24,10 +24,11 @@ pause certains points d'aération pendant la distribution de nourriture lorsque
 > ⚠️ **État du projet.** Entièrement implémenté et configurable depuis l'admin : la commande des
 > vannes (planning, cycle en rotation round-robin, groupes), le **verrouillage de sécurité** contre le
 > dead-heading, la **surveillance** (oxygène, température air/eau, pression avec alarmes), les
-> **heures astronomiques & la géolocalisation** ainsi que le **couplage au feeder**. **Encore prévu :**
-> le backend matériel **ESP32** direct et le **mode hiver / hors-gel** (les options correspondantes
-> apparaissent déjà dans la configuration mais ne sont pas encore actives). Tant que le backend ESP32
-> n'est pas livré, les vannes et la pompe sont pilotées via des états ioBroker existants.
+> **heures astronomiques & la géolocalisation**, le **couplage au feeder**, le **mode hiver /
+> hors-gel**, la **boucle fermée d'oxygène**, les **notifications via un adaptateur de messagerie**,
+> les **statistiques de fonctionnement** et un **mode de test à blanc (dry-run)**. **Encore prévu :**
+> le backend matériel **ESP32** direct. Tant que le backend ESP32 n'est pas livré, les vannes et la
+> pompe sont pilotées via des états ioBroker existants.
 
 ---
 
@@ -97,6 +98,10 @@ parties que tu utilises.
 ### Général
 - **Activation principale** – l'interrupteur marche/arrêt de tout l'adaptateur. À l'arrêt, rien n'est
   commandé.
+- **Test à blanc (journal uniquement, ne commute pas le matériel)** – tout le moteur de commande
+  s'exécute et les points de données se mettent à jour, mais les commandes de vannes/pompe sont
+  uniquement écrites dans le journal (`[DRY-RUN] would …`) au lieu des états réels. Idéal pour la mise
+  en service et pour tester une configuration avant de la câbler.
 - **Backend matériel** – `États ioBroker existants` (par défaut) pilote tes vannes/ta pompe via les
   états d'autres adaptateurs. `ESP32 (direct)` est *prévu* (M7) et pas encore actif.
 - **Intervalle d'interrogation (s)** – à quelle fréquence l'état du backend est interrogé (p. ex.
@@ -121,11 +126,24 @@ points.**
 - **Plannings** – ouvrir des points/groupes sélectionnés pendant une plage horaire par jour de
   semaine (`De`/`À`, p. ex. `08:00`–`18:00` ; les plages de nuit comme `22:00`–`06:00` sont prises en
   charge). Un planning actif est **prioritaire sur le round-robin**.
+- **Mode hiver / hors-gel** – pendant la saison configurée (**Début**/**Fin** sous forme de `MM-DD`
+  récurrent, p. ex. `11-01`–`03-15`, à cheval sur le nouvel an) les points sélectionnés sont forcés
+  en marche afin de maintenir un trou hors gel. Coche éventuellement **Seulement quand il fait froid
+  (protection antigel)** et fixe un **seuil de température de l'air** pour que le bassin ne soit aéré
+  que lorsqu'il gèle réellement (cela nécessite la surveillance de la température de l'air). Laisse
+  **Points maintenus ouverts** vide pour aérer tout le bassin. Le mode hiver s'exécute dans le mode de
+  fonctionnement `auto` et, comme tout programme, cède la priorité au verrouillage de sécurité et à
+  une pause du feeder.
 
 ### Capteurs
 Surveillance facultative. Pour chaque capteur, coche **Activé** et choisis l'**état source** :
 - **Oxygène dissous** – avec un seuil bas (déclenche `sensors.oxygenAlarm`), une consigne et une
   hystérésis ; le **% de saturation** en oxygène est calculé à partir de la température de l'eau.
+  - **Boucle fermée d'oxygène** – lorsqu'elle est activée, l'adaptateur **force l'aération en marche**
+    tant que l'oxygène est sous le seuil bas et la maintient jusqu'à ce qu'il remonte à la consigne
+    (ou `low + hysteresis` si aucune consigne n'est définie). Laisse **Points boostés** vide pour
+    booster tout le bassin. Comme le mode hiver, la boucle s'exécute dans le mode `auto` et cède la
+    priorité à la sécurité et aux pauses du feeder.
 - **Température air/eau**.
 - **Pression** – avec min/max (hors plage, déclenche `sensors.pressureAlarm`).
 
@@ -161,7 +179,9 @@ nourriture, afin qu'elle ne soit pas dispersée.
 
 ### Notifications
 Active les notifications et choisis une **instance de messagerie** (n'importe quel adaptateur de type
-`messaging`, p. ex. Telegram). *(L'envoi est préparé pour une étape ultérieure.)*
+`messaging`, p. ex. Telegram ou Pushover). L'adaptateur envoie alors un court message localisé lorsque
+le verrouillage de sécurité se déclenche ou se relâche, lorsque l'alarme d'oxygène s'active ou revient
+à la normale, et lorsque la pression sort de sa plage ou y revient.
 
 ## 6. Objets / points de données
 
@@ -177,6 +197,7 @@ jour par l'adaptateur.
 | `info.connection` | boolean | `indicator.connected` | L'adaptateur fonctionne / configuration valide |
 | `info.backend` | string | `text` | Backend matériel actif (`iobroker` ou `esp32`) |
 | `info.activeMode` | string | `text` | Mode de fonctionnement actuel |
+| `info.dryRun` | boolean | `indicator` | Test à blanc actif (aucun matériel n'est commuté) |
 
 **Commande (commandes accessibles en écriture)**
 
@@ -223,6 +244,7 @@ jour par l'adaptateur.
 | `sensors.oxygen` | number | `value` | Oxygène dissous (mg/l) |
 | `sensors.oxygenSaturation` | number | `value` | Saturation en oxygène (%) |
 | `sensors.oxygenAlarm` | boolean | `indicator.alarm` | Oxygène sous le seuil bas |
+| `sensors.oxygenBoostActive` | boolean | `indicator` | La boucle fermée d'oxygène force l'aération en marche (uniquement lorsque la boucle est activée) |
 | `sensors.airTemperature` | number | `value.temperature` | Température de l'air (°C) |
 | `sensors.waterTemperature` | number | `value.temperature` | Température de l'eau (°C) |
 | `sensors.pressure` | number | `value.pressure` | Pression du système (bar) |
@@ -245,10 +267,19 @@ jour par l'adaptateur.
 | `feeder.pauseUntil` | number | `value.time` | Pause active jusqu'à |
 | `feeder.lastFeedStart` | number | `value.time` | Dernier début de distribution |
 
+**Mode hiver / hors-gel** (créé uniquement lorsque le mode hiver est activé)
+
+| Objet | Type | Rôle | Description |
+|-------|------|------|-------------|
+| `winter.active` | boolean | `indicator` | Le mode hiver force actuellement l'aération en marche |
+| `winter.frostActive` | boolean | `indicator` | La protection antigel est engagée (il fait assez froid) |
+
 **Statistiques**
 
 | Objet | Type | Rôle | Description |
 |-------|------|------|-------------|
+| `aeration.point.<n>.runtimeTodaySec` | number | `value` | Durée de fonctionnement du point `<n>` aujourd'hui (secondes) |
+| `aeration.point.<n>.runtimeTotalH` | number | `value` | Durée de fonctionnement totale du point `<n>` (heures) |
 | `statistics.compressorRuntimeTodayH` | number | `value` | Durée de fonctionnement du compresseur aujourd'hui (heures) |
 | `statistics.switchCyclesToday` | number | `value` | Cycles de commutation des vannes aujourd'hui |
 
@@ -258,11 +289,11 @@ automatiquement.
 ## 7. Feuille de route
 
 Terminé : interface de configuration, commande des vannes (planning/round-robin/groupes), le
-verrouillage de sécurité contre le dead-heading, la surveillance, l'astro & la géolocalisation et le
-couplage au feeder. **Encore à venir :**
+verrouillage de sécurité contre le dead-heading, la surveillance, l'astro & la géolocalisation, le
+couplage au feeder, le mode hiver / hors-gel, la boucle fermée d'oxygène, les notifications, les
+statistiques de fonctionnement et le mode de test à blanc (dry-run). **Encore à venir :**
 
 * le backend matériel **ESP32** direct + le firmware de référence (Waveshare ESP32-S3-POE-ETH-8DI-8RO) ;
-* le **mode hiver / hors-gel** ;
 * un **adaptateur de widgets vis-2** ultérieur pour l'exploitation et la surveillance.
 
 Voir [PROJECT_PLAN.md](../../PROJECT_PLAN.md) pour le plan complet, basé sur des étapes.

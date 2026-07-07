@@ -48,6 +48,8 @@ declare global {
 		interface AdapterConfig {
 			/** Master enable switch for the whole adapter. */
 			masterEnable: boolean;
+			/** Dry-run: log the intended valve/pump actions instead of writing them (commissioning/test). */
+			dryRun: boolean;
 			/** Hardware backend: control existing ioBroker states or talk to an ESP32 directly. */
 			controlBackend: 'iobroker' | 'esp32';
 			/** ESP32 host/IP (used when controlBackend is "esp32"). */
@@ -110,6 +112,10 @@ declare global {
 			o2LowThreshold: number | null;
 			o2TargetThreshold: number | null;
 			o2Hysteresis: number;
+			/** Oxygen closed loop: force aeration on while oxygen is below the low threshold. */
+			o2ControlEnabled: boolean;
+			/** Indices (0-based) of the points boosted by the oxygen loop (empty = all points). */
+			o2AffectedPoints: number[];
 
 			/** Air-temperature monitoring. */
 			airTempEnabled: boolean;
@@ -124,12 +130,18 @@ declare global {
 			pressureMin: number | null;
 			pressureMax: number | null;
 
-			/** Winter / ice-free mode. */
+			/** Winter / ice-free mode: force the selected points on during the cold season. */
 			winterEnabled: boolean;
 			/** Winter start as recurring "MM-DD". */
 			winterStart: string;
 			/** Winter end as recurring "MM-DD". */
 			winterEnd: string;
+			/** Only force aeration on while it is actually cold (needs air-temperature monitoring). */
+			winterFrostProtect: boolean;
+			/** Air temperature at/below which winter forcing is active (°C). */
+			winterAirTempThreshold: number;
+			/** Indices (0-based) of the points kept open in winter (empty = all points). */
+			winterAffectedPoints: number[];
 
 			/** Feeder coupling (ioBroker.automatic-feeder): pause aeration during feeding. */
 			feederEnabled: boolean;

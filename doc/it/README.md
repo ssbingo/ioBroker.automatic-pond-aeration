@@ -24,10 +24,11 @@ determinati punti di aerazione durante l'alimentazione quando è installato
 > ⚠️ **Stato del progetto.** Completamente implementato e configurabile dall'admin: il controllo delle
 > valvole (programma orario, ciclo a rotazione round-robin, gruppi), il **blocco di sicurezza** contro
 > il dead-heading, il **monitoraggio** (ossigeno, temperatura aria/acqua, pressione con allarmi), gli
-> **orari astronomici & la geolocalizzazione** e l'**accoppiamento con il feeder**. **Ancora
-> pianificati:** il backend hardware **ESP32** diretto e la **modalità inverno / anti-ghiaccio** (le
-> relative opzioni compaiono già nella configurazione ma non sono ancora attive). Finché il backend
-> ESP32 non sarà disponibile, le valvole e la pompa vengono pilotate tramite stati ioBroker esistenti.
+> **orari astronomici & la geolocalizzazione**, l'**accoppiamento con il feeder**, la **modalità
+> inverno / anti-ghiaccio**, il **circuito chiuso dell'ossigeno**, le **notifiche tramite un
+> adattatore di messaging**, le **statistiche di funzionamento** e una **modalità di test dry-run**.
+> **Ancora pianificato:** il backend hardware **ESP32** diretto. Finché il backend ESP32 non sarà
+> disponibile, le valvole e la pompa vengono pilotate tramite stati ioBroker esistenti.
 
 ---
 
@@ -95,6 +96,10 @@ usi.
 ### Generale
 - **Abilitazione principale** – l'interruttore on/off dell'intero adattatore. Quando è spento, non
   viene controllato nulla.
+- **Dry-run (solo log, non commutare l'hardware)** – l'intero motore di controllo funziona e i punti
+  dati si aggiornano, ma i comandi delle valvole/della pompa vengono solo scritti nel log
+  (`[DRY-RUN] would …`) invece che negli stati reali. Ideale per la messa in servizio e per testare
+  una configurazione prima di cablarla.
 - **Backend hardware** – `Stati ioBroker esistenti` (predefinito) pilota le tue valvole/la tua pompa
   tramite gli stati di altri adattatori. `ESP32 (diretto)` è *pianificato* (M7) e non ancora attivo.
 - **Intervallo di polling (s)** – ogni quanto viene interrogato lo stato del backend (ad es. `30`).
@@ -118,11 +123,24 @@ gruppo e spunta i punti che ne fanno parte. **Non ci possono mai essere più gru
 - **Programmi orari** – aprire punti/gruppi selezionati durante una fascia oraria per giorno della
   settimana (`Da`/`A`, ad es. `08:00`–`18:00`; sono supportate fasce che attraversano la notte come
   `22:00`–`06:00`). Un programma attivo ha **priorità sul round-robin**.
+- **Modalità inverno / anti-ghiaccio** – durante la stagione configurata (**Inizio**/**Fine** come
+  `MM-DD` ricorrente, ad es. `11-01`–`03-15`, con passaggio oltre il nuovo anno) i punti selezionati
+  vengono forzati in accensione per mantenere aperto un foro libero dal ghiaccio. Facoltativamente
+  spunta **Solo quando fa freddo (protezione antigelo)** e imposta una **soglia di temperatura
+  dell'aria**, così il laghetto viene aerato solo quando sta effettivamente gelando (ciò richiede il
+  monitoraggio della temperatura dell'aria). Lascia vuoto **Punti mantenuti aperti** per aerare tutto
+  il laghetto. La modalità inverno funziona nella modalità operativa `auto` e, come ogni programma,
+  cede comunque il passo al blocco di sicurezza e a una pausa del feeder.
 
 ### Sensori
 Monitoraggio facoltativo. Per ogni sensore spunta **Abilitato** e scegli lo **stato sorgente**:
 - **Ossigeno disciolto** – con una soglia minima (attiva `sensors.oxygenAlarm`), un valore obiettivo
   e un'isteresi; la **% di saturazione** di ossigeno viene calcolata dalla temperatura dell'acqua.
+  - **Circuito chiuso dell'ossigeno** – quando è abilitato, l'adattatore **forza l'aerazione in
+    accensione** finché l'ossigeno è sotto la soglia minima e la mantiene attiva finché non risale al
+    valore obiettivo (o a `low + hysteresis` quando non è impostato alcun obiettivo). Lascia vuoto
+    **Punti potenziati** per potenziare tutto il laghetto. Come la modalità inverno, il circuito
+    funziona nella modalità `auto` e cede il passo al blocco di sicurezza e alle pause del feeder.
 - **Temperatura aria/acqua**.
 - **Pressione** – con min/max (fuori intervallo attiva `sensors.pressureAlarm`).
 
@@ -159,7 +177,9 @@ così il cibo non viene disperso.
 
 ### Notifiche
 Abilita le notifiche e scegli un'**istanza di messaging** (un qualsiasi adattatore di tipo
-`messaging`, ad es. Telegram). *(L'invio è predisposto per una milestone successiva.)*
+`messaging`, ad es. Telegram o Pushover). L'adattatore invia quindi un breve messaggio localizzato
+quando il blocco di sicurezza interviene o si disattiva, quando l'allarme dell'ossigeno scatta o
+rientra, e quando la pressione esce dal suo intervallo o vi rientra.
 
 ## 6. Oggetti / punti dati
 
@@ -174,6 +194,7 @@ comandi scrivibili; tutti gli altri sono valori di stato in sola lettura aggiorn
 | `info.connection` | boolean | `indicator.connected` | Adattatore in funzione / configurazione valida |
 | `info.backend` | string | `text` | Backend hardware attivo (`iobroker` o `esp32`) |
 | `info.activeMode` | string | `text` | Modalità operativa corrente |
+| `info.dryRun` | boolean | `indicator` | Dry-run attivo (nessun hardware viene commutato) |
 
 **Controllo (comandi scrivibili)**
 
@@ -220,6 +241,7 @@ comandi scrivibili; tutti gli altri sono valori di stato in sola lettura aggiorn
 | `sensors.oxygen` | number | `value` | Ossigeno disciolto (mg/l) |
 | `sensors.oxygenSaturation` | number | `value` | Saturazione di ossigeno (%) |
 | `sensors.oxygenAlarm` | boolean | `indicator.alarm` | Ossigeno sotto la soglia minima |
+| `sensors.oxygenBoostActive` | boolean | `indicator` | Il circuito chiuso dell'ossigeno sta forzando l'aerazione in accensione (solo con il circuito abilitato) |
 | `sensors.airTemperature` | number | `value.temperature` | Temperatura dell'aria (°C) |
 | `sensors.waterTemperature` | number | `value.temperature` | Temperatura dell'acqua (°C) |
 | `sensors.pressure` | number | `value.pressure` | Pressione del sistema (bar) |
@@ -242,10 +264,19 @@ comandi scrivibili; tutti gli altri sono valori di stato in sola lettura aggiorn
 | `feeder.pauseUntil` | number | `value.time` | Pausa attiva fino a |
 | `feeder.lastFeedStart` | number | `value.time` | Ultimo inizio dell'alimentazione |
 
+**Modalità inverno / anti-ghiaccio** (creati solo quando la modalità inverno è abilitata)
+
+| Oggetto | Tipo | Ruolo | Descrizione |
+|---------|------|-------|-------------|
+| `winter.active` | boolean | `indicator` | La modalità inverno sta attualmente forzando l'aerazione in accensione |
+| `winter.frostActive` | boolean | `indicator` | La protezione antigelo è attiva (fa abbastanza freddo) |
+
 **Statistiche**
 
 | Oggetto | Tipo | Ruolo | Descrizione |
 |---------|------|-------|-------------|
+| `aeration.point.<n>.runtimeTodaySec` | number | `value` | Tempo di funzionamento del punto `<n>` odierno (secondi) |
+| `aeration.point.<n>.runtimeTotalH` | number | `value` | Tempo di funzionamento totale del punto `<n>` (ore) |
 | `statistics.compressorRuntimeTodayH` | number | `value` | Tempo di funzionamento del compressore odierno (ore) |
 | `statistics.switchCyclesToday` | number | `value` | Cicli di commutazione delle valvole odierni |
 
@@ -255,11 +286,11 @@ ripuliti automaticamente.
 ## 7. Roadmap
 
 Fatto: interfaccia di configurazione, controllo delle valvole (programma/round-robin/gruppi), il
-blocco di sicurezza contro il dead-heading, il monitoraggio, astro & geolocalizzazione e
-l'accoppiamento con il feeder. **Ancora da fare:**
+blocco di sicurezza contro il dead-heading, il monitoraggio, astro & geolocalizzazione,
+l'accoppiamento con il feeder, la modalità inverno / anti-ghiaccio, il circuito chiuso dell'ossigeno,
+le notifiche, le statistiche di funzionamento e la modalità di test dry-run. **Ancora da fare:**
 
 * il backend hardware **ESP32** diretto + firmware di riferimento (Waveshare ESP32-S3-POE-ETH-8DI-8RO);
-* la **modalità inverno / anti-ghiaccio**;
 * un successivo **adattatore di widget vis-2** per il funzionamento e il monitoraggio.
 
 Per il piano completo, basato su milestone, vedi [PROJECT_PLAN.md](../../PROJECT_PLAN.md).

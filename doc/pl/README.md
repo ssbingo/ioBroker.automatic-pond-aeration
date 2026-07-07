@@ -23,10 +23,11 @@ napowietrzania podczas karmienia, gdy zainstalowany jest
 > ⚠️ **Status projektu.** W pełni zaimplementowane i konfigurowalne z panelu admin: sterowanie
 > zaworami (harmonogram, cykliczna rotacja round-robin, grupy), **blokada bezpieczeństwa** przeciw
 > pracy przy zamkniętych zaworach (dead-heading), **monitorowanie** (tlen, temperatura
-> powietrza/wody, ciśnienie z alarmami), **czasy astronomiczne i geolokalizacja** oraz **sprzężenie z
-> feederem**. **Wciąż planowane:** bezpośredni sprzętowy backend **ESP32** oraz **tryb zimowy / bez
-> lodu** (odpowiednie opcje już pojawiają się w konfiguracji, ale nie są jeszcze aktywne). Dopóki
-> backend ESP32 nie zostanie wydany, zawory i pompa są sterowane przez istniejące stany ioBroker.
+> powietrza/wody, ciśnienie z alarmami), **czasy astronomiczne i geolokalizacja**, **sprzężenie z
+> feederem**, **tryb zimowy / bez lodu**, **zamknięta pętla tlenowa**, **powiadomienia przez adapter
+> messaging**, **statystyki czasu pracy** oraz **testowy tryb dry-run**. **Wciąż planowane:**
+> bezpośredni sprzętowy backend **ESP32**. Dopóki backend ESP32 nie zostanie wydany, zawory i pompa
+> są sterowane przez istniejące stany ioBroker.
 
 ---
 
@@ -91,6 +92,10 @@ części, których używasz.
 ### Ogólne
 - **Główne włączenie** – przełącznik wł./wył. całego adaptera. Gdy jest wyłączony, nic nie jest
   sterowane.
+- **Tryb dry-run (tylko log, bez przełączania sprzętu)** – cały mechanizm sterowania działa, a punkty
+  danych są aktualizowane, ale polecenia zaworów/pompy są tylko zapisywane do logu
+  (`[DRY-RUN] would …`) zamiast do rzeczywistych stanów. Idealne do uruchamiania i testowania
+  konfiguracji przed jej podłączeniem.
 - **Backend sprzętowy** – `Istniejące stany ioBroker` (domyślnie) steruje Twoimi zaworami/pompą przez
   stany innych adapterów. `ESP32 (bezpośrednio)` jest *planowany* (M7) i jeszcze nieaktywny.
 - **Interwał odpytywania (s)** – jak często odpytywany jest status backendu (np. `30`).
@@ -113,11 +118,23 @@ nazwę i zaznacz jej punkty składowe. **Nigdy nie może być więcej grup niż 
 - **Harmonogramy** – otwieranie wybranych punktów/grup w oknie czasowym dla dnia tygodnia (`Od`/`Do`,
   np. `08:00`–`18:00`; okna przechodzące przez noc, takie jak `22:00`–`06:00`, są obsługiwane).
   Aktywny harmonogram ma **priorytet nad rotacją round-robin**.
+- **Tryb zimowy / bez lodu** – w skonfigurowanym sezonie (**Początek**/**Koniec** jako powtarzalne
+  `MM-DD`, np. `11-01`–`03-15`, z przejściem przez przełom roku) wybrane punkty są wymuszane na wł.,
+  aby utrzymać otwartą przeręblę wolną od lodu. Opcjonalnie zaznacz **Tylko gdy jest zimno (ochrona
+  przed mrozem)** i ustaw **próg temperatury powietrza**, aby staw był napowietrzany tylko wtedy, gdy
+  faktycznie marznie (wymaga to monitorowania temperatury powietrza). Pozostaw **Punkty utrzymywane
+  otwarte** puste, aby napowietrzać cały staw. Tryb zimowy działa w trybie pracy `auto` i, jak każdy
+  program, nadal ustępuje blokadzie bezpieczeństwa oraz pauzie feedera.
 
 ### Czujniki
 Opcjonalne monitorowanie. Dla każdego czujnika zaznacz **Włączony** i wybierz **stan źródłowy**:
 - **Rozpuszczony tlen** – z dolnym progiem (wyzwala `sensors.oxygenAlarm`), wartością docelową i
   histerezą; **nasycenie tlenem %** jest obliczane z temperatury wody.
+  * **Zamknięta pętla tlenowa** – po włączeniu adapter **wymusza napowietrzanie na wł.**, gdy tlen
+    jest poniżej dolnego progu, i utrzymuje je do powrotu do wartości docelowej (lub
+    `low + hysteresis`, gdy nie ustawiono wartości docelowej). Pozostaw **Punkty wzmacniane** puste,
+    aby wzmocnić cały staw. Podobnie jak tryb zimowy, pętla działa w trybie `auto` i ustępuje
+    blokadzie bezpieczeństwa oraz pauzom feedera.
 - **Temperatura powietrza/wody**.
 - **Ciśnienie** – z min/maks (poza zakresem wyzwala `sensors.pressureAlarm`).
 
@@ -150,8 +167,10 @@ nie była rozdmuchiwana.
   (elektrozawór lub silnikowy zawór kulowy) oraz, dla zaworu silnikowego, jego **czas przejścia**.
 
 ### Powiadomienia
-Włącz powiadomienia i wybierz **instancję messaging** (dowolny adapter typu `messaging`, np.
-Telegram). *(Wysyłka jest przygotowana na późniejszy kamień milowy.)*
+Włącz powiadomienia i wybierz **instancję messaging** (dowolny adapter typu `messaging`, np. Telegram
+lub Pushover). Adapter wysyła wtedy krótki, zlokalizowany komunikat, gdy blokada bezpieczeństwa
+zadziała lub ustąpi, gdy alarm tlenowy się pojawi lub ustąpi oraz gdy ciśnienie wyjdzie poza zakres
+lub do niego wróci.
 
 ## 6. Obiekty / punkty danych
 
@@ -166,6 +185,7 @@ zapisywalne; wszystkie pozostałe to wartości stanu tylko do odczytu aktualizow
 | `info.connection` | boolean | `indicator.connected` | Adapter działa / konfiguracja prawidłowa |
 | `info.backend` | string | `text` | Aktywny backend sprzętowy (`iobroker` lub `esp32`) |
 | `info.activeMode` | string | `text` | Bieżący tryb pracy |
+| `info.dryRun` | boolean | `indicator` | Tryb dry-run aktywny (żaden sprzęt nie jest przełączany) |
 
 **Sterowanie (polecenia zapisywalne)**
 
@@ -216,6 +236,7 @@ zapisywalne; wszystkie pozostałe to wartości stanu tylko do odczytu aktualizow
 | `sensors.waterTemperature` | number | `value.temperature` | Temperatura wody (°C) |
 | `sensors.pressure` | number | `value.pressure` | Ciśnienie w systemie (bar) |
 | `sensors.pressureAlarm` | boolean | `indicator.alarm` | Ciśnienie poza zakresem |
+| `sensors.oxygenBoostActive` | boolean | `indicator` | Zamknięta pętla tlenowa wymusza napowietrzanie na wł. (tylko przy włączonej pętli) |
 
 **Astronomia i lokalizacja**
 
@@ -234,10 +255,19 @@ zapisywalne; wszystkie pozostałe to wartości stanu tylko do odczytu aktualizow
 | `feeder.pauseUntil` | number | `value.time` | Pauza aktywna do |
 | `feeder.lastFeedStart` | number | `value.time` | Ostatni początek karmienia |
 
+**Tryb zimowy / bez lodu** (tworzony tylko przy włączonym trybie zimowym)
+
+| Obiekt | Typ | Rola | Opis |
+|--------|-----|------|------|
+| `winter.active` | boolean | `indicator` | Tryb zimowy obecnie wymusza napowietrzanie na wł. |
+| `winter.frostActive` | boolean | `indicator` | Ochrona przed mrozem jest włączona (wystarczająco zimno) |
+
 **Statystyki**
 
 | Obiekt | Typ | Rola | Opis |
 |--------|-----|------|------|
+| `aeration.point.<n>.runtimeTodaySec` | number | `value` | Dzisiejszy czas pracy punktu `<n>` (sekundy) |
+| `aeration.point.<n>.runtimeTotalH` | number | `value` | Całkowity czas pracy punktu `<n>` (godziny) |
 | `statistics.compressorRuntimeTodayH` | number | `value` | Dzisiejszy czas pracy sprężarki (godziny) |
 | `statistics.switchCyclesToday` | number | `value` | Dzisiejsze cykle przełączeń zaworów |
 
@@ -247,11 +277,11 @@ czyszczone.
 ## 7. Plan rozwoju
 
 Gotowe: interfejs konfiguracji, sterowanie zaworami (harmonogram/round-robin/grupy), blokada
-bezpieczeństwa przeciw pracy przy zamkniętych zaworach, monitorowanie, astro i geolokalizacja oraz
-sprzężenie z feederem. **Wciąż przed nami:**
+bezpieczeństwa przeciw pracy przy zamkniętych zaworach, monitorowanie, astro i geolokalizacja,
+sprzężenie z feederem, tryb zimowy / bez lodu, zamknięta pętla tlenowa, powiadomienia, statystyki
+czasu pracy oraz testowy tryb dry-run. **Wciąż przed nami:**
 
 * bezpośredni sprzętowy backend **ESP32** + referencyjne oprogramowanie układowe (Waveshare ESP32-S3-POE-ETH-8DI-8RO);
-* **tryb zimowy / bez lodu**;
 * kolejny **adapter widżetów vis-2** do obsługi i monitorowania.
 
 Pełny, oparty na kamieniach milowych plan znajdziesz w [PROJECT_PLAN.md](../../PROJECT_PLAN.md).
