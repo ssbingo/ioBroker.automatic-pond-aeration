@@ -9,11 +9,11 @@
  * monitoring, astronomical times and geolocation, plus a coupling to
  * ioBroker.automatic-feeder that pauses selected points during feeding.
  *
- * Milestone M3: the dead-head safety interlock is in place. A watchdog continuously
- * ensures that at least `minOpenValves` valves stay open while the pump runs; otherwise
- * the emergency valve is opened and (if controllable) the pump is stopped. The HAL
- * (M2) drives the hardware through foreign states. The control engine (arbiter, schedule,
- * round-robin, groups) follows in M4.
+ * Milestone M4: the control engine is in place. An arbiter computes the desired valve
+ * states from the mode (auto/manual/off), the schedule, the cyclic round-robin and the
+ * groups; valves are switched make-before-break and the M3 dead-head safety interlock runs
+ * on top of every result. Monitoring (M5), the feeder coupling (M6) and the ESP32 backend
+ * (M7) follow in later milestones.
  *
  * Logging levels used (configurable per instance in the ioBroker admin):
  *   error  - failures that need attention (write failed, unexpected exception)
@@ -27,10 +27,13 @@ const utils = require('@iobroker/adapter-core');
 const { validateConfig } = require('./lib/config');
 const { buildObjectModel, computeObsolete } = require('./lib/objects');
 const { IoBrokerBackend } = require('./lib/hal/iobroker-backend');
-const { evaluateSafety } = require('./lib/safety');
+const { evaluateSafety, planValveTransition } = require('./lib/safety');
+const { resolveDesiredValves } = require('./lib/control/arbiter');
 
 /** Matches a per-point manual command id like "control.point.3.open". */
 const POINT_OPEN_RE = /^control\.point\.(\d+)\.open$/;
+/** Matches a group activation command id like "control.group.1.active". */
+const GROUP_ACTIVE_RE = /^control\.group\.(\d+)\.active$/;
 
 class AutomaticPondAeration extends utils.Adapter {
 	/**
@@ -53,6 +56,17 @@ class AutomaticPondAeration extends utils.Adapter {
 		// Safety watchdog timer and last interlock state (for edge-triggered logging).
 		this.watchdog = null;
 		this.interlockWasActive = false;
+		// Control engine runtime state.
+		this.controlTimer = null;
+		this.runtimeEnabled = true;
+		this.mode = 'auto';
+		this.manualValves = [];
+		this.groupActive = [];
+		this.roundRobinStartMs = 0;
+		// Last written values (to avoid rewriting unchanged states every tick).
+		this.lastActive = [];
+		this.lastActiveMode = '';
+		this.lastOpenCount = -1;
 		// A valid (empty) normalized config until onReady loads the real one.
 		this.cfg = validateConfig({}).config;
 	}
@@ -91,15 +105,29 @@ class AutomaticPondAeration extends utils.Adapter {
 		// Our own command states (foreign hardware states are subscribed by the backend).
 		this.subscribeStates('control.*');
 
+		// Control engine runtime state (mirrors the persisted command states).
+		this.runtimeEnabled = config.masterEnable;
+		this.mode = config.masterEnable ? 'auto' : 'off';
+		this.manualValves = new Array(config.points.length).fill(false);
+		this.groupActive = new Array(config.groups.length).fill(false);
+		this.roundRobinStartMs = Date.now();
+		await this.setStateAsync('control.enabled', { val: this.runtimeEnabled, ack: true });
+		await this.setStateAsync('control.mode', { val: this.mode, ack: true });
+
 		// Safety watchdog: re-evaluate the dead-head interlock periodically (rule 3: cleared in onUnload).
-		await this.applySafety('startup');
 		this.watchdog = this.setInterval(() => {
 			this.applySafety('watchdog').catch(e => this.log.warn(`Safety watchdog failed: ${e.message}`));
 		}, config.watchdogIntervalSec * 1000);
 
+		// Control tick: recompute and apply the desired valve states periodically.
+		this.controlTimer = this.setInterval(() => {
+			this.controlTick('tick').catch(e => this.log.warn(`Control tick failed: ${e.message}`));
+		}, 1000);
+		await this.controlTick('startup');
+
 		await this.setConnected(true);
 		this.log.info(
-			`Automatic Pond Aeration started: ${config.points.length} aeration point(s), ${config.groups.length} group(s). Control engine follows in later milestones.`,
+			`Automatic Pond Aeration started: ${config.points.length} aeration point(s), ${config.groups.length} group(s), mode "${this.mode}".`,
 		);
 	}
 
@@ -185,31 +213,113 @@ class AutomaticPondAeration extends utils.Adapter {
 	 * @returns {Promise<void>}
 	 */
 	async handleCommand(local, state) {
+		if (local === 'control.enabled') {
+			this.runtimeEnabled = Boolean(state.val);
+			await this.setStateAsync(local, { val: this.runtimeEnabled, ack: true });
+			await this.controlTick('enable');
+			return;
+		}
+
+		if (local === 'control.mode') {
+			this.mode = ['auto', 'manual', 'off'].includes(String(state.val)) ? String(state.val) : 'auto';
+			await this.setStateAsync(local, { val: this.mode, ack: true });
+			await this.controlTick('mode');
+			return;
+		}
+
 		if (local === 'control.allOff') {
-			this.log.info('Command: close all valves.');
-			for (let i = 0; i < this.cfg.points.length; i++) {
-				await this.backend?.setValve(i, false);
-			}
+			this.log.info('Command: close all valves (switching to mode "off").');
+			this.mode = 'off';
+			await this.setStateAsync('control.mode', { val: 'off', ack: true });
 			await this.setStateAsync(local, { val: false, ack: true });
+			await this.controlTick('allOff');
 			return;
 		}
 
 		const pointMatch = POINT_OPEN_RE.exec(local);
 		if (pointMatch) {
 			const index = Number(pointMatch[1]);
-			const open = Boolean(state.val);
-			const issued = await this.backend?.setValve(index, open);
-			if (!issued) {
-				this.log.warn(`Aeration point ${index} cannot be switched: no valve state mapped.`);
+			this.manualValves[index] = Boolean(state.val);
+			await this.setStateAsync(local, { val: Boolean(state.val), ack: true });
+			if (this.mode !== 'manual') {
+				this.log.info(
+					`Manual valve command stored; it takes effect in mode "manual" (current mode: "${this.mode}").`,
+				);
 			}
-			await this.setStateAsync(local, { val: open, ack: true });
+			await this.controlTick('manual');
 			return;
 		}
 
-		// Other commands (enabled, mode, group activation) are acknowledged; the control
-		// engine will act on them in M4.
+		const groupMatch = GROUP_ACTIVE_RE.exec(local);
+		if (groupMatch) {
+			const index = Number(groupMatch[1]);
+			this.groupActive[index] = Boolean(state.val);
+			await this.setStateAsync(local, { val: Boolean(state.val), ack: true });
+			await this.controlTick('group');
+			return;
+		}
+
 		await this.setStateAsync(local, { val: state.val, ack: true });
-		this.log.debug(`Command ${local} = ${state.val} acknowledged (control engine follows in M4).`);
+		this.log.debug(`Command ${local} = ${state.val} acknowledged.`);
+	}
+
+	/**
+	 * Control tick: compute the desired valve states from the arbiter and apply them using
+	 * make-before-break (open new valves before closing the ones no longer needed), then run
+	 * the safety backstop. Called on startup, periodically and after every command.
+	 *
+	 * @param {string} source - what triggered the tick (for logging)
+	 * @returns {Promise<void>}
+	 */
+	async controlTick(source) {
+		if (!this.backend) {
+			return;
+		}
+		const now = new Date();
+		const desired = resolveDesiredValves({
+			points: this.cfg.points,
+			groups: this.cfg.groups,
+			schedules: this.cfg.schedules,
+			masterEnable: this.runtimeEnabled,
+			mode: this.mode,
+			manual: this.manualValves,
+			groupActive: this.groupActive,
+			roundRobinEnabled: this.cfg.roundRobinEnabled,
+			roundRobinOrder: [],
+			roundRobinDwellSec: this.cfg.roundRobinDwellSec,
+			nowDay: now.getDay(),
+			nowMinutes: now.getHours() * 60 + now.getMinutes(),
+			elapsedMs: Date.now() - this.roundRobinStartMs,
+		});
+
+		const cur = this.backend.getCurrentState();
+		const { open, close } = planValveTransition(cur.valves, desired);
+		// make-before-break: open the new valves before closing the ones no longer needed.
+		for (const i of open) {
+			await this.backend.setValve(i, true);
+		}
+		for (const i of close) {
+			await this.backend.setValve(i, false);
+		}
+		if (open.length || close.length) {
+			this.log.debug(`Control tick (${source}): opened [${open}], closed [${close}].`);
+		}
+
+		// Reflect the program's intent into aeration.point.<n>.active (only on change).
+		for (let i = 0; i < desired.length; i++) {
+			if (this.lastActive[i] !== Boolean(desired[i])) {
+				this.lastActive[i] = Boolean(desired[i]);
+				await this.setStateAsync(`aeration.point.${i}.active`, { val: Boolean(desired[i]), ack: true });
+			}
+		}
+		const activeMode = this.runtimeEnabled ? this.mode : 'disabled';
+		if (this.lastActiveMode !== activeMode) {
+			this.lastActiveMode = activeMode;
+			await this.setStateAsync('info.activeMode', { val: activeMode, ack: true });
+		}
+
+		// The safety interlock always runs after control.
+		await this.applySafety(source);
 	}
 
 	/**
@@ -241,9 +351,10 @@ class AutomaticPondAeration extends utils.Adapter {
 		});
 
 		// Edge-triggered logging so a persistent trip is not logged on every tick.
-		if (decision.interlockActive && !this.interlockWasActive) {
+		const interlockChanged = decision.interlockActive !== this.interlockWasActive;
+		if (interlockChanged && decision.interlockActive) {
 			this.log.error(`Safety interlock TRIPPED (${source}): ${decision.tripReason}`);
-		} else if (!decision.interlockActive && this.interlockWasActive) {
+		} else if (interlockChanged && !decision.interlockActive) {
 			this.log.info('Safety interlock cleared.');
 		}
 		this.interlockWasActive = decision.interlockActive;
@@ -257,8 +368,14 @@ class AutomaticPondAeration extends utils.Adapter {
 			await this.backend.setPump(false);
 		}
 
-		await this.setStateAsync('safety.interlockActive', { val: decision.interlockActive, ack: true });
-		await this.setStateAsync('safety.openValveCount', { val: decision.openValveCount, ack: true });
+		// Update the status states only on change (avoid rewriting every tick).
+		if (interlockChanged) {
+			await this.setStateAsync('safety.interlockActive', { val: decision.interlockActive, ack: true });
+		}
+		if (decision.openValveCount !== this.lastOpenCount) {
+			this.lastOpenCount = decision.openValveCount;
+			await this.setStateAsync('safety.openValveCount', { val: decision.openValveCount, ack: true });
+		}
 		if (decision.tripReason) {
 			await this.setStateAsync('safety.lastTripReason', { val: decision.tripReason, ack: true });
 		}
@@ -297,6 +414,10 @@ class AutomaticPondAeration extends utils.Adapter {
 	 */
 	async onUnload(callback) {
 		try {
+			if (this.controlTimer) {
+				this.clearInterval(this.controlTimer);
+				this.controlTimer = null;
+			}
 			if (this.watchdog) {
 				this.clearInterval(this.watchdog);
 				this.watchdog = null;

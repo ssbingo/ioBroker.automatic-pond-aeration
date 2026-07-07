@@ -200,6 +200,9 @@ follow-up vis-2 widget adapter).
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.0.5 (2026-07-07)
+* (ssbingo) Control engine: an arbiter drives the valves from the operating mode (`auto`/`manual`/`off`), time schedules, a cyclic round-robin and group activation (`control.mode`, `control.point.<n>.open`, `control.group.<g>.active`). Schedules take priority over the round-robin; valves switch make-before-break; the safety interlock runs on top of every result
+
 ### 0.0.4 (2026-07-07)
 * (ssbingo) Dead-head safety interlock with a watchdog: while the pump runs, at least the configured minimum number of valves must stay open, otherwise the emergency valve is opened and (if controllable) the pump is stopped. Adds pure, unit-tested make-before-break and anti short-cycle helpers
 

@@ -1,20 +1,20 @@
 {
 	"common": {
 		"name": "automatic-pond-aeration",
-		"version": "0.0.4",
+		"version": "0.0.5",
 		"news": {
-			"0.0.4": {
-				"en": "Dead-head safety interlock: a watchdog ensures at least the configured minimum number of valves stays open while the pump runs; otherwise the emergency valve is opened and (if possible) the pump is stopped.",
-				"de": "Deadhead-Sicherheitsverriegelung: ein Watchdog stellt sicher, dass bei laufender Pumpe mindestens die konfigurierte Mindestzahl an Ventilen offen bleibt; andernfalls wird das Notventil geöffnet und (falls möglich) die Pumpe abgeschaltet.",
-				"ru": "Защитная блокировка от работы «в тупик»: сторожевой таймер следит, чтобы при работающем насосе оставалось открытым не меньше заданного числа клапанов; иначе открывается аварийный клапан и (по возможности) насос выключается.",
-				"pt": "Bloqueio de segurança contra dead-head: um watchdog garante que, com a bomba a funcionar, permaneça aberto pelo menos o número mínimo de válvulas configurado; caso contrário, abre a válvula de emergência e (se possível) desliga a bomba.",
-				"nl": "Dead-head-veiligheidsvergrendeling: een watchdog zorgt dat bij een draaiende pomp minimaal het ingestelde aantal kleppen open blijft; anders wordt de noodklep geopend en (indien mogelijk) de pomp uitgeschakeld.",
-				"fr": "Verrouillage de sécurité anti-dead-head : un chien de garde garantit qu'au moins le nombre minimal de vannes configuré reste ouvert lorsque la pompe tourne ; sinon la vanne de secours est ouverte et (si possible) la pompe est arrêtée.",
-				"it": "Interblocco di sicurezza anti dead-head: un watchdog garantisce che, con la pompa in funzione, resti aperto almeno il numero minimo di valvole configurato; altrimenti apre la valvola di emergenza e (se possibile) spegne la pompa.",
-				"es": "Enclavamiento de seguridad anti dead-head: un watchdog garantiza que, con la bomba en marcha, permanezca abierto al menos el número mínimo de válvulas configurado; de lo contrario abre la válvula de emergencia y (si es posible) detiene la bomba.",
-				"pl": "Blokada bezpieczeństwa przed pracą „na głucho”: watchdog dba, aby przy pracującej pompie pozostawała otwarta co najmniej skonfigurowana minimalna liczba zaworów; w przeciwnym razie otwiera zawór awaryjny i (jeśli to możliwe) wyłącza pompę.",
-				"uk": "Запобіжне блокування від роботи «в глухий кут»: сторожовий таймер стежить, щоб при працюючому насосі залишалася відкритою щонайменше задана кількість клапанів; інакше відкривається аварійний клапан і (за можливості) насос вимикається.",
-				"zh-cn": "防憋压安全联锁：看门狗确保水泵运行时至少保持所配置的最少阀门数量开启；否则打开应急阀并（在可能时）停止水泵。"
+			"0.0.5": {
+				"en": "Control engine: an arbiter drives the valves from the mode (auto/manual/off), time schedules, a cyclic round-robin and group activation; valves switch make-before-break so at least one stays open during transitions.",
+				"de": "Steuer-Engine: ein Arbiter steuert die Ventile aus dem Modus (auto/manuell/aus), Zeitplänen, einem zyklischen Rundlauf und Gruppenaktivierung; Umschaltung nach make-before-break, sodass beim Wechsel immer mindestens ein Ventil offen bleibt.",
+				"ru": "Управляющий движок: арбитр управляет клапанами на основе режима (авто/ручной/выкл), расписаний, циклического обхода и активации групп; переключение по принципу make-before-break, чтобы при смене всегда оставался открыт хотя бы один клапан.",
+				"pt": "Motor de controlo: um árbitro comanda as válvulas a partir do modo (auto/manual/desligado), horários, uma rotação cíclica e ativação de grupos; comutação make-before-break para manter pelo menos uma válvula aberta durante as transições.",
+				"nl": "Besturingsengine: een arbiter stuurt de kleppen aan op basis van de modus (auto/handmatig/uit), schema's, een cyclische rondgang en groepsactivering; make-before-break-omschakeling zodat er tijdens overgangen altijd minstens één klep open blijft.",
+				"fr": "Moteur de contrôle : un arbitre pilote les vannes selon le mode (auto/manuel/arrêt), les horaires, une rotation cyclique et l'activation de groupes ; commutation make-before-break pour garder au moins une vanne ouverte pendant les transitions.",
+				"it": "Motore di controllo: un arbitro comanda le valvole in base alla modalità (auto/manuale/off), alle pianificazioni, a una rotazione ciclica e all'attivazione dei gruppi; commutazione make-before-break per mantenere almeno una valvola aperta durante le transizioni.",
+				"es": "Motor de control: un árbitro gobierna las válvulas según el modo (auto/manual/apagado), los horarios, una rotación cíclica y la activación de grupos; conmutación make-before-break para mantener al menos una válvula abierta durante las transiciones.",
+				"pl": "Silnik sterowania: arbiter steruje zaworami na podstawie trybu (auto/ręczny/wył.), harmonogramów, cyklicznej rotacji i aktywacji grup; przełączanie make-before-break, aby podczas zmian pozostawał otwarty co najmniej jeden zawór.",
+				"uk": "Керуючий рушій: арбітр керує клапанами на основі режиму (авто/ручний/вимк), розкладів, циклічного обходу та активації груп; перемикання за принципом make-before-break, щоб під час змін завжди залишався відкритим щонайменше один клапан.",
+				"zh-cn": "控制引擎：仲裁器根据模式（自动/手动/关闭）、计划、循环轮换和分组激活来驱动阀门；采用先通后断切换，确保切换过程中至少有一个阀门保持开启。"
 			}
 		},
 		"titleLang": {
