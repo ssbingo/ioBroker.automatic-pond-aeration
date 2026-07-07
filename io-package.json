@@ -76,6 +76,12 @@
 			"config": "materialize"
 		},
 		"eraseOnUpload": true,
+		"encryptedNative": [
+			"esp32AuthToken"
+		],
+		"protectedNative": [
+			"esp32AuthToken"
+		],
 		"dependencies": [
 			{
 				"js-controller": ">=6.0.11"
