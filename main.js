@@ -1096,6 +1096,44 @@ class AutomaticPondAeration extends utils.Adapter {
 	}
 
 	/**
+	 * Reflect the ESP32 firmware's physical override buttons into the adapter. The firmware toggles
+	 * a button on each digital-input rising edge and reports the latched state in `GET /api/status`
+	 * (`buttons[i]` ↔ point i, matching buildConfigPayload's DI→point mapping). We mirror that state
+	 * into `buttonStates`, the `aeration.point.<n>.buttonOn` data point and the arbiter — so a button
+	 * pressed at the device gets the same "force on" priority (only the master switch or a safety trip
+	 * overrides it) and is visible in ioBroker. This is the read-only counterpart to
+	 * {@link handleButtonChange} (which drives boolean-state buttons).
+	 *
+	 * @param {boolean[]} buttons - the firmware's per-DI latched override states
+	 * @returns {Promise<void>}
+	 */
+	async reflectEsp32Buttons(buttons) {
+		if (!Array.isArray(buttons)) {
+			return;
+		}
+		let changed = false;
+		for (let i = 0; i < this.cfg.points.length; i++) {
+			const p = this.cfg.points[i];
+			if (!p.buttonEnabled || p.backendType !== 'esp32') {
+				continue;
+			}
+			const on = Boolean(buttons[i]);
+			if (!this.buttonStates[i]) {
+				this.buttonStates[i] = { on: false, raw: false };
+			}
+			if (this.buttonStates[i].on !== on) {
+				this.buttonStates[i] = { on, raw: on };
+				this.logInfo(on ? 'buttonOverrideOn' : 'buttonOverrideOff', { point: p.name });
+				await this.setStateChangedAsync(`aeration.point.${i}.buttonOn`, { val: on, ack: true });
+				changed = true;
+			}
+		}
+		if (changed) {
+			await this.controlTick('esp32-button');
+		}
+	}
+
+	/**
 	 * Discover the switches of the selected automatic-feeder instance and return them as a
 	 * selection list ({ value, label }) for the admin UI (answered via the sendTo callback).
 	 *
