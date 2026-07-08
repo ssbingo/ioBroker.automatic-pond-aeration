@@ -282,7 +282,15 @@ function Settings(props) {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{points.map((p, i) => (
+						{points.map((p, i) => {
+							// A manual override button is only allowed on an aeration-valve channel. On the
+							// ESP32 pump / emergency-valve relay channels it is force-disabled in lib/config.js;
+							// mirror that here by greying the control out (defaults must match the backend: 7/6).
+							const pumpCh = native.esp32PumpRelay ?? 7;
+							const emergencyCh = native.esp32EmergencyRelay ?? 6;
+							const buttonReserved =
+								p.backendType === 'esp32' && (p.espChannel === pumpCh || p.espChannel === emergencyCh);
+							return (
 							<TableRow key={p.id || i}>
 								<TableCell>
 									<TextField variant="standard" value={p.name || ''} onChange={e => updatePoint(i, 'name', e.target.value)} />
@@ -310,8 +318,18 @@ function Settings(props) {
 									)}
 								</TableCell>
 								<TableCell sx={{ minWidth: 210 }}>
-									<Switch checked={!!p.buttonEnabled} onChange={e => updatePoint(i, 'buttonEnabled', e.target.checked)} />
-									{p.buttonEnabled ? (
+									<Switch
+										checked={!buttonReserved && !!p.buttonEnabled}
+										disabled={buttonReserved}
+										onChange={e => updatePoint(i, 'buttonEnabled', e.target.checked)}
+									/>
+									{buttonReserved ? (
+										<Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+											{I18n.t(
+												'Buttons are only available on aeration-valve channels — this channel drives the pump or the emergency valve.',
+											)}
+										</Typography>
+									) : p.buttonEnabled ? (
 										<ObjectSelect label={I18n.t('Button state')} value={p.buttonObjectId} onChange={v => updatePoint(i, 'buttonObjectId', v)} {...objProps} />
 									) : null}
 								</TableCell>
@@ -321,14 +339,15 @@ function Settings(props) {
 									</IconButton>
 								</TableCell>
 							</TableRow>
-						))}
+							);
+						})}
 					</TableBody>
 				</Table>
 				<Button startIcon={<AddIcon />} onClick={addPoint} disabled={points.length >= MAX_POINTS} sx={{ mt: 1 }}>
 					{I18n.t('Add point')}
 				</Button>
 				<Typography variant="caption" color="textSecondary" sx={{ display: 'block', mt: 1 }}>
-					{I18n.t('Override button: an optional physical push-button (e.g. an ESP32 digital input or any boolean state). It works as a toggle — one press forces the point on with priority over the automatic control; only the master switch or a safety trip overrides it. Press again to release.')}
+					{I18n.t('Override button: an optional physical push-button (e.g. an ESP32 digital input or any boolean state). It works as a toggle — one press forces the point on with priority over the automatic control; only the master switch or a safety trip overrides it. Press again to release. Buttons are only available for aeration valves — a point that sits on the ESP32 pump or emergency-valve relay channel cannot have one.')}
 				</Typography>
 			</Section>
 		</Box>
