@@ -412,10 +412,39 @@ share one bus with the board's relay expander and clock/RTC; the temperature pro
   water.
 ]
 
+== Using the ESP32 backend
+
+With the board flashed and wired, the adapter can drive it directly — no relay adapter in between.
+
+#steps(
+  [*Flash the firmware* from the separate repository
+    #link("https://github.com/ssbingo/pond-aeration-esp32-firmware")[pond-aeration-esp32-firmware]
+    (PlatformIO: `pio run -t upload`). Set the pressure sensor's range factor at build time
+    (`-DXGZP_K=64` for 0–100 kPa).],
+  [*Power & wire* per the failsafe diagram (valves 24 V DC on NC, emergency valve NO, the 230 V AC
+    pump via a relay + snubber or a contactor) — full detail in `dev/hardware/wiring.md`.],
+  [In the adapter's *General* tab set *Backend* = `ESP32 (direct)`, enter the board's *host / IP*, and
+    map the *emergency-valve relay* and *pump relay* (0–7). Each aeration point uses the relay channel
+    set per point.],
+  [Save. The adapter checks the firmware, pushes the safety configuration, and starts polling.],
+)
+
+#safety("The failsafe lives on the device")[
+  The adapter sends a *heartbeat*; if it stops (network or ioBroker down) the firmware opens the
+  emergency valve and switches the pump off on its own. It also enforces the dead-head interlock
+  locally. This is why the ESP32 is driven directly rather than switched "dumb" from afar.
+]
+
+#tipbox("Mobile web page (port 80)")[
+  Open the board's IP in a phone browser — the firmware serves a small, self-contained page to watch
+  the relays / sensors and toggle channels on site, without ioBroker.
+]
+
 = FAQ
 
-/ Do I need an ESP32 to use the adapter?: No. Today it controls valves and the pump through existing
-  ioBroker states. The ESP32 build is a planned convenience, not a requirement.
+/ Do I need an ESP32 to use the adapter?: No. By default it controls valves and the pump through
+  existing ioBroker states, so any relay board works. The direct ESP32 build is an optional
+  convenience (no extra PC, an on-device failsafe and a mobile web page).
 
 / Nothing switches — did I break something?: Check that the *master switch* is on, the *mode* is
   `auto` (or `manual` with a point opened), and each enabled point has a *valve state* mapped. In

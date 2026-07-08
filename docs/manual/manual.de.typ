@@ -449,11 +449,42 @@ Temperaturfühler nutzt einen separaten 1-Wire-Pin.
   eine lange Strecke ins Wasser gemacht ist.
 ]
 
+== Das ESP32-Backend verwenden
+
+Ist das Board geflasht und verdrahtet, kann der Adapter es direkt ansteuern — ohne Relais-Adapter
+dazwischen.
+
+#steps(
+  [*Firmware flashen* aus dem separaten Repository
+    #link("https://github.com/ssbingo/pond-aeration-esp32-firmware")[pond-aeration-esp32-firmware]
+    (PlatformIO: `pio run -t upload`). Den Bereichsfaktor des Drucksensors beim Bauen setzen
+    (`-DXGZP_K=64` für 0–100 kPa).],
+  [*Versorgen & verdrahten* gemäß Failsafe-Schaltplan (Ventile 24 V DC an NC, Notventil NO, die
+    230-V-AC-Pumpe über ein Relais + Snubber oder ein Schütz) — Details in `dev/hardware/wiring.md`.],
+  [Im *Allgemein*-Reiter des Adapters *Backend* = `ESP32 (direct)` setzen, *Host / IP* des Boards
+    eintragen und das *Notventil-Relais* sowie das *Pumpen-Relais* (0–7) zuordnen. Jede
+    Belüftungsstelle nutzt den je Punkt gesetzten Relaiskanal.],
+  [Speichern. Der Adapter prüft die Firmware, sendet die Sicherheitskonfiguration und beginnt zu
+    pollen.],
+)
+
+#safety("Die Ausfallsicherung liegt auf dem Gerät")[
+  Der Adapter sendet einen *Heartbeat*; bleibt er aus (Netz oder ioBroker weg), öffnet die Firmware
+  von selbst das Notventil und schaltet die Pumpe ab. Sie erzwingt auch den Dead-Head-Interlock lokal.
+  Deshalb wird der ESP32 direkt angesteuert statt „dumm" aus der Ferne geschaltet.
+]
+
+#tipbox("Mobile Webseite (Port 80)")[
+  Öffnen Sie die IP des Boards im Handy-Browser — die Firmware liefert eine kleine, eigenständige
+  Seite, um Relais/Sensoren zu sehen und Kanäle vor Ort zu schalten, ganz ohne ioBroker.
+]
+
 = FAQ
 
-/ Brauche ich einen ESP32, um den Adapter zu nutzen?: Nein. Heute steuert er Ventile und die Pumpe
-  über vorhandene ioBroker-States. Der ESP32-Aufbau ist eine geplante Erleichterung, keine
-  Voraussetzung.
+/ Brauche ich einen ESP32, um den Adapter zu nutzen?: Nein. Standardmäßig steuert er Ventile und die
+  Pumpe über vorhandene ioBroker-States, sodass jede Relaisplatine funktioniert. Der direkte
+  ESP32-Aufbau ist eine optionale Erleichterung (kein zusätzlicher PC, eine geräteinterne
+  Ausfallsicherung und eine mobile Webseite).
 
 / Nichts schaltet — habe ich etwas kaputtgemacht?: Prüfen Sie, dass der *Hauptschalter* an ist, der
   *Modus* `auto` ist (oder `manual` mit einem geöffneten Punkt) und jeder aktivierte Punkt einen
