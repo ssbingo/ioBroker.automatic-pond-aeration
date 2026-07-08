@@ -114,9 +114,14 @@ een naam en vink de bijbehorende punten aan. **Er kunnen nooit meer groepen dan 
 ### Besturing
 - **Cyclische roundrobin** – om de beurt door de punten schakelen, elk geopend gedurende de
   **verblijftijd** (seconden).
+  - **Reeks (punten en groepen)** – definieer optioneel een **geordende cyclus van stappen**, waarbij
+    elke stap één enkel **punt of een hele groep** aanstuurt en een eigen verblijftijd kan hebben. Zo
+    kun je bijv. *groep 1 → groep 3 → punt 1 → …* draaien en punten en groepen vrij **mengen**. Herschik
+    de stappen met de pijltjes omhoog/omlaag in de admin. Laat de reeks leeg om terug te vallen op de
+    gewone roundrobin over alle punten.
 - **Tijdschema's** – geselecteerde punten/groepen openen tijdens een tijdvenster per weekdag
   (`Van`/`Tot`, bijv. `08:00`–`18:00`; vensters die over de nacht heen lopen, zoals `22:00`–`06:00`,
-  worden ondersteund). Een actief tijdschema heeft **voorrang op de roundrobin**.
+  worden ondersteund). Een actief tijdschema heeft **voorrang op de roundrobin / reeks**.
 - **Winter-/ijsvrijmodus** – tijdens het ingestelde seizoen (**Start**/**Einde** als terugkerende
   `MM-DD`, bijv. `11-01`–`03-15`, doorlopend over de jaarwisseling) worden de geselecteerde punten
   geforceerd ingeschakeld om een ijsvrij wak open te houden. Vink optioneel **Alleen wanneer het koud

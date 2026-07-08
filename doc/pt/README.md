@@ -118,9 +118,14 @@ marque seus pontos membros. **Nunca pode haver mais grupos do que pontos.**
 ### Controle
 - **Rodízio cíclico (round-robin)** – percorrer os pontos por vez, cada um aberto pelo **tempo de
   permanência** (segundos).
+  - **Sequência (pontos e grupos)** – defina opcionalmente um **ciclo ordenado de passos**, onde cada
+    passo aponta para um único **ponto ou um grupo inteiro** e pode ter seu próprio tempo de
+    permanência. Isso permite executar por ex. *grupo 1 → grupo 3 → ponto 1 → …* e **misturar**
+    livremente pontos e grupos. Reordene os passos com as setas para cima/baixo no admin. Deixe a
+    sequência vazia para voltar ao round-robin simples sobre todos os pontos.
 - **Horários** – abrir pontos/grupos selecionados durante uma janela de tempo por dia da semana
   (`De`/`Até`, por ex. `08:00`–`18:00`; janelas que atravessam a noite, como `22:00`–`06:00`, são
-  suportadas). Um horário ativo tem **prioridade sobre o round-robin**.
+  suportadas). Um horário ativo tem **prioridade sobre o round-robin / a sequência**.
 - **Modo inverno / livre de gelo** – durante a estação configurada (**Início**/**Fim** como `MM-DD`
   recorrentes, por ex. `11-01`–`03-15`, atravessando a virada do ano) os pontos selecionados são
   forçados a abrir para manter um buraco livre de gelo. Opcionalmente marque **Apenas quando está frio

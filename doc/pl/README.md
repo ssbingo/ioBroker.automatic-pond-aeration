@@ -115,9 +115,14 @@ nazwę i zaznacz jej punkty składowe. **Nigdy nie może być więcej grup niż 
 ### Sterowanie
 - **Cykliczna rotacja (round-robin)** – kolejne przełączanie punktów, każdy otwarty przez **czas
   przetrzymania** (sekundy).
+  * **Sekwencja (punkty i grupy)** – opcjonalnie zdefiniuj **uporządkowany cykl kroków**, gdzie każdy
+    krok odnosi się do pojedynczego **punktu lub całej grupy** i może mieć własny czas przetrzymania.
+    Pozwala to uruchomić np. *grupa 1 → grupa 3 → punkt 1 → …* i swobodnie **mieszać** punkty i grupy.
+    Zmieniaj kolejność kroków strzałkami w górę/w dół w adminie. Pozostaw sekwencję pustą, aby wrócić
+    do zwykłej rotacji round-robin po wszystkich punktach.
 - **Harmonogramy** – otwieranie wybranych punktów/grup w oknie czasowym dla dnia tygodnia (`Od`/`Do`,
   np. `08:00`–`18:00`; okna przechodzące przez noc, takie jak `22:00`–`06:00`, są obsługiwane).
-  Aktywny harmonogram ma **priorytet nad rotacją round-robin**.
+  Aktywny harmonogram ma **priorytet nad rotacją round-robin / sekwencją**.
 - **Tryb zimowy / bez lodu** – w skonfigurowanym sezonie (**Początek**/**Koniec** jako powtarzalne
   `MM-DD`, np. `11-01`–`03-15`, z przejściem przez przełom roku) wybrane punkty są wymuszane na wł.,
   aby utrzymać otwartą przeręblę wolną od lodu. Opcjonalnie zaznacz **Tylko gdy jest zimno (ochrona

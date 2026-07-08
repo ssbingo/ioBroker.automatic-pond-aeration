@@ -401,6 +401,7 @@ class AutomaticPondAeration extends utils.Adapter {
 			roundRobinEnabled: this.cfg.roundRobinEnabled,
 			roundRobinOrder: [],
 			roundRobinDwellSec: this.cfg.roundRobinDwellSec,
+			sequenceSteps: this.cfg.sequenceSteps,
 			nowDay: now.getDay(),
 			nowMinutes: now.getHours() * 60 + now.getMinutes(),
 			elapsedMs: Date.now() - this.roundRobinStartMs,

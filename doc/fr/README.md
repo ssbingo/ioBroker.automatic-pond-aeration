@@ -123,9 +123,14 @@ points.**
 ### Commande
 - **Cycle en rotation (round-robin)** – parcourir les points à tour de rôle, chacun ouvert pendant la
   **durée de maintien** (secondes).
+  - **Séquence (points et groupes)** – définir éventuellement un **cycle ordonné d'étapes**, où chaque
+    étape cible un seul **point ou un groupe entier** et peut porter sa propre durée de maintien. Cela
+    permet d'exécuter p. ex. *groupe 1 → groupe 3 → point 1 → …* et de **mélanger** librement points et
+    groupes. Réordonne les étapes avec les flèches haut/bas dans l'admin. Laisse la séquence vide pour
+    revenir au round-robin simple sur tous les points.
 - **Plannings** – ouvrir des points/groupes sélectionnés pendant une plage horaire par jour de
   semaine (`De`/`À`, p. ex. `08:00`–`18:00` ; les plages de nuit comme `22:00`–`06:00` sont prises en
-  charge). Un planning actif est **prioritaire sur le round-robin**.
+  charge). Un planning actif est **prioritaire sur le round-robin / la séquence**.
 - **Mode hiver / hors-gel** – pendant la saison configurée (**Début**/**Fin** sous forme de `MM-DD`
   récurrent, p. ex. `11-01`–`03-15`, à cheval sur le nouvel an) les points sélectionnés sont forcés
   en marche afin de maintenir un trou hors gel. Coche éventuellement **Seulement quand il fait froid

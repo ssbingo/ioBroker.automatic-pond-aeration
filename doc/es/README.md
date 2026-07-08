@@ -122,9 +122,14 @@ y marca sus puntos miembros. **Nunca puede haber más grupos que puntos.**
 ### Control
 - **Ciclo rotativo (round-robin)** – recorrer los puntos por turnos, cada uno abierto durante el
   **tiempo de permanencia** (segundos).
+  - **Secuencia (puntos y grupos)** – define opcionalmente un **ciclo ordenado de pasos**, donde cada
+    paso apunta a un único **punto o a un grupo entero** y puede llevar su propio tiempo de
+    permanencia. Esto permite ejecutar p. ej. *grupo 1 → grupo 3 → punto 1 → …* y **mezclar**
+    libremente puntos y grupos. Reordena los pasos con las flechas arriba/abajo en el admin. Deja la
+    secuencia vacía para volver al round-robin simple sobre todos los puntos.
 - **Horarios** – abrir puntos/grupos seleccionados durante una franja horaria por día de la semana
   (`Desde`/`Hasta`, p. ej. `08:00`–`18:00`; se admiten franjas nocturnas como `22:00`–`06:00`). Un
-  horario activo tiene **prioridad sobre el round-robin**.
+  horario activo tiene **prioridad sobre el round-robin / la secuencia**.
 - **Modo invierno / libre de hielo** – durante la temporada configurada (**Inicio**/**Fin** como
   `MM-DD` recurrente, p. ej. `11-01`–`03-15`, cruzando el cambio de año) los puntos seleccionados se
   fuerzan a abrir para mantener un agujero libre de hielo. Opcionalmente marca **Solo cuando hace

@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "automatic-pond-aeration",
-		"version": "0.0.13",
+		"version": "0.0.14",
 		"news": {
+			"0.0.14": {
+				"en": "Cyclic sequence over points and groups (mixed), with an optional per-step dwell time.",
+				"de": "Zyklische Sequenz über Stellen und Gruppen (gemischt), mit optionaler Verweildauer je Schritt.",
+				"ru": "Циклическая последовательность по точкам и группам (смешанно), с опциональным временем задержки на шаг.",
+				"pt": "Sequência cíclica por pontos e grupos (misturados), com tempo de permanência opcional por passo.",
+				"nl": "Cyclische reeks over punten en groepen (gemengd), met optionele verblijftijd per stap.",
+				"fr": "Séquence cyclique sur points et groupes (mixtes), avec un temps de maintien optionnel par étape.",
+				"it": "Sequenza ciclica su punti e gruppi (mista), con tempo di permanenza opzionale per passo.",
+				"es": "Secuencia cíclica sobre puntos y grupos (mixta), con tiempo de permanencia opcional por paso.",
+				"pl": "Cykliczna sekwencja punktów i grup (mieszana), z opcjonalnym czasem postoju na krok.",
+				"uk": "Циклічна послідовність за точками та групами (змішано), з опціональним часом затримки на крок.",
+				"zh-cn": "对增氧点和分组的循环序列（可混合），每步可选停留时间。"
+			},
 			"0.0.13": {
 				"en": "Winter/ice-free mode, oxygen closed loop, notifications, runtime statistics and a dry-run test mode.",
 				"de": "Winter-/Eisfrei-Modus, Sauerstoff-Regelkreis, Benachrichtigungen, Laufzeitstatistik und ein Testlauf-Modus.",
@@ -131,6 +144,7 @@
 
 		"roundRobinEnabled": false,
 		"roundRobinDwellSec": 60,
+		"sequenceSteps": [],
 
 		"o2Enabled": false,
 		"o2ObjectId": "",

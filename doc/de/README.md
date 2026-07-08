@@ -121,9 +121,15 @@ Gruppen als Punkte geben.**
 ### Steuerung
 - **Zyklischer Round-Robin** – reihum durch die Punkte schalten, jeder für die **Verweildauer**
   (Sekunden) geöffnet.
+  - **Sequenz (Punkte und Gruppen)** – optional einen **geordneten Ablauf von Schritten** definieren,
+    wobei jeder Schritt einen einzelnen **Punkt oder eine ganze Gruppe** anspricht und eine eigene
+    Verweildauer haben kann. So lässt sich z. B. *Gruppe 1 → Gruppe 3 → Punkt 1 → …* fahren und Punkte
+    und Gruppen frei **mischen**. Die Schritte lassen sich im Admin mit den Pfeilen nach oben/unten
+    umsortieren. Lasse die Sequenz leer, um auf den einfachen Round-Robin über alle Punkte
+    zurückzufallen.
 - **Zeitpläne** – ausgewählte Punkte/Gruppen während eines Wochentags-Zeitfensters öffnen
   (`Von`/`Bis`, z. B. `08:00`–`18:00`; über Nacht reichende Fenster wie `22:00`–`06:00` werden
-  unterstützt). Ein aktiver Zeitplan hat **Vorrang vor dem Round-Robin**.
+  unterstützt). Ein aktiver Zeitplan hat **Vorrang vor dem Round-Robin / der Sequenz**.
 - **Winter-/Eisfrei-Modus** – während der konfigurierten Saison (**Start**/**Ende** als
   wiederkehrendes `MM-DD`, z. B. `11-01`–`03-15`, über den Jahreswechsel hinweg) werden die
   ausgewählten Punkte zwangsweise eingeschaltet, um ein eisfreies Loch offen zu halten. Optional **Nur

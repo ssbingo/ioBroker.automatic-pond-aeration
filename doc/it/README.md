@@ -120,9 +120,14 @@ gruppo e spunta i punti che ne fanno parte. **Non ci possono mai essere più gru
 ### Controllo
 - **Ciclo a rotazione (round-robin)** – scorrere i punti a turno, ciascuno aperto per il **tempo di
   permanenza** (secondi).
+  - **Sequenza (punti e gruppi)** – definisci facoltativamente un **ciclo ordinato di passi**, dove
+    ogni passo mira a un singolo **punto o a un intero gruppo** e può avere il proprio tempo di
+    permanenza. Ciò consente di eseguire ad es. *gruppo 1 → gruppo 3 → punto 1 → …* e di **mescolare**
+    liberamente punti e gruppi. Riordina i passi con le frecce su/giù nell'admin. Lascia vuota la
+    sequenza per tornare al semplice round-robin su tutti i punti.
 - **Programmi orari** – aprire punti/gruppi selezionati durante una fascia oraria per giorno della
   settimana (`Da`/`A`, ad es. `08:00`–`18:00`; sono supportate fasce che attraversano la notte come
-  `22:00`–`06:00`). Un programma attivo ha **priorità sul round-robin**.
+  `22:00`–`06:00`). Un programma attivo ha **priorità sul round-robin / sulla sequenza**.
 - **Modalità inverno / anti-ghiaccio** – durante la stagione configurata (**Inizio**/**Fine** come
   `MM-DD` ricorrente, ad es. `11-01`–`03-15`, con passaggio oltre il nuovo anno) i punti selezionati
   vengono forzati in accensione per mantenere aperto un foro libero dal ghiaccio. Facoltativamente

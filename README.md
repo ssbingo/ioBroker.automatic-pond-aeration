@@ -123,9 +123,14 @@ name and tick its member points. **There can never be more groups than points.**
 
 ### Control
 - **Cyclic round-robin** – rotate through the points, each open for the **dwell time** (seconds).
+  - **Sequence (points and groups)** – optionally define an **ordered cycle of steps**, where each
+    step targets a single **point or a whole group** and may carry its own dwell time. This lets
+    you run e.g. *group 1 → group 3 → point 1 → …* and freely **mix** points and groups. Reorder the
+    steps with the up/down arrows. Leave the sequence empty to fall back to the plain round-robin
+    over all points.
 - **Schedules** – open selected points/groups during a weekday time window (`From`/`To`, e.g.
   `08:00`–`18:00`; overnight windows like `22:00`–`06:00` are supported). An active schedule has
-  **priority over the round-robin**.
+  **priority over the round-robin / sequence**.
 - **Winter / ice-free mode** – during the configured season (**Start**/**End** as recurring `MM-DD`,
   e.g. `11-01`–`03-15`, wrapping across the new year) the selected points are forced on to keep an
   ice-free hole open. Optionally tick **Only when it is cold (frost protection)** and set an **air
@@ -294,6 +299,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.0.14 (2026-07-08)
+* (ssbingo) Cyclic sequence over points AND groups (M11): the round-robin can now follow an ordered list of steps where each step targets a single point or a whole group, with an optional per-step dwell time and free mixing (e.g. group 1 → group 3 → point 1). Reorder in the admin; an empty sequence keeps the plain round-robin over all points. New `sequenceSteps` config, pure/unit-tested `lib/control/sequence.js`, admin builder and 5 new admin strings in 11 languages
+
 ### 0.0.13 (2026-07-07)
 * (ssbingo) Winter/ice-free mode, oxygen closed loop, notifications, statistics and a dry-run test mode (M10). Winter mode forces the selected points on during a recurring season (`MM-DD` window, optional air-temperature frost gating). The oxygen closed loop boosts aeration while dissolved oxygen is low until it recovers to the target. Notifications go to any `messaging` adapter (Telegram/Pushover) on interlock, oxygen and pressure edges. Runtime statistics (per-point runtime, compressor hours, switch cycles) are accumulated with a daily reset. Dry-run runs the whole control engine but only logs the intended valve/pump actions. New states `winter.*`, `sensors.oxygenBoostActive`, `info.dryRun`; localized messages and admin strings in 11 languages
 
@@ -320,9 +328,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.0.5 (2026-07-07)
 * (ssbingo) Control engine: an arbiter drives the valves from the operating mode (`auto`/`manual`/`off`), time schedules, a cyclic round-robin and group activation (`control.mode`, `control.point.<n>.open`, `control.group.<g>.active`). Schedules take priority over the round-robin; valves switch make-before-break; the safety interlock runs on top of every result
-
-### 0.0.4 (2026-07-07)
-* (ssbingo) Dead-head safety interlock with a watchdog: while the pump runs, at least the configured minimum number of valves must stay open, otherwise the emergency valve is opened and (if controllable) the pump is stopped. Adds pure, unit-tested make-before-break and anti short-cycle helpers
 
 ---
 

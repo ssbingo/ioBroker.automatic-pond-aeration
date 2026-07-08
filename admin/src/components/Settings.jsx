@@ -25,6 +25,8 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { I18n } from '@iobroker/adapter-react-v5';
 import ObjectSelect from './ObjectSelect';
 import LocationPicker from './LocationPicker';
@@ -141,6 +143,20 @@ function Settings(props) {
 	const updateSchedule = (i, key, value) => set('schedules', schedules.map((s, idx) => (idx === i ? { ...s, [key]: value } : s)));
 	const addSchedule = () => set('schedules', [...schedules, { id: `sch-${schedules.length}`, enabled: true, targets: [], days: [], from: '08:00', to: '18:00' }]);
 	const removeSchedule = i => set('schedules', schedules.filter((_s, idx) => idx !== i));
+
+	const sequenceSteps = Array.isArray(native.sequenceSteps) ? native.sequenceSteps : [];
+	const updateStep = (i, key, value) => set('sequenceSteps', sequenceSteps.map((s, idx) => (idx === i ? { ...s, [key]: value } : s)));
+	const addStep = () => set('sequenceSteps', [...sequenceSteps, { targetId: (points[0] && points[0].id) || '', dwellSec: null }]);
+	const removeStep = i => set('sequenceSteps', sequenceSteps.filter((_s, idx) => idx !== i));
+	const moveStep = (i, delta) => {
+		const j = i + delta;
+		if (j < 0 || j >= sequenceSteps.length) {
+			return;
+		}
+		const next = sequenceSteps.slice();
+		[next[i], next[j]] = [next[j], next[i]];
+		set('sequenceSteps', next);
+	};
 
 	const toggleInArray = (arr, value) => (arr.includes(value) ? arr.filter(x => x !== value) : [...arr, value]);
 
@@ -297,6 +313,33 @@ function Settings(props) {
 					<Sw label={I18n.t('Enabled')} checked={native.roundRobinEnabled} onChange={v => set('roundRobinEnabled', v)} />
 					<Num label={I18n.t('Dwell per point (s)')} value={native.roundRobinDwellSec} onChange={v => set('roundRobinDwellSec', v)} min={1} />
 				</Box>
+				{native.roundRobinEnabled ? (
+					<Box sx={{ mt: 2 }}>
+						<Typography variant="subtitle2" sx={{ fontWeight: 600 }}>{I18n.t('Sequence (points and groups)')}</Typography>
+						<Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+							{I18n.t('Optional ordered cycle over points and/or groups (mixed). Leave empty to rotate through all points.')}
+						</Typography>
+						{sequenceSteps.map((s, i) => (
+							<Box key={i} sx={{ display: 'flex', gap: 1, alignItems: 'flex-end', mb: 1, flexWrap: 'wrap' }}>
+								<Typography variant="caption" sx={{ width: 24, textAlign: 'right' }}>{i + 1}.</Typography>
+								<Sel
+									label={I18n.t('Target')}
+									value={targetOptions.some(t => t.id === s.targetId) ? s.targetId : ''}
+									onChange={v => updateStep(i, 'targetId', v)}
+									sx={{ minWidth: 180 }}
+									options={targetOptions.map(t => ({ value: t.id, label: t.label }))}
+								/>
+								<Num label={I18n.t('Dwell (s, optional)')} value={s.dwellSec} onChange={v => updateStep(i, 'dwellSec', v)} nullable min={1} />
+								<IconButton size="small" onClick={() => moveStep(i, -1)} disabled={i === 0}><ArrowUpwardIcon fontSize="small" /></IconButton>
+								<IconButton size="small" onClick={() => moveStep(i, 1)} disabled={i === sequenceSteps.length - 1}><ArrowDownwardIcon fontSize="small" /></IconButton>
+								<IconButton size="small" onClick={() => removeStep(i)}><DeleteIcon fontSize="small" /></IconButton>
+							</Box>
+						))}
+						<Button startIcon={<AddIcon />} onClick={addStep} disabled={targetOptions.length === 0} sx={{ mt: 1 }}>
+							{I18n.t('Add step')}
+						</Button>
+					</Box>
+				) : null}
 			</Section>
 			<Section title={I18n.t('Schedules')}>
 				{schedules.map((s, i) => (

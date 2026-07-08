@@ -31,6 +31,14 @@ declare global {
 			members: number[];
 		}
 
+		/** One step of the cyclic sequence: a point or group id, optionally with its own dwell. */
+		interface AerationSequenceStep {
+			/** Id of the targeted point or group. */
+			targetId: string;
+			/** Optional per-step dwell in seconds (falls back to roundRobinDwellSec). */
+			dwellSec?: number;
+		}
+
 		/** A time-based on/off program targeting one or more points/groups. */
 		interface AerationScheduleConfig {
 			id: string;
@@ -101,10 +109,12 @@ declare global {
 			/** Overlap in seconds for make-before-break valve switching. */
 			overlapSec: number;
 
-			/** Cyclic round-robin base program enabled. */
+			/** Cyclic program enabled (round-robin over all points, or the sequence below). */
 			roundRobinEnabled: boolean;
-			/** Dwell time per point in the round-robin (seconds). */
+			/** Default dwell time per step in the cyclic program (seconds). */
 			roundRobinDwellSec: number;
+			/** Ordered cyclic sequence of points and/or groups (empty = plain round-robin over all points). */
+			sequenceSteps: AerationSequenceStep[];
 
 			/** Dissolved-oxygen monitoring. */
 			o2Enabled: boolean;
