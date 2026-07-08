@@ -38,6 +38,11 @@
 > и **тестовый режим dry-run**. **Ещё запланировано:** прямой аппаратный бэкенд **ESP32**. Пока бэкенд
 > ESP32 не выпущен, клапаны и насос управляются через существующие состояния ioBroker.
 
+> 📘 **Полное пошаговое руководство (PDF, для начинающих — со схемами подключения, FAQ и
+> устранением неполадок):** English → [../../docs/manual/pond-aeration-manual.en.pdf](../../docs/manual/pond-aeration-manual.en.pdf) ·
+> Deutsch → [../../docs/manual/pond-aeration-manual.de.pdf](../../docs/manual/pond-aeration-manual.de.pdf)
+> (исходники и сборка в [../../docs/manual/](../../docs/manual/)).
+
 ---
 
 ## Содержание

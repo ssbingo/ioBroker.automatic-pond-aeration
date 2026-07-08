@@ -39,6 +39,11 @@ napowietrzania podczas karmienia, gdy zainstalowany jest
 > bezpośredni sprzętowy backend **ESP32**. Dopóki backend ESP32 nie zostanie wydany, zawory i pompa
 > są sterowane przez istniejące stany ioBroker.
 
+> 📘 **Kompletny przewodnik krok po kroku (PDF, dla początkujących — ze schematami połączeń, FAQ i
+> rozwiązywaniem problemów):** English → [../../docs/manual/pond-aeration-manual.en.pdf](../../docs/manual/pond-aeration-manual.en.pdf) ·
+> Deutsch → [../../docs/manual/pond-aeration-manual.de.pdf](../../docs/manual/pond-aeration-manual.de.pdf)
+> (źródło i kompilacja w [../../docs/manual/](../../docs/manual/)).
+
 ---
 
 ## Spis treści

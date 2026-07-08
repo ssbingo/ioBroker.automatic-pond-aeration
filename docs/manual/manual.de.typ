@@ -64,6 +64,30 @@ ein Ventil pro _Belüftungspunkt_ (bis zu 8). Er kann:
   [*Etwas funktioniert nicht?* Springen Sie zur Fehlerbehebung (Kapitel 11).],
 )
 
+== Schnellstart (die Kurzfassung)
+
+#notebox("Wenn Sie ioBroker bereits betreiben und ein schaltbares Ventil haben")[
+  Dies ist der schnellste Weg. Jeder Schritt wird später ausführlich erklärt — das Kapitel steht in
+  Klammern.
+]
+
+#steps(
+  [Installieren Sie den Adapter und fügen Sie eine Instanz hinzu (Kapitel 5).],
+  [Schalten Sie den *Trockenlauf* ein, damit noch nichts geschaltet wird (Reiter Allgemein).],
+  [Fügen Sie Ihre *Belüftungspunkte* hinzu und ordnen Sie jedem seinen Ventil-State zu (Kapitel 6).],
+  [Legen Sie einen einfachen *Zeitplan* fest oder aktivieren Sie das *Round-Robin*, damit etwas
+    passiert (Reiter Steuerung).],
+  [Beobachten Sie das Log und die States `aeration.point.*.active` — bestätigen Sie, dass die
+    richtigen Punkte ein- und ausschalten.],
+  [Konfigurieren Sie die *Sicherheit* (Pumpe + Notventil), schalten Sie dann den *Trockenlauf aus*
+    und beaufsichtigen Sie die ersten echten Läufe genau.],
+)
+
+#safety("Überspringen Sie die beaufsichtigte Phase nicht")[
+  Weil die Tiere von der Belüftung abhängen, betreiben Sie sie eine Weile *beaufsichtigt*, bevor Sie
+  ihr unbeaufsichtigt vertrauen — siehe die Warnung auf dem Deckblatt.
+]
+
 = Wie eine Teichbelüftung funktioniert (die Grundlagen)
 
 Auch wenn das alles neu für Sie ist — die Idee ist einfach.
@@ -72,7 +96,7 @@ Auch wenn das alles neu für Sie ist — die Idee ist einfach.
 
 #spec(
   ([Luftpumpe / Kompressor], [Erzeugt den Luftstrom. Oft eine lineare Membranpumpe. Läuft bei
-    niedrigem Druck (typischerweise wenige kPa bis ~30 kPa).]),
+    niedrigem Druck (typischerweise wenige kPa bis ≈30 kPa).]),
   ([Verteiler + Schläuche], [Verteilen die Luft auf mehrere Punkte im Teich.]),
   ([Ventile (Magnetventile)], [Eines pro Belüftungspunkt. Offen = Luft strömt zu diesem Diffusor;
     geschlossen = nicht. Diese schaltet der Adapter.]),
@@ -286,7 +310,7 @@ Der Adapter erstellt diese States aus Ihrer Konfiguration. `<n>` = Punktindex (0
 Gruppenindex. Mit *(w)* markierte Einträge sind beschreibbare Befehle; der Rest sind schreibgeschützte
 Statuswerte.
 
-#table(columns: (auto, 1fr), fill: (_, y) => if y == 0 { ink } else if calc.odd(y) { sky } else { white },
+#dtable(
   [Objekt], [Bedeutung],
   [`info.connection`], [Adapter läuft / Konfiguration gültig],
   [`info.activeMode`], [Aktueller Betriebsmodus],
@@ -319,17 +343,52 @@ Der Referenz-Controller ist das *Waveshare ESP32-S3-POE-ETH-8DI-8RO* #src(3): 8 
 Ventile, das Notventil und die Pumpe), 8 digitale Eingänge und Ethernet mit *Power-over-Ethernet* —
 ein Kabel für Strom und Daten.
 
+#notebox("Sie brauchen dieses Board heute nicht")[
+  Mit dem aktuellen ioBroker-Backend funktioniert *jede* Relaisplatine oder smarte Steckdose, die
+  jedes Ventil als State bereitstellt. Die folgenden Diagramme gelten gleichermaßen: „Relaisplatine“
+  steht für die Hardware, die Ihre Ventile schaltet — welche auch immer das ist.
+]
+
+== Ausfallsichere Verdrahtung (sehr wichtig)
+
+Verdrahten Sie die Aktoren so, dass *ein Stromausfall den Teich sicher zurücklässt*. Ein Relais, das
+die Spannung verliert, *fällt ab* (wird stromlos), wählen Sie daher die Verdrahtung jedes Geräts
+entsprechend:
+
+#figure(
+  image("assets/relay-wiring.svg", width: 100%),
+  caption: [Ausfallsichere Verdrahtung: Belüftungsventile als *stromlos geschlossen (NC)*, das
+  Notventil als *stromlos offen (NO)*, die Pumpe im stromlosen Zustand ausgeschaltet. Bei einem
+  Stromausfall fällt alles von selbst in den sicheren Zustand.],
+)
+
+#spec(
+  ([Belüftungsventile], [*Stromlos geschlossen (NC)* verdrahten: kein Strom → geschlossen. Der Adapter
+    bestromt ein Relais, um einen Punkt zu *öffnen*.]),
+  ([Notventil], [*Stromlos offen (NO)* verdrahten: kein Strom → offen, damit die Pumpe immer
+    irgendwohin blasen kann. Dies ist die eigentliche Notabsicherung.]),
+  ([Pumpe], [Falls steuerbar, so verdrahten, dass stromlos = aus. Wenn Sie die Pumpe nur *beobachten*,
+    öffnet die Verriegelung dennoch das Notventil.]),
+)
+
+#safety("Motorisierte Kugelventile öffnen nicht von selbst")[
+  Ein motorisiertes Kugelventil (z. B. CWX-15N) *behält seine Position* bei Stromausfall — es ist
+  nicht fail-open. Wenn Sie eines als Notventil verwenden, verlässt sich der Dead-Head-Schutz dann
+  darauf, dass auch die Pumpe die Spannung verliert. Für eine echte Notabsicherung bevorzugen Sie ein
+  *stromlos offenes Magnetventil* als Notventil.
+]
+
 == Referenzsensoren (alle optional)
 
 #spec(
-  ([Wassertemperatur], [*DS18B20* wasserdichte Sonde (1-Wire). ~3 € von einem seriösen Händler
+  ([Wassertemperatur], [*DS18B20* wasserdichte Sonde (1-Wire). ≈€3 von einem seriösen Händler
     #src(16). Kaufen Sie bei einem autorisierten Distributor — die meisten billigen Klone sind
     Fälschungen #src(12).]),
   ([Luftleitungsdruck], [*CFSensor XGZP6897D…KPDG* (I²C), Relativdruck-Typ, standardmäßig 0–100 kPa
     #src(7). Nur über AliExpress/Alibaba erhältlich; die Firmware erkennt die beiden Bus-Varianten
     automatisch (0x6D / 0x58).]),
-  ([Gelöster Sauerstoff], [*Optional und teuer.* Budget: *DFRobot SEN0237-A* (~176 €) #src(6).
-    Premium: *Atlas EZO-DO*-Stack (~450 €) #src(4), der eine galvanisch getrennte Trägerplatine
+  ([Gelöster Sauerstoff], [*Optional und teuer.* Budget: *DFRobot SEN0237-A* (≈ €176) #src(6).
+    Premium: *Atlas EZO-DO*-Stack (≈ €450) #src(4), der eine galvanisch getrennte Trägerplatine
     benötigt #src(5).]),
 )
 
@@ -340,6 +399,37 @@ in `dev/hardware/sensors.md` im Repository.
   Beide Sauerstoffoptionen verwenden eine galvanische Sonde mit einer Membran/einem Elektrolyten, die
   regelmäßig gewartet werden muss und einen Wasserfluss über sie hinweg benötigt. Behandeln Sie
   Sauerstoff als optionale, fortgeschrittene Ergänzung.
+]
+
+== Die Sensoren an den ESP32 anschließen
+
+Alle drei Referenzsensoren arbeiten mit *3,3 V*, daher ist *keine Pegelanpassung* nötig. Die beiden
+I²C-Sensoren teilen sich einen Bus mit dem Relais-Expander und der Uhr/RTC des Boards; der
+Temperaturfühler nutzt einen separaten 1-Wire-Pin.
+
+#figure(
+  image("assets/esp32-sensors.svg", width: 100%),
+  caption: [Sensor-Verdrahtung: Der Sauerstoffsensor (`0x61`) und der Drucksensor (`0x6D`/`0x58`)
+  teilen sich den I²C-Bus (`SDA`=GPIO42, `SCL`=GPIO41) mit einem *einzigen* 4,7-kΩ-Pull-up-Paar; der
+  DS18B20 sitzt an einem 1-Wire-GPIO mit eigenem 4,7-kΩ-Pull-up. Die Sauerstoffsonde und der
+  Temperaturfühler kommen ins Wasser; der Drucksensor erhält einen kurzen Luftschlauch.],
+)
+
+#steps(
+  [Versorgen Sie jeden Sensor über *3,3 V* und *GND* des Boards.],
+  [Verbinden Sie `SDA`/`SCL` der beiden I²C-Sensoren mit `GPIO42`/`GPIO41`. Bringen Sie *nur ein*
+    4,7-kΩ-Pull-up-Paar für den gesamten Bus an — falls ein Sensor-Breakout bereits Pull-ups hat,
+    entfernen Sie sie.],
+  [Verdrahten Sie die Datenleitung des DS18B20 mit einem freien GPIO (z. B. `GPIO2`) und einem
+    4,7-kΩ-Pull-up nach 3,3 V.],
+  [Setzen Sie für Sauerstoff das EZO-DO auf eine *galvanisch getrennte Trägerplatine* #src(5) und
+    lassen Sie es im Gehäuse — nur das Sondenkabel geht ins Wasser.],
+)
+
+#tipbox("Halten Sie I²C kurz")[
+  I²C reicht nur ≈1–3 m. Montieren Sie die Sauerstoff- und Druckschaltungen *im Controller-Gehäuse*
+  und führen Sie *Sonde/Schlauch* nach außen. Der DS18B20 (1-Wire) ist der einzige Sensor, der für
+  eine lange Strecke ins Wasser gemacht ist.
 ]
 
 = FAQ
@@ -387,6 +477,41 @@ in `dev/hardware/sensors.md` im Repository.
 Wenn Sie weiterhin nicht weiterkommen, eröffnen Sie ein Issue im Projekt-Repository #src(2) mit Ihrer
 Adapterversion, Ihrer Konfiguration und den relevanten Log-Zeilen (setzen Sie den Log-Level der
 Instanz auf `debug`).
+
+= Glossar
+
+/ Belüftungspunkt: Ein Ort im Teich, der mit Luft versorgt wird, geschaltet durch ein Ventil. Bis zu
+  8.
+/ Diffusor / Ausströmer: Das Teil unter Wasser, das den Luftstrom in feine Bläschen verwandelt.
+/ Magnetventil: Ein elektrisch geschaltetes Ventil. „Stromlos geschlossen (NC)“ ist ohne Strom zu;
+  „stromlos offen (NO)“ ist ohne Strom offen.
+/ Dead-Heading: Eine Pumpe, die gegen vollständig geschlossene Ventile läuft — gefährlich. Die
+  Sicherheitsverriegelung verhindert es.
+/ Verriegelung (Interlock): Eine Sicherheitsregel, die alles übersteuert: Während die Pumpe läuft,
+  bleibt mindestens ein Ventil offen, oder das Notventil öffnet und die Pumpe stoppt.
+/ Make-before-break: Das nächste Ventil öffnen, bevor das vorige schließt, sodass es nie einen Moment
+  gibt, in dem alles geschlossen ist.
+/ Zeitplan: Ein Zeitfenster an einem Wochentag (`From`–`To`), in dem ausgewählte Punkte/Gruppen
+  laufen.
+/ Round-Robin: Reihum durch die Punkte rotieren, jeder für eine feste *Verweilzeit* offen.
+/ Sequenz: Ein Round-Robin, das Sie Schritt für Schritt definieren, wobei jeder Schritt ein Punkt
+  *oder* eine Gruppe ist, mit eigener optionaler Verweilzeit — Punkte und Gruppen dürfen gemischt
+  werden.
+/ Gruppe: Mehrere gemeinsam gesteuerte Belüftungspunkte. Es gibt nie mehr Gruppen als Punkte.
+/ Verweilzeit: Wie lange ein Punkt/Schritt offen bleibt, bevor der Zyklus weitergeht.
+/ Trockenlauf: Ein Testmodus — die Logik läuft, aber es wird keine Hardware geschaltet; beabsichtigte
+  Aktionen werden nur protokolliert.
+/ Hysterese: Ein Spielraum, der verhindert, dass ein Alarm/Regelkreis rund um einen Schwellwert
+  ständig ein- und ausflackert.
+/ Gelöster Sauerstoff (DO): Sauerstoff im Wasser, in mg/L, den die Tiere atmen. „Sättigung %“ gibt
+  an, wie voll das Wasser im Verhältnis zum Maximum bei dieser Temperatur ist.
+/ State / Datenpunkt: Ein benannter Wert in ioBroker, den der Adapter liest oder schreibt (z. B. ein
+  Ventilschalter).
+/ ioBroker: Die Open-Source-Smart-Home-Plattform, in der dieser Adapter läuft #src(1).
+/ ESP32: Ein kleiner vernetzter Mikrocontroller, der die Relais ansteuern und die Sensoren direkt
+  auslesen kann (geplanter Aufbau).
+/ I²C / 1-Wire: Zwei einfache Verdrahtungs-„Busse“ für Sensoren — I²C für die Sauerstoff- und
+  Drucksensoren, 1-Wire für den DS18B20-Temperaturfühler.
 
 = Referenzen
 

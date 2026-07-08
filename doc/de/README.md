@@ -40,6 +40,11 @@ der Fütterung pausieren, wenn
 > **ESP32**-Hardware-Backend. Bis das ESP32-Backend verfügbar ist, werden Ventile und Pumpe über
 > vorhandene ioBroker-States angesteuert.
 
+> 📘 **Vollständige Schritt-für-Schritt-Anleitung (PDF, für Einsteiger – mit Schaltplänen, FAQ &
+> Fehlerbehebung):** English → [../../docs/manual/pond-aeration-manual.en.pdf](../../docs/manual/pond-aeration-manual.en.pdf) ·
+> Deutsch → [../../docs/manual/pond-aeration-manual.de.pdf](../../docs/manual/pond-aeration-manual.de.pdf)
+> (Quelle & Build unter [../../docs/manual/](../../docs/manual/)).
+
 ---
 
 ## Inhaltsverzeichnis

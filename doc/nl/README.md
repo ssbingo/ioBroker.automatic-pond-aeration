@@ -39,6 +39,11 @@ geïnstalleerd.
 > **dry-run-testmodus**. **Nog gepland:** de directe **ESP32**-hardware-backend. Totdat de
 > ESP32-backend er is, worden kleppen en pomp aangestuurd via bestaande ioBroker-states.
 
+> 📘 **Volledige stapsgewijze handleiding (PDF, voor beginners — met bedradingsschema's, FAQ en
+> probleemoplossing):** English → [../../docs/manual/pond-aeration-manual.en.pdf](../../docs/manual/pond-aeration-manual.en.pdf) ·
+> Deutsch → [../../docs/manual/pond-aeration-manual.de.pdf](../../docs/manual/pond-aeration-manual.de.pdf)
+> (bron en build onder [../../docs/manual/](../../docs/manual/)).
+
 ---
 
 ## Inhoudsopgave

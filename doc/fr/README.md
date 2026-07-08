@@ -41,6 +41,11 @@ pause certains points d'aération pendant la distribution de nourriture lorsque
 > le backend matériel **ESP32** direct. Tant que le backend ESP32 n'est pas livré, les vannes et la
 > pompe sont pilotées via des états ioBroker existants.
 
+> 📘 **Manuel complet pas à pas (PDF, pour débutants — avec schémas de câblage, FAQ et
+> dépannage) :** English → [../../docs/manual/pond-aeration-manual.en.pdf](../../docs/manual/pond-aeration-manual.en.pdf) ·
+> Deutsch → [../../docs/manual/pond-aeration-manual.de.pdf](../../docs/manual/pond-aeration-manual.de.pdf)
+> (source et build dans [../../docs/manual/](../../docs/manual/)).
+
 ---
 
 ## Table des matières

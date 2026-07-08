@@ -41,6 +41,11 @@ determinati punti di aerazione durante l'alimentazione quando è installato
 > **Ancora pianificato:** il backend hardware **ESP32** diretto. Finché il backend ESP32 non sarà
 > disponibile, le valvole e la pompa vengono pilotate tramite stati ioBroker esistenti.
 
+> 📘 **Manuale completo passo passo (PDF, per principianti — con schemi di cablaggio, FAQ e
+> risoluzione dei problemi):** English → [../../docs/manual/pond-aeration-manual.en.pdf](../../docs/manual/pond-aeration-manual.en.pdf) ·
+> Deutsch → [../../docs/manual/pond-aeration-manual.de.pdf](../../docs/manual/pond-aeration-manual.de.pdf)
+> (sorgente e build in [../../docs/manual/](../../docs/manual/)).
+
 ---
 
 ## Indice

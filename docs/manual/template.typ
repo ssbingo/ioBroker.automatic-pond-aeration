@@ -67,6 +67,14 @@
   }
 }
 
+// --- a 2-column data table with a coloured header row -----------------------
+#let dtable(h1, h2, ..cells) = table(
+  columns: (auto, 1fr), inset: 6pt, stroke: none,
+  fill: (_, y) => if y == 0 { ink } else if calc.odd(y) { sky } else { white },
+  text(fill: white, weight: "bold")[#h1], text(fill: white, weight: "bold")[#h2],
+  ..cells.pos(),
+)
+
 // --- key/value spec table ---------------------------------------------------
 #let spec(..rows) = table(
   columns: (auto, 1fr), stroke: none, inset: 6pt,
@@ -145,9 +153,8 @@
     #it.body
   ]
 
-  // tables: clean, zebra, coloured header row
+  // tables: clean spacing (header colour is handled per-table, see the dtable helper)
   set table(stroke: none, inset: 6pt)
-  show table.cell.where(y: 0): set text(fill: white, weight: "bold")
 
   // =============================== COVER ====================================
   set page(header: none, footer: none)

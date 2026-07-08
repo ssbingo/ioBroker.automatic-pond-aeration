@@ -26,6 +26,11 @@
 > 通过 **messaging 适配器**发送的通知、运行时长统计，以及**试运行（dry-run）测试模式**。**仍在计划中：** 直接的
 > **ESP32** 硬件后端。在 ESP32 后端发布之前，阀门和气泵通过现有的 ioBroker 状态进行驱动。
 
+> 📘 **完整的分步手册（PDF，面向初学者 —— 含接线图、常见问题与故障排查）：**
+> English → [../../docs/manual/pond-aeration-manual.en.pdf](../../docs/manual/pond-aeration-manual.en.pdf) ·
+> Deutsch → [../../docs/manual/pond-aeration-manual.de.pdf](../../docs/manual/pond-aeration-manual.de.pdf)
+> （源文件与构建位于 [../../docs/manual/](../../docs/manual/)）。
+
 ---
 
 ## 目录

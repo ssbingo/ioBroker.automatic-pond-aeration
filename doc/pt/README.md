@@ -40,6 +40,11 @@ aeração selecionados durante a alimentação quando
 > de hardware **ESP32** direto. Até que o backend ESP32 seja lançado, as válvulas e a bomba são
 > controladas por meio de estados existentes do ioBroker.
 
+> 📘 **Manual completo passo a passo (PDF, para iniciantes — com diagramas de ligação, perguntas
+> frequentes e resolução de problemas):** English → [../../docs/manual/pond-aeration-manual.en.pdf](../../docs/manual/pond-aeration-manual.en.pdf) ·
+> Deutsch → [../../docs/manual/pond-aeration-manual.de.pdf](../../docs/manual/pond-aeration-manual.de.pdf)
+> (fonte e compilação em [../../docs/manual/](../../docs/manual/)).
+
 ---
 
 ## Índice

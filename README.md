@@ -52,6 +52,11 @@ compute **astronomical times** from your **geolocation**, drive the hardware **d
 > 🇩🇪 Deutsche Anleitung: [doc/de/README.md](doc/de/README.md) · other languages: see
 > [Documentation](#documentation) at the bottom.
 
+> 📘 **Complete step-by-step manual (PDF, for beginners — with wiring diagrams, FAQ &
+> troubleshooting):** English → [docs/manual/pond-aeration-manual.en.pdf](docs/manual/pond-aeration-manual.en.pdf) ·
+> Deutsch → [docs/manual/pond-aeration-manual.de.pdf](docs/manual/pond-aeration-manual.de.pdf)
+> (source & build under [docs/manual/](docs/manual/)).
+
 ---
 
 ## Table of contents

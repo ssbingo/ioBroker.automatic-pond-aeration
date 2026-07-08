@@ -58,6 +58,28 @@ air flows, by opening and closing *valves* — one valve per _aeration point_ (u
   [*Something not working?* Jump to Troubleshooting (chapter 11).],
 )
 
+== Quick start (the short version)
+
+#notebox("If you already run ioBroker and have a switchable valve")[
+  This is the fastest path. Every step is explained in detail later — the chapter is named in
+  brackets.
+]
+
+#steps(
+  [Install the adapter and add an instance (chapter 5).],
+  [Turn on *Dry-run* so nothing is switched yet (General tab).],
+  [Add your *aeration points* and map each one to its valve state (chapter 6).],
+  [Set a simple *schedule* or enable the *round-robin* so something happens (Control tab).],
+  [Watch the log and the `aeration.point.*.active` states — confirm the right points turn on/off.],
+  [Configure *Safety* (pump + emergency valve), then turn *Dry-run off* and supervise the first real
+    runs closely.],
+)
+
+#safety("Do not skip the supervised phase")[
+  Because the animals depend on the aeration, run it *watched* for a while before you trust it
+  unattended — see the warning on the cover.
+]
+
 = How a pond aeration works (the basics)
 
 Even if this is all new to you, the idea is simple.
@@ -66,7 +88,7 @@ Even if this is all new to you, the idea is simple.
 
 #spec(
   ([Air pump / compressor], [Produces the airflow. Often a linear-diaphragm pump. Runs at low
-    pressure (typically a few kPa up to ~30 kPa).]),
+    pressure (typically a few kPa up to ≈30 kPa).]),
   ([Manifold + hoses], [Distribute the air to several points in the pond.]),
   ([Valves (solenoids)], [One per aeration point. Open = air flows to that diffuser; closed = it
     doesn't. These are what the adapter switches.]),
@@ -261,7 +283,7 @@ scripts, or from a visualization. The most important commands:
 The adapter creates these states from your configuration. `<n>` = point index (0–7), `<g>` = group
 index. Items marked *(w)* are writable commands; the rest are read-only status values.
 
-#table(columns: (auto, 1fr), fill: (_, y) => if y == 0 { ink } else if calc.odd(y) { sky } else { white },
+#dtable(
   [Object], [Meaning],
   [`info.connection`], [Adapter running / configuration valid],
   [`info.activeMode`], [Current operating mode],
@@ -294,15 +316,48 @@ The reference controller is the *Waveshare ESP32-S3-POE-ETH-8DI-8RO* #src(3): 8 
 valves, emergency valve and pump), 8 digital inputs, and Ethernet with *Power-over-Ethernet* — one
 cable for power and data.
 
+#notebox("You do not need this board today")[
+  With the current ioBroker backend, *any* relay board or smart plug that exposes each valve as a
+  state works. The diagrams below apply equally: "relay board" is whatever hardware switches your
+  valves.
+]
+
+== Failsafe wiring (very important)
+
+Wire the actuators so that *losing power leaves the pond safe*. A relay that loses power *releases*
+(de-energises), so choose each device's wiring accordingly:
+
+#figure(
+  image("assets/relay-wiring.svg", width: 100%),
+  caption: [Failsafe wiring: aeration valves as *normally-closed (NC)*, the emergency valve as
+  *normally-open (NO)*, the pump switched off when de-energised. On a power cut everything falls into
+  the safe state by itself.],
+)
+
+#spec(
+  ([Aeration valves], [Wire *normally-closed (NC)*: no power → closed. The adapter energises a relay
+    to *open* a point.]),
+  ([Emergency valve], [Wire *normally-open (NO)*: no power → open, so the pump always has somewhere to
+    blow. This is the real failsafe.]),
+  ([Pump], [If controllable, wire so de-energised = off. If you only *observe* the pump, the interlock
+    still opens the emergency valve.]),
+)
+
+#safety("Motorised ball valves do not spring open")[
+  A motor ball valve (e.g. CWX-15N) *keeps its position* on power loss — it is not fail-open. If you
+  use one as the emergency valve, the dead-head protection then relies on the pump also losing power.
+  For a true failsafe, prefer a *normally-open solenoid* emergency valve.
+]
+
 == Reference sensors (all optional)
 
 #spec(
-  ([Water temperature], [*DS18B20* waterproof probe (1-Wire). ~€3 from a reputable shop #src(16). Buy
+  ([Water temperature], [*DS18B20* waterproof probe (1-Wire). ≈€3 from a reputable shop #src(16). Buy
     from an authorised distributor — most cheap clones are counterfeit #src(12).]),
   ([Air-line pressure], [*CFSensor XGZP6897D…KPDG* (I²C), gauge type, 0–100 kPa default #src(7). Only
     available from AliExpress/Alibaba; the firmware auto-detects the two bus variants (0x6D / 0x58).]),
-  ([Dissolved oxygen], [*Optional and costly.* Budget: *DFRobot SEN0237-A* (~€176) #src(6). Premium:
-    *Atlas EZO-DO* stack (~€450) #src(4), which needs an electrical isolation carrier #src(5).]),
+  ([Dissolved oxygen], [*Optional and costly.* Budget: *DFRobot SEN0237-A* (≈ €176) #src(6). Premium:
+    *Atlas EZO-DO* stack (≈ €450) #src(4), which needs an electrical isolation carrier #src(5).]),
 )
 
 Full part numbers, prices, wiring, the I²C address map and all caveats are kept in
@@ -311,6 +366,35 @@ Full part numbers, prices, wiring, the I²C address map and all caveats are kept
 #safety("Oxygen sensing is maintenance-heavy")[
   Both oxygen options use a galvanic probe with a membrane/electrolyte that must be serviced
   regularly and needs water flow across it. Treat oxygen as an optional, advanced add-on.
+]
+
+== Wiring the sensors to the ESP32
+
+All three reference sensors run at *3.3 V*, so there is *no level shifting*. The two I²C sensors
+share one bus with the board's relay expander and clock/RTC; the temperature probe uses a separate
+1-Wire pin.
+
+#figure(
+  image("assets/esp32-sensors.svg", width: 100%),
+  caption: [Sensor wiring: the oxygen (`0x61`) and pressure (`0x6D`/`0x58`) sensors share the I²C bus
+  (`SDA`=GPIO42, `SCL`=GPIO41) with a *single* 4.7 kΩ pull-up pair; the DS18B20 sits on a 1-Wire GPIO
+  with its own 4.7 kΩ pull-up. The oxygen probe and the temperature probe go into the water; the
+  pressure sensor gets a short air tube.],
+)
+
+#steps(
+  [Power every sensor from the board's *3.3 V* and *GND*.],
+  [Connect the two I²C sensors' `SDA`/`SCL` to `GPIO42`/`GPIO41`. Fit *only one* 4.7 kΩ pull-up pair
+    for the whole bus — if a sensor breakout already has pull-ups, remove them.],
+  [Wire the DS18B20 data line to a free GPIO (e.g. `GPIO2`) with a 4.7 kΩ pull-up to 3.3 V.],
+  [For oxygen, put the EZO-DO on an *electrically isolated carrier* #src(5) and keep it inside the
+    enclosure — only the probe cable goes to the water.],
+)
+
+#tipbox("Keep I²C short")[
+  I²C only reaches ≈1–3 m. Mount the oxygen and pressure circuits *in the controller enclosure* and
+  run the *probe/tube* outside. The DS18B20 (1-Wire) is the one sensor made for a long run into the
+  water.
 ]
 
 = FAQ
@@ -350,6 +434,35 @@ Full part numbers, prices, wiring, the I²C address map and all caveats are kept
 
 If you are still stuck, open an issue on the project repository #src(2) with your adapter version,
 your configuration and the relevant log lines (set the instance log level to `debug`).
+
+= Glossary
+
+/ Aeration point: One place in the pond that receives air, switched by one valve. Up to 8.
+/ Diffuser / air stone: The part under water that turns airflow into fine bubbles.
+/ Solenoid valve: An electrically switched valve. "Normally closed (NC)" is shut without power;
+  "normally open (NO)" is open without power.
+/ Dead-heading: A pump running against fully closed valves — dangerous. The safety interlock prevents
+  it.
+/ Interlock: A safety rule that overrides everything: while the pump runs, at least one valve stays
+  open, or the emergency valve opens and the pump stops.
+/ Make-before-break: Opening the next valve before closing the previous one, so there is never a
+  moment with everything shut.
+/ Schedule: A weekday time window (`From`–`To`) during which chosen points/groups run.
+/ Round-robin: Rotating through the points, each open for a fixed *dwell* time.
+/ Sequence: A round-robin you define step by step, where each step is a point *or* a group, with its
+  own optional dwell — points and groups may be mixed.
+/ Group: Several aeration points controlled together. There are never more groups than points.
+/ Dwell time: How long one point/step stays open before the cycle moves on.
+/ Dry-run: A test mode — the logic runs but no hardware is switched; intended actions are only logged.
+/ Hysteresis: A margin that stops an alarm/loop from flickering on and off around a threshold.
+/ Dissolved oxygen (DO): Oxygen in the water, in mg/L, that the animals breathe. "Saturation %" is
+  how full the water is relative to the maximum at that temperature.
+/ State / data point: A named value in ioBroker the adapter reads or writes (e.g. a valve switch).
+/ ioBroker: The open-source smart-home platform this adapter runs in #src(1).
+/ ESP32: A small networked microcontroller that can drive the relays and read the sensors directly
+  (planned build).
+/ I²C / 1-Wire: Two simple wiring "buses" for sensors — I²C for the oxygen and pressure sensors,
+  1-Wire for the DS18B20 temperature probe.
 
 = References
 
