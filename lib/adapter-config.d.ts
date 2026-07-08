@@ -74,6 +74,10 @@ declare global {
 			esp32UseWebsocket: boolean;
 			/** Optional ESP32 auth token (encrypted). */
 			esp32AuthToken: string;
+			/** ESP32 relay channel (0–7) wired to the emergency valve. */
+			esp32EmergencyRelay: number;
+			/** ESP32 relay channel (0–7) wired to the pump. */
+			esp32PumpRelay: number;
 			/** Polling interval for backend status in seconds. */
 			pollIntervalSec: number;
 

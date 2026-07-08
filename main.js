@@ -27,6 +27,7 @@ const utils = require('@iobroker/adapter-core');
 const { validateConfig } = require('./lib/config');
 const { buildObjectModel, computeObsolete } = require('./lib/objects');
 const { IoBrokerBackend } = require('./lib/hal/iobroker-backend');
+const { Esp32Backend } = require('./lib/hal/esp32-backend');
 const { evaluateSafety, planValveTransition } = require('./lib/safety');
 const { resolveDesiredValves } = require('./lib/control/arbiter');
 const { resolveWinter } = require('./lib/control/winter');
@@ -155,9 +156,11 @@ class AutomaticPondAeration extends utils.Adapter {
 			this.logInfo('dryRunActive');
 		}
 
-		// Hardware abstraction layer. Only the ioBroker backend exists so far; the ESP32
-		// backend follows in M7.
-		this.backend = new IoBrokerBackend(this, config);
+		// Hardware abstraction layer: drive existing ioBroker states, or talk to the ESP32
+		// reference firmware directly (M7).
+		this.backend =
+			config.controlBackend === 'esp32' ? new Esp32Backend(this, config) : new IoBrokerBackend(this, config);
+		this.log.debug(`Hardware backend: ${config.controlBackend}.`);
 		await this.backend.init();
 
 		// Our own command states (foreign hardware states are subscribed by the backend).

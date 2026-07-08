@@ -191,7 +191,9 @@ Klicken Sie auf *Speichern* (oder *Speichern und schließen*), wenn Sie fertig s
   beabsichtigten Aktionen werden nur ins Log geschrieben (`[DRY-RUN] would …`). Perfekt, um eine
   Konfiguration sicher auszuprobieren, bevor Sie sie verdrahten.
 - *Backend* — `Existing ioBroker states` (Standard) steuert Ihre Hardware über die States anderer
-  Adapter. `ESP32 (direct)` ist *geplant* (Kapitel 9) und noch nicht aktiv.
+  Adapter. `ESP32 (direct)` spricht die separate Referenz-Firmware auf einem Waveshare-Board per HTTP
+  an (Host/IP sowie Notventil-/Pumpen-Relaiskanal setzen; siehe Kapitel 9). Die Firmware wird noch
+  fertiggestellt.
 
 == Belüftungspunkte
 

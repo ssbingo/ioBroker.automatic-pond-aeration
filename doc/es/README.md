@@ -37,9 +37,11 @@ aireación seleccionados durante la alimentación cuando
 > contra el dead-heading, la **supervisión** (oxígeno, temperatura aire/agua, presión con alarmas),
 > las **horas astronómicas y la geolocalización**, el **acoplamiento con el feeder**, el **modo
 > invierno / libre de hielo**, el **lazo cerrado de oxígeno**, las **notificaciones a través de un
-> adaptador de mensajería**, las **estadísticas de funcionamiento** y un **modo de prueba dry-run**.
-> **Aún planificado:** el backend de hardware **ESP32** directo. Hasta que llegue el backend ESP32,
-> las válvulas y la bomba se controlan a través de estados de ioBroker existentes.
+> adaptador de mensajería**, las **estadísticas de funcionamiento**, un **modo de prueba dry-run**,
+> los **botones de anulación** por punto y el backend de hardware **ESP32** directo (se comunica por
+> HTTP con el [firmware de referencia](https://github.com/ssbingo/pond-aeration-esp32-firmware)
+> independiente; el firmware aún se está terminando). El backend predeterminado controla tus válvulas
+> y la bomba a través de estados de ioBroker existentes, así que funciona cualquier placa de relés.
 
 > 📘 **Manual completo paso a paso (PDF, para principiantes — con diagramas de cableado, preguntas
 > frecuentes y resolución de problemas):** English → [../../docs/manual/pond-aeration-manual.en.pdf](../../docs/manual/pond-aeration-manual.en.pdf) ·
@@ -119,8 +121,12 @@ uses.
   (`[DRY-RUN] would …`) en lugar de en los estados reales. Ideal para la puesta en marcha y para
   probar una configuración antes de cablearla.
 - **Backend de hardware** – `Estados de ioBroker existentes` (predeterminado) controla tus
-  válvulas/bomba a través de estados de otros adaptadores. `ESP32 (directo)` está *previsto* (M7) y
-  todavía no está activo.
+  válvulas/bomba a través de estados de otros adaptadores. `ESP32 (directo)` se comunica por HTTP con
+  el [firmware de referencia](https://github.com/ssbingo/pond-aeration-esp32-firmware) en un Waveshare
+  ESP32-S3-POE-ETH-8DI-8RO — define el **host/IP** y asigna el **relé de la válvula de emergencia** y
+  el **relé de la bomba** (0–7); los puntos de aireación usan el canal de relé configurado por punto.
+  El adaptador envía una configuración de seguridad y un latido (heartbeat) para que el sistema de
+  seguridad en el propio dispositivo del firmware proteja el estanque incluso si ioBroker está caído.
 - **Intervalo de sondeo (s)** – con qué frecuencia se consulta el estado del backend (p. ej. `30`).
 
 ### Puntos de aireación
@@ -328,12 +334,12 @@ de seguridad contra el dead-heading, la supervisión, astro y geolocalización, 
 feeder, el modo invierno / libre de hielo, el lazo cerrado de oxígeno, las notificaciones, las
 estadísticas de funcionamiento y el modo de prueba dry-run. **Todavía pendiente:**
 
-* el backend de hardware **ESP32** directo + firmware de referencia (Waveshare ESP32-S3-POE-ETH-8DI-8RO),
-  incl. los sensores de referencia (oxígeno disuelto, presión de la línea de aire, temperatura del
-  agua) cableados al ESP32 — consulta [dev/hardware/sensors.md](../../dev/hardware/sensors.md);
-* una **página web apta para móviles servida directamente por el ESP32 (obligatoria en el puerto
-  80)** para el control y la supervisión in situ desde un teléfono, sin necesidad de ioBroker para
-  manejarla;
+* completar el **[firmware de referencia](https://github.com/ssbingo/pond-aeration-esp32-firmware)**
+  para el Waveshare ESP32-S3-POE-ETH-8DI-8RO — el backend ESP32 del lado del adaptador ya está listo;
+  la base del firmware (Ethernet, relés, botones de entrada digital, API HTTP/WS, sistema de seguridad
+  en el propio dispositivo, interfaz web apta para móviles en el puerto 80) está confirmada, y los
+  sensores de referencia (oxígeno disuelto, presión de la línea de aire, temperatura del agua —
+  consulta [dev/hardware/sensors.md](../../dev/hardware/sensors.md)) son el siguiente paso;
 * un posterior **adaptador de widgets vis-2** para el manejo y la supervisión.
 
 Consulta [PROJECT_PLAN.md](../../PROJECT_PLAN.md) para el plan completo basado en hitos.

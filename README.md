@@ -45,9 +45,11 @@ compute **astronomical times** from your **geolocation**, drive the hardware **d
 > (schedule, cyclic round-robin, groups), the dead-head **safety interlock**, **monitoring**
 > (oxygen, air/water temperature, pressure with alarms), **astronomical times & geolocation**, the
 > **feeder coupling**, the **winter / ice-free mode**, the **oxygen closed loop**, **notifications**
-> via a messaging adapter, **runtime statistics** and a **dry-run** test mode. **Still planned:** the
-> direct **ESP32** hardware backend. Until the ESP32 backend ships, valves and the pump are driven
-> through existing ioBroker states.
+> via a messaging adapter, **runtime statistics**, a **dry-run** test mode, per-point **override
+> buttons**, and the direct **ESP32** hardware backend (talks to the separate
+> [reference firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware) over HTTP; the firmware
+> is still being completed). The default backend drives your valves and pump through existing ioBroker
+> states, so any relay board works.
 
 > 🇩🇪 Deutsche Anleitung: [doc/de/README.md](doc/de/README.md) · other languages: see
 > [Documentation](#documentation) at the bottom.
@@ -120,7 +122,11 @@ you use.
   update, but valve/pump commands are only written to the log (`[DRY-RUN] would …`) instead of the
   real states. Ideal for commissioning and testing a configuration before wiring it up.
 - **Hardware backend** – `Existing ioBroker states` (default) drives your valves/pump through states
-  of other adapters. `ESP32 (direct)` is *planned* (M7) and not active yet.
+  of other adapters. `ESP32 (direct)` talks to the [reference firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware)
+  on a Waveshare ESP32-S3-POE-ETH-8DI-8RO over HTTP — set the **host/IP**, and map the **emergency-valve
+  relay** and **pump relay** (0–7); the aeration points use the relay channel set per point. The
+  adapter pushes a safety config and a heartbeat so the firmware's on-device failsafe protects the pond
+  even if ioBroker is down.
 - **Poll interval (s)** – how often the backend status is polled (e.g. `30`).
 
 ### Aeration points
@@ -315,11 +321,11 @@ interlock, monitoring, astro & geolocation, the feeder coupling, the **winter / 
 **oxygen closed loop**, **notifications**, **runtime statistics** and the **dry-run** test mode.
 **Still to come:**
 
-* the direct **ESP32** hardware backend + reference firmware (Waveshare ESP32-S3-POE-ETH-8DI-8RO),
-  incl. the reference sensors (dissolved oxygen, air-line pressure, water temperature) wired to the
-  ESP32 — see [dev/hardware/sensors.md](dev/hardware/sensors.md);
-* a **mobile-friendly web page served directly by the ESP32 (mandatory on port 80)** for on-site
-  control and monitoring from a phone — no ioBroker needed to operate it;
+* completing the **[reference firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware)** for
+  the Waveshare ESP32-S3-POE-ETH-8DI-8RO — the adapter-side ESP32 backend is in place; the firmware
+  foundation (Ethernet, relays, digital-input buttons, HTTP/WS API, on-device failsafe, mobile web UI
+  on port 80) is committed, with the reference sensors (dissolved oxygen, air-line pressure, water
+  temperature — see [dev/hardware/sensors.md](dev/hardware/sensors.md)) as the next step;
 * a follow-up **vis-2 widget adapter** for operation and monitoring.
 
 See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
@@ -329,6 +335,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.0.17 (2026-07-08)
+* (ssbingo) Direct **ESP32 hardware backend** (M7): selecting `ESP32 (direct)` now drives a Waveshare ESP32-S3-POE-ETH-8DI-8RO through the separate [reference firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware) over HTTP (JSON, port 80) — `GET /api/info` protocol check, `POST /api/config` pushing the safety roles, relay commands, and a heartbeat that keeps the firmware's on-device failsafe disarmed while the adapter is healthy; the polled status is mirrored into the data points. New config `esp32EmergencyRelay`/`esp32PumpRelay`, pure/unit-tested `lib/hal/esp32-protocol.js` and `lib/hal/esp32-backend.js`, admin fields + 3 strings in 11 languages. The ioBroker-state backend remains the default
+
 ### 0.0.16 (2026-07-08)
 * (ssbingo) Per-point manual override push-button (M7 groundwork): each aeration point can have a physical button (an ESP32 digital input or any boolean state). It toggles — one press forces the point on with **priority over the automatic control** (schedule/sequence/winter/oxygen) and even over a feeder pause; only the master switch or a safety trip overrides it. New per-point config (`buttonEnabled`/`buttonMode`/`buttonObjectId`), state `aeration.point.<n>.buttonOn`, pure/unit-tested `lib/control/button.js`, admin column and localized messages/strings in 11 languages. The button mode is an enum, so more behaviours can be added later
 
@@ -355,9 +364,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.0.8 (2026-07-07)
 * (ssbingo) Feeder coupling (`ioBroker.automatic-feeder`): while a selected feeder is feeding, the chosen aeration points are paused (forced off) for the feeding time plus a configurable offset — `measure` mode watches the feeder switch, `pulse` mode uses a fixed feeding duration. The feeder switches can be auto-discovered from the admin (`discoverFeederSwitches`); the pause drives `feeder.pauseActive` / `feeder.pauseUntil` / `feeder.lastFeedStart`
-
-### 0.0.7 (2026-07-07)
-* (ssbingo) Monitoring, astronomical times and geolocation: oxygen, air/water temperature and pressure are read from foreign states and mirrored into `sensors.*`, with a low-oxygen alarm (hysteresis), a pressure-range alarm and a temperature-compensated oxygen saturation. Sunrise/sunset/solar-noon and the night flag are computed from the coordinates (ioBroker system config or an on-demand Nominatim address lookup, rule 12)
 
 ---
 

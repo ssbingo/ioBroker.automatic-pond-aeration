@@ -35,9 +35,12 @@ geïnstalleerd.
 > klepbesturing (tijdschema, cyclische roundrobin, groepen), de **veiligheidsvergrendeling** tegen
 > dead-heading, de **bewaking** (zuurstof, lucht-/watertemperatuur, druk met alarmen),
 > **astronomische tijden & geolocatie**, de **feeder-koppeling**, de **winter-/ijsvrijmodus**, de
-> **zuurstofregelkring**, **meldingen via een messaging-adapter**, **looptijdstatistieken** en een
-> **dry-run-testmodus**. **Nog gepland:** de directe **ESP32**-hardware-backend. Totdat de
-> ESP32-backend er is, worden kleppen en pomp aangestuurd via bestaande ioBroker-states.
+> **zuurstofregelkring**, **meldingen via een messaging-adapter**, **looptijdstatistieken**, een
+> **dry-run-testmodus**, **overrideknoppen** per punt en de directe **ESP32**-hardware-backend
+> (communiceert via HTTP met de aparte
+> [referentiefirmware](https://github.com/ssbingo/pond-aeration-esp32-firmware); de firmware wordt nog
+> afgerond). De standaard-backend stuurt je kleppen en pomp aan via bestaande ioBroker-states, dus
+> elke relaisprint werkt.
 
 > 📘 **Volledige stapsgewijze handleiding (PDF, voor beginners — met bedradingsschema's, FAQ en
 > probleemoplossing):** English → [../../docs/manual/pond-aeration-manual.en.pdf](../../docs/manual/pond-aeration-manual.en.pdf) ·
@@ -112,7 +115,12 @@ onderdelen die je gebruikt.
   (`[DRY-RUN] would …`) in plaats van naar de echte states. Ideaal voor inbedrijfstelling en het
   testen van een configuratie voordat je alles bedraadt.
 - **Hardware-backend** – `Bestaande ioBroker-states` (standaard) stuurt je kleppen/pomp aan via
-  states van andere adapters. `ESP32 (direct)` is *gepland* (M7) en nog niet actief.
+  states van andere adapters. `ESP32 (direct)` communiceert via HTTP met de
+  [referentiefirmware](https://github.com/ssbingo/pond-aeration-esp32-firmware) op een Waveshare
+  ESP32-S3-POE-ETH-8DI-8RO — stel de **host/IP** in en wijs het **noodklep-relais** en het
+  **pomp-relais** (0–7) toe; de beluchtingspunten gebruiken het per punt ingestelde relaiskanaal. De
+  adapter stuurt een veiligheidsconfiguratie en een heartbeat, zodat de failsafe op het apparaat zelf
+  van de firmware de vijver beschermt, zelfs als ioBroker uitvalt.
 - **Pollinterval (s)** – hoe vaak de backendstatus wordt opgevraagd (bijv. `30`).
 
 ### Beluchtingspunten
@@ -314,12 +322,12 @@ Klaar: configuratie-UI, klepbesturing (tijdschema/roundrobin/groepen), de veilig
 tegen dead-heading, bewaking, astro & geolocatie, de feeder-koppeling, de winter-/ijsvrijmodus, de
 zuurstofregelkring, meldingen, looptijdstatistieken en de dry-run-testmodus. **Nog te komen:**
 
-* de directe **ESP32**-hardware-backend + referentiefirmware (Waveshare ESP32-S3-POE-ETH-8DI-8RO),
-  incl. de referentiesensoren (opgeloste zuurstof, luchtleidingdruk, watertemperatuur) die op de
-  ESP32 zijn aangesloten — zie [dev/hardware/sensors.md](../../dev/hardware/sensors.md);
-* een **mobielvriendelijke webpagina die rechtstreeks door de ESP32 wordt geserveerd (verplicht op
-  poort 80)** voor bediening en bewaking ter plaatse vanaf een telefoon — zonder ioBroker om hem te
-  bedienen;
+* het afronden van de **[referentiefirmware](https://github.com/ssbingo/pond-aeration-esp32-firmware)**
+  voor de Waveshare ESP32-S3-POE-ETH-8DI-8RO — de ESP32-backend aan de adapterzijde is aanwezig; de
+  firmwarebasis (Ethernet, relais, knoppen op digitale ingangen, HTTP/WS-API, failsafe op het apparaat
+  zelf, mobielvriendelijke web-UI op poort 80) is vastgelegd, met de referentiesensoren (opgeloste
+  zuurstof, luchtleidingdruk, watertemperatuur — zie
+  [dev/hardware/sensors.md](../../dev/hardware/sensors.md)) als volgende stap;
 * een daaropvolgende **vis-2-widget-adapter** voor bediening en bewaking.
 
 Zie [PROJECT_PLAN.md](../../PROJECT_PLAN.md) voor het volledige, op mijlpalen gebaseerde plan.

@@ -37,9 +37,11 @@ determinati punti di aerazione durante l'alimentazione quando è installato
 > il dead-heading, il **monitoraggio** (ossigeno, temperatura aria/acqua, pressione con allarmi), gli
 > **orari astronomici & la geolocalizzazione**, l'**accoppiamento con il feeder**, la **modalità
 > inverno / anti-ghiaccio**, il **circuito chiuso dell'ossigeno**, le **notifiche tramite un
-> adattatore di messaging**, le **statistiche di funzionamento** e una **modalità di test dry-run**.
-> **Ancora pianificato:** il backend hardware **ESP32** diretto. Finché il backend ESP32 non sarà
-> disponibile, le valvole e la pompa vengono pilotate tramite stati ioBroker esistenti.
+> adattatore di messaging**, le **statistiche di funzionamento**, una **modalità di test dry-run**, i
+> **pulsanti di override** per punto e il backend hardware **ESP32** diretto (comunica via HTTP con il
+> [firmware di riferimento](https://github.com/ssbingo/pond-aeration-esp32-firmware) separato; il
+> firmware è ancora in fase di completamento). Il backend predefinito pilota le tue valvole e la pompa
+> tramite stati ioBroker esistenti, così funziona qualsiasi scheda a relè.
 
 > 📘 **Manuale completo passo passo (PDF, per principianti — con schemi di cablaggio, FAQ e
 > risoluzione dei problemi):** English → [../../docs/manual/pond-aeration-manual.en.pdf](../../docs/manual/pond-aeration-manual.en.pdf) ·
@@ -117,7 +119,12 @@ usi.
   (`[DRY-RUN] would …`) invece che negli stati reali. Ideale per la messa in servizio e per testare
   una configurazione prima di cablarla.
 - **Backend hardware** – `Stati ioBroker esistenti` (predefinito) pilota le tue valvole/la tua pompa
-  tramite gli stati di altri adattatori. `ESP32 (diretto)` è *pianificato* (M7) e non ancora attivo.
+  tramite gli stati di altri adattatori. `ESP32 (diretto)` comunica via HTTP con il
+  [firmware di riferimento](https://github.com/ssbingo/pond-aeration-esp32-firmware) su un Waveshare
+  ESP32-S3-POE-ETH-8DI-8RO — imposta l'**host/IP** e associa il **relè della valvola di emergenza** e
+  il **relè della pompa** (0–7); i punti di aerazione usano il canale relè impostato per ciascun punto.
+  L'adattatore invia una configurazione di sicurezza e un heartbeat affinché il failsafe integrato nel
+  dispositivo del firmware protegga il laghetto anche se ioBroker è offline.
 - **Intervallo di polling (s)** – ogni quanto viene interrogato lo stato del backend (ad es. `30`).
 
 ### Punti di aerazione
@@ -326,12 +333,12 @@ blocco di sicurezza contro il dead-heading, il monitoraggio, astro & geolocalizz
 l'accoppiamento con il feeder, la modalità inverno / anti-ghiaccio, il circuito chiuso dell'ossigeno,
 le notifiche, le statistiche di funzionamento e la modalità di test dry-run. **Ancora da fare:**
 
-* il backend hardware **ESP32** diretto + firmware di riferimento (Waveshare ESP32-S3-POE-ETH-8DI-8RO),
-  compresi i sensori di riferimento (ossigeno disciolto, pressione della linea dell'aria, temperatura
-  dell'acqua) collegati all'ESP32 — vedi [dev/hardware/sensors.md](../../dev/hardware/sensors.md);
-* una **pagina web ottimizzata per i dispositivi mobili servita direttamente dall'ESP32
-  (obbligatoriamente sulla porta 80)** per il controllo e il monitoraggio in loco da uno smartphone,
-  senza bisogno di ioBroker per usarla;
+* il completamento del **[firmware di riferimento](https://github.com/ssbingo/pond-aeration-esp32-firmware)**
+  per il Waveshare ESP32-S3-POE-ETH-8DI-8RO — il backend ESP32 lato adattatore è già presente; la base
+  del firmware (Ethernet, relè, pulsanti su ingressi digitali, API HTTP/WS, failsafe integrato nel
+  dispositivo, interfaccia web ottimizzata per i dispositivi mobili sulla porta 80) è stata committata,
+  con i sensori di riferimento (ossigeno disciolto, pressione della linea dell'aria, temperatura
+  dell'acqua — vedi [dev/hardware/sensors.md](../../dev/hardware/sensors.md)) come passo successivo;
 * un successivo **adattatore di widget vis-2** per il funzionamento e il monitoraggio.
 
 Per il piano completo, basato su milestone, vedi [PROJECT_PLAN.md](../../PROJECT_PLAN.md).

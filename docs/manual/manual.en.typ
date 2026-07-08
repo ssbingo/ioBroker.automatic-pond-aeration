@@ -174,7 +174,9 @@ The settings page is organised into tabs. You only fill in the parts you use. Cl
   real valve or pump is switched — the intended actions are only written to the log (`[DRY-RUN]
   would …`). Perfect for trying a configuration safely before wiring it up.
 - *Backend* — `Existing ioBroker states` (default) drives your hardware through other adapters'
-  states. `ESP32 (direct)` is *planned* (chapter 9) and not active yet.
+  states. `ESP32 (direct)` talks to the separate reference firmware on a Waveshare board over HTTP
+  (set the host/IP and the emergency-valve / pump relay channels; see chapter 9). The firmware is
+  still being completed.
 
 == Aeration points
 

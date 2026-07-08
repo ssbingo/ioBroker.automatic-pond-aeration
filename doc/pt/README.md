@@ -36,9 +36,11 @@ aeração selecionados durante a alimentação quando
 > contra o dead-heading, o **monitoramento** (oxigênio, temperatura ar/água, pressão com alarmes), os
 > **horários astronômicos e a geolocalização**, o **acoplamento com o feeder**, o **modo inverno /
 > livre de gelo**, a **malha fechada de oxigênio**, as **notificações via um adaptador de messaging**,
-> as **estatísticas de funcionamento** e um **modo de teste dry-run**. **Ainda planejado:** o backend
-> de hardware **ESP32** direto. Até que o backend ESP32 seja lançado, as válvulas e a bomba são
-> controladas por meio de estados existentes do ioBroker.
+> as **estatísticas de funcionamento**, um **modo de teste dry-run**, os **botões de substituição** por
+> ponto e o backend de hardware **ESP32** direto (comunica-se por HTTP com o
+> [firmware de referência](https://github.com/ssbingo/pond-aeration-esp32-firmware) separado; o
+> firmware ainda está sendo concluído). O backend padrão controla suas válvulas e a bomba por meio de
+> estados existentes do ioBroker, então qualquer placa de relés funciona.
 
 > 📘 **Manual completo passo a passo (PDF, para iniciantes — com diagramas de ligação, perguntas
 > frequentes e resolução de problemas):** English → [../../docs/manual/pond-aeration-manual.en.pdf](../../docs/manual/pond-aeration-manual.en.pdf) ·
@@ -115,8 +117,12 @@ que usa.
   (`[DRY-RUN] would …`) em vez dos estados reais. Ideal para o comissionamento e para testar uma
   configuração antes de conectá-la ao hardware.
 - **Backend de hardware** – `Estados existentes do ioBroker` (padrão) controla suas válvulas/bomba
-  por meio de estados de outros adaptadores. `ESP32 (direto)` está *planejado* (M7) e ainda não está
-  ativo.
+  por meio de estados de outros adaptadores. `ESP32 (direto)` comunica-se por HTTP com o
+  [firmware de referência](https://github.com/ssbingo/pond-aeration-esp32-firmware) em um Waveshare
+  ESP32-S3-POE-ETH-8DI-8RO — defina o **host/IP** e mapeie o **relé da válvula de emergência** e o
+  **relé da bomba** (0–7); os pontos de aeração usam o canal de relé definido por ponto. O adaptador
+  envia uma configuração de segurança e um heartbeat para que a proteção contra falhas no próprio
+  dispositivo do firmware proteja o lago mesmo se o ioBroker estiver fora do ar.
 - **Intervalo de sondagem (s)** – com que frequência o status do backend é consultado (por ex. `30`).
 
 ### Pontos de aeração
@@ -321,12 +327,12 @@ de segurança contra o dead-heading, o monitoramento, astro e geolocalização, 
 feeder, o **modo inverno / livre de gelo**, a **malha fechada de oxigênio**, as **notificações**, as
 **estatísticas de funcionamento** e o **modo de teste dry-run**. **Ainda por vir:**
 
-* o backend de hardware **ESP32** direto + firmware de referência (Waveshare ESP32-S3-POE-ETH-8DI-8RO),
-  incl. os sensores de referência (oxigênio dissolvido, pressão da linha de ar, temperatura da água)
-  ligados ao ESP32 — consulte [dev/hardware/sensors.md](../../dev/hardware/sensors.md);
-* uma **página web adequada a dispositivos móveis servida diretamente pelo ESP32 (obrigatoriamente na
-  porta 80)** para controle e monitoramento no local a partir de um telefone — sem necessidade de
-  ioBroker para operá-la;
+* concluir o **[firmware de referência](https://github.com/ssbingo/pond-aeration-esp32-firmware)** para
+  o Waveshare ESP32-S3-POE-ETH-8DI-8RO — o backend ESP32 do lado do adaptador já está pronto; a base do
+  firmware (Ethernet, relés, botões em entradas digitais, API HTTP/WS, proteção contra falhas no
+  próprio dispositivo, interface web adequada a dispositivos móveis na porta 80) está confirmada, com
+  os sensores de referência (oxigênio dissolvido, pressão da linha de ar, temperatura da água —
+  consulte [dev/hardware/sensors.md](../../dev/hardware/sensors.md)) como próximo passo;
 * um **adaptador de widgets vis-2** subsequente para operação e monitoramento.
 
 Consulte [PROJECT_PLAN.md](../../PROJECT_PLAN.md) para o plano completo, baseado em marcos.

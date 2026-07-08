@@ -36,9 +36,11 @@ der Fütterung pausieren, wenn
 > Nullförderung, die **Überwachung** (Sauerstoff, Luft-/Wassertemperatur, Druck mit Alarmen),
 > **astronomische Zeiten & Geoposition**, die **Feeder-Kopplung**, der **Winter-/Eisfrei-Modus**, der
 > **Sauerstoff-Regelkreis**, **Benachrichtigungen über einen Messaging-Adapter**, die
-> **Laufzeitstatistik** sowie ein **Trockenlauf-Testmodus**. **Noch geplant:** das direkte
-> **ESP32**-Hardware-Backend. Bis das ESP32-Backend verfügbar ist, werden Ventile und Pumpe über
-> vorhandene ioBroker-States angesteuert.
+> **Laufzeitstatistik**, ein **Trockenlauf-Testmodus**, **Übersteuerungstaster** pro Punkt sowie das
+> direkte **ESP32**-Hardware-Backend (spricht über HTTP mit der separaten
+> [Referenz-Firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware); die Firmware wird noch
+> fertiggestellt). Das Standard-Backend steuert deine Ventile und Pumpe über vorhandene
+> ioBroker-States, sodass jede Relaisplatine funktioniert.
 
 > 📘 **Vollständige Schritt-für-Schritt-Anleitung (PDF, für Einsteiger – mit Schaltplänen, FAQ &
 > Fehlerbehebung):** English → [../../docs/manual/pond-aeration-manual.en.pdf](../../docs/manual/pond-aeration-manual.en.pdf) ·
@@ -117,7 +119,12 @@ die Teile, die du tatsächlich nutzt.
   (`[DRY-RUN] would …`) statt in die echten States. Ideal für die Inbetriebnahme und zum Testen einer
   Konfiguration, bevor sie verdrahtet wird.
 - **Hardware-Backend** – `Vorhandene ioBroker-States` (Standard) steuert deine Ventile/Pumpe über
-  States anderer Adapter. `ESP32 (direkt)` ist *geplant* (M7) und noch nicht aktiv.
+  States anderer Adapter. `ESP32 (direkt)` spricht über HTTP mit der
+  [Referenz-Firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware) auf einem Waveshare
+  ESP32-S3-POE-ETH-8DI-8RO — lege die **Host/IP** fest und ordne das **Notventil-Relais** und das
+  **Pumpen-Relais** (0–7) zu; die Belüftungspunkte nutzen den pro Punkt eingestellten Relaiskanal. Der
+  Adapter überträgt eine Sicherheitskonfiguration und einen Heartbeat, damit die geräteinterne
+  Ausfallsicherung der Firmware den Teich schützt, selbst wenn ioBroker ausfällt.
 - **Abfrageintervall (s)** – wie oft der Backend-Status abgefragt wird (z. B. `30`).
 
 ### Belüftungspunkte
@@ -324,11 +331,12 @@ Sicherheitsverriegelung gegen Nullförderung, Überwachung, Astro & Geoposition,
 der **Winter-/Eisfrei-Modus**, der **Sauerstoff-Regelkreis**, **Benachrichtigungen**, die
 **Laufzeitstatistik** sowie der **Trockenlauf-Testmodus**. **Noch ausstehend:**
 
-* das direkte **ESP32**-Hardware-Backend + Referenz-Firmware (Waveshare ESP32-S3-POE-ETH-8DI-8RO),
-  inkl. der Referenzsensoren (gelöster Sauerstoff, Luftleitungsdruck, Wassertemperatur), die an den
-  ESP32 angeschlossen sind – siehe [dev/hardware/sensors.md](../../dev/hardware/sensors.md);
-* eine **mobilfreundliche Webseite, die direkt vom ESP32 (verpflichtend auf Port 80) bereitgestellt
-  wird**, zur Steuerung und Überwachung vor Ort vom Smartphone – ohne ioBroker für den Betrieb;
+* die Fertigstellung der **[Referenz-Firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware)**
+  für den Waveshare ESP32-S3-POE-ETH-8DI-8RO — das adapterseitige ESP32-Backend ist vorhanden; die
+  Firmware-Grundlage (Ethernet, Relais, digitale Eingangs-Taster, HTTP/WS-API, geräteinterne
+  Ausfallsicherung, mobilfreundliche Web-UI auf Port 80) ist committet, als nächster Schritt folgen die
+  Referenzsensoren (gelöster Sauerstoff, Luftleitungsdruck, Wassertemperatur — siehe
+  [dev/hardware/sensors.md](../../dev/hardware/sensors.md));
 * ein nachgelagerter **vis-2-Widget-Adapter** für Bedienung und Überwachung.
 
 Den vollständigen, meilensteinbasierten Plan findest du in [PROJECT_PLAN.md](../../PROJECT_PLAN.md).

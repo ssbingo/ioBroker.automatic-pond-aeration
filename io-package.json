@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "automatic-pond-aeration",
-		"version": "0.0.16",
+		"version": "0.0.17",
 		"news": {
+			"0.0.17": {
+				"en": "Direct ESP32 hardware backend: drives the Waveshare board via the separate reference firmware over HTTP, with a heartbeat that arms the firmware's on-device failsafe.",
+				"de": "Direktes ESP32-Backend: steuert das Waveshare-Board über die separate Referenz-Firmware per HTTP, mit Heartbeat für die On-Device-Ausfallsicherung der Firmware.",
+				"ru": "Прямой аппаратный бэкенд ESP32: управляет платой Waveshare через отдельную эталонную прошивку по HTTP, с heartbeat для аппаратной защиты прошивки.",
+				"pt": "Backend de hardware ESP32 direto: controla a placa Waveshare através do firmware de referência separado por HTTP, com heartbeat para a proteção no dispositivo.",
+				"nl": "Directe ESP32-hardwarebackend: stuurt het Waveshare-board via de aparte referentiefirmware over HTTP, met heartbeat voor de failsafe op het apparaat.",
+				"fr": "Backend matériel ESP32 direct : pilote la carte Waveshare via le firmware de référence séparé en HTTP, avec un heartbeat pour la sécurité embarquée du firmware.",
+				"it": "Backend hardware ESP32 diretto: controlla la scheda Waveshare tramite il firmware di riferimento separato via HTTP, con heartbeat per il failsafe sul dispositivo.",
+				"es": "Backend de hardware ESP32 directo: controla la placa Waveshare mediante el firmware de referencia separado por HTTP, con heartbeat para el failsafe en el dispositivo.",
+				"pl": "Bezpośredni backend sprzętowy ESP32: steruje płytą Waveshare przez osobny firmware referencyjny po HTTP, z heartbeat dla zabezpieczenia na urządzeniu.",
+				"uk": "Прямий апаратний бекенд ESP32: керує платою Waveshare через окрему еталонну прошивку по HTTP, із heartbeat для апаратного захисту.",
+				"zh-cn": "直连 ESP32 硬件后端：通过独立参考固件以 HTTP 控制 Waveshare 板，并用心跳启用固件的板载故障保护。"
+			},
 			"0.0.16": {
 				"en": "Per-point manual override push-button (toggle): forces a point on with priority over the automatic control; only the master switch or a safety trip overrides it.",
 				"de": "Manueller Übersteuerungs-Taster je Stelle (Toggle): erzwingt eine Stelle mit Vorrang vor der Automatik; nur Hauptschalter oder Sicherheitsauslösung heben ihn auf.",
@@ -147,6 +160,8 @@
 		"esp32Port": 80,
 		"esp32UseWebsocket": true,
 		"esp32AuthToken": "",
+		"esp32EmergencyRelay": 6,
+		"esp32PumpRelay": 7,
 		"pollIntervalSec": 30,
 
 		"locationMode": "system",

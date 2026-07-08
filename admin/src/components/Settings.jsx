@@ -247,11 +247,20 @@ function Settings(props) {
 					<Num label={I18n.t('Poll interval (s)')} value={native.pollIntervalSec} onChange={v => set('pollIntervalSec', v)} min={1} />
 				</Box>
 				{native.controlBackend === 'esp32' ? (
-					<Box sx={{ mt: 2, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-						<TextField variant="standard" label={I18n.t('ESP32 host / IP')} value={native.esp32Host || ''} onChange={e => set('esp32Host', e.target.value)} />
-						<Num label={I18n.t('ESP32 port')} value={native.esp32Port} onChange={v => set('esp32Port', v)} min={1} />
-						<Sw label={I18n.t('Use WebSocket')} checked={native.esp32UseWebsocket} onChange={v => set('esp32UseWebsocket', v)} />
-					</Box>
+					<>
+						<Box sx={{ mt: 2, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+							<TextField variant="standard" label={I18n.t('ESP32 host / IP')} value={native.esp32Host || ''} onChange={e => set('esp32Host', e.target.value)} />
+							<Num label={I18n.t('ESP32 port')} value={native.esp32Port} onChange={v => set('esp32Port', v)} min={1} />
+							<Sw label={I18n.t('Use WebSocket')} checked={native.esp32UseWebsocket} onChange={v => set('esp32UseWebsocket', v)} />
+						</Box>
+						<Box sx={{ mt: 1, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+							<Num label={I18n.t('Emergency-valve relay (0–7)')} value={native.esp32EmergencyRelay} onChange={v => set('esp32EmergencyRelay', v)} min={0} />
+							<Num label={I18n.t('Pump relay (0–7)')} value={native.esp32PumpRelay} onChange={v => set('esp32PumpRelay', v)} min={0} />
+						</Box>
+						<Typography variant="caption" color="textSecondary" sx={{ display: 'block', mt: 0.5 }}>
+							{I18n.t('The aeration-point valves use the relay channel set per point; here you map the emergency valve and the pump. The firmware runs an on-device failsafe from these settings.')}
+						</Typography>
+					</>
 				) : null}
 			</Section>
 		</Box>
