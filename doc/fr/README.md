@@ -142,7 +142,7 @@ Le cœur de la configuration. Ajoute **jusqu'à 8** points ; chaque point est un
   (toggle)** : une pression force le point **en marche, avec priorité sur la commande automatique**
   (planning/séquence/hiver/oxygène) et même sur une pause du feeder — *seuls l'interrupteur principal
   ou un déclenchement de sécurité le supplantent*. Appuie de nouveau pour le relâcher. (D'autres
-  modes de bouton sont prévus ; le champ est préparé pour eux.)
+  modes de bouton sont prévus ; le champ est préparé pour eux.) Un bouton n'est disponible que pour une **vanne d'aération** — un point situé sur le canal de relais ESP32 de la **pompe** ou de la **vanne de secours** ne peut pas en avoir (l'option est grisée). Avec le backend ESP32, un bouton pressé **sur l'appareil** est répercuté dans ioBroker (`aeration.point.<n>.buttonOn`) et obtient la même priorité.
 
 ### Groupes
 Regroupe des points pour les commuter ensemble (p. ex. un bouton ouvre plusieurs diffuseurs). Donne

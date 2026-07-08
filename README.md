@@ -140,7 +140,10 @@ The heart of the configuration. Add **up to 8** points; each one is one valve. P
   or any boolean state). It works as a **toggle**: one press forces the point **on with priority over
   the automatic control** (schedule/sequence/winter/oxygen) and even over a feeder pause — *only the
   master switch or a safety trip overrides it*. Press again to release. (More button modes are
-  planned; the field is prepared for them.)
+  planned; the field is prepared for them.) A button is only available for an **aeration valve** — a
+  point that sits on the ESP32 **pump** or **emergency-valve** relay channel cannot have one (the
+  option is greyed out). With the ESP32 backend, a button pressed **at the device** is reflected back
+  into ioBroker (`aeration.point.<n>.buttonOn`) and gets the same priority.
 
 ### Groups
 Group points to switch them together (e.g. one button opens several diffusers). Give the group a
@@ -335,6 +338,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.0.18 (2026-07-08)
+* (ssbingo) Override-button safety + ESP32 device web UI. The per-point manual override **push-button is now only allowed on an aeration-valve channel** — if a point sits on the ESP32 pump or emergency-valve relay channel the button is force-disabled and greyed out in the admin (those channels are safety-critical and must never be hand-toggled). A button wired to the ESP32 is now **reflected back into ioBroker**: pressing it at the device updates `aeration.point.<n>.buttonOn` and gets the same force-on priority in the arbiter. The companion [reference firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware) gained an on-device **web UI** (Settings: DHCP/static IP/DNS/hostname, NTP time, WS2812/buzzer; **OTA** firmware update with a GitHub version check; a device-info page), **SNTP** timekeeping (default `de.pool.ntp.org`) and **status LED/buzzer** signalling, plus a beginner install guide (EN/DE)
+
 ### 0.0.17 (2026-07-08)
 * (ssbingo) Direct **ESP32 hardware backend** (M7): selecting `ESP32 (direct)` now drives a Waveshare ESP32-S3-POE-ETH-8DI-8RO through the separate [reference firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware) over HTTP (JSON, port 80) — `GET /api/info` protocol check, `POST /api/config` pushing the safety roles, relay commands, and a heartbeat that keeps the firmware's on-device failsafe disarmed while the adapter is healthy; the polled status is mirrored into the data points. New config `esp32EmergencyRelay`/`esp32PumpRelay`, pure/unit-tested `lib/hal/esp32-protocol.js` and `lib/hal/esp32-backend.js`, admin fields + 3 strings in 11 languages. The ioBroker-state backend remains the default
 
@@ -361,9 +367,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.0.9 (2026-07-07)
 * (ssbingo) Full configuration UI (React admin): a tabbed settings page covering general/backend, aeration points, groups, control (round-robin + schedules), sensors, location (OpenStreetMap map + on-demand geocoding), feeder coupling (with switch discovery) and safety (pump + emergency valve). Everything built so far can now be configured and tested from the admin
-
-### 0.0.8 (2026-07-07)
-* (ssbingo) Feeder coupling (`ioBroker.automatic-feeder`): while a selected feeder is feeding, the chosen aeration points are paused (forced off) for the feeding time plus a configurable offset — `measure` mode watches the feeder switch, `pulse` mode uses a fixed feeding duration. The feeder switches can be auto-discovered from the admin (`discoverFeederSwitches`); the pause drives `feeder.pauseActive` / `feeder.pauseUntil` / `feeder.lastFeedStart`
 
 ---
 

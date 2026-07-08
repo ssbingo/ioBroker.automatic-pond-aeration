@@ -197,8 +197,11 @@ This is the heart of the setup. Add *up to 8* points; each one is one valve.
 Each point may also have an optional *override button* — a physical push-button (e.g. an ESP32
 digital input, or any boolean state). It works as a *toggle*: one press forces that point *on with
 priority over the automatic control* (schedule, sequence, winter, oxygen) and even over a feeder
-pause; only the master switch or a safety trip overrides it. Press again to release. (More button
-modes are planned.)
+pause; only the master switch or a safety trip overrides it. Press again to release. A button is only
+available for an *aeration valve*: a point that sits on the ESP32 pump or emergency-valve relay
+channel cannot have one (the option is greyed out, because those channels are safety-critical). With
+the ESP32 backend, a button pressed *at the device* is reflected back into ioBroker
+(`aeration.point.<n>.buttonOn`) and gets the same priority. (More button modes are planned.)
 
 == Groups
 
@@ -435,9 +438,15 @@ With the board flashed and wired, the adapter can drive it directly — no relay
   locally. This is why the ESP32 is driven directly rather than switched "dumb" from afar.
 ]
 
-#tipbox("Mobile web page (port 80)")[
-  Open the board's IP in a phone browser — the firmware serves a small, self-contained page to watch
-  the relays / sensors and toggle channels on site, without ioBroker.
+#tipbox("On-device web UI (port 80)")[
+  Open the board's IP in a browser — the firmware serves four self-contained pages (no cloud, no app):
+  *Home* (watch the relays / sensors and toggle channels on site), *Settings* (DHCP or static IP /
+  DNS / hostname, the *NTP server* — default `de.pool.ntp.org` — and the WS2812 LED / buzzer),
+  *Update* (an *over-the-air* firmware update with a GitHub "latest version" check) and *Info* (time,
+  IP, MAC, hostname, version, memory and uptime). The status LED shows green = normal, orange = no
+  link, blue = a button override is active, red-blinking = failsafe; the buzzer beeps once when the
+  failsafe engages. A step-by-step beginner install guide (English + German, with diagrams) ships in
+  the firmware repository under `docs/`.
 ]
 
 = FAQ

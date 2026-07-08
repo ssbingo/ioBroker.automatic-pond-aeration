@@ -141,7 +141,7 @@ El núcleo de la configuración. Añade **hasta 8** puntos; cada punto es una v�
   el punto **encendido con prioridad sobre el control automático**
   (horario/secuencia/invierno/oxígeno) e incluso sobre una pausa del feeder — *solo el interruptor
   principal o un disparo de seguridad lo anulan*. Pulsa de nuevo para soltarlo. (Se prevén más modos
-  de botón; el campo está preparado para ellos.)
+  de botón; el campo está preparado para ellos.) Un botón solo está disponible para una **válvula de aireación** — un punto que se encuentra en el canal de relé ESP32 de la **bomba** o de la **válvula de emergencia** no puede tener uno (la opción aparece deshabilitada). Con el backend ESP32, un botón pulsado **en el dispositivo** se refleja de vuelta en ioBroker (`aeration.point.<n>.buttonOn`) y obtiene la misma prioridad.
 
 ### Grupos
 Agrupa puntos para conmutarlos juntos (p. ej. un botón abre varios difusores). Da un nombre al grupo

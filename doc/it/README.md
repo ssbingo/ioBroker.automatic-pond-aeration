@@ -140,7 +140,7 @@ punto:
   (toggle)**: una pressione forza il punto **acceso con priorità sul controllo automatico**
   (programma/sequenza/inverno/ossigeno) e persino su una pausa del feeder — *solo l'interruttore
   principale o un intervento di sicurezza lo annullano*. Premi di nuovo per rilasciarlo. (Sono
-  previste altre modalità del pulsante; il campo è predisposto per esse.)
+  previste altre modalità del pulsante; il campo è predisposto per esse.) Un pulsante è disponibile solo per una **valvola di aerazione** — un punto che si trova sul canale relè ESP32 della **pompa** o della **valvola di emergenza** non può averne uno (l'opzione è disattivata). Con il backend ESP32, un pulsante premuto **sul dispositivo** viene riflesso in ioBroker (`aeration.point.<n>.buttonOn`) e ottiene la stessa priorità.
 
 ### Gruppi
 Raggruppa i punti per commutarli insieme (ad es. un pulsante apre più diffusori). Assegna un nome al

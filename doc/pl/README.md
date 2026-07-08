@@ -134,7 +134,7 @@ Serce konfiguracji. Dodaj **do 8** punktów; każdy punkt to jeden zawór. Dla k
   wymusza punkt **wł. z priorytetem nad sterowaniem automatycznym**
   (harmonogram/sekwencja/zima/tlen), a nawet nad pauzą feedera — *tylko główny wyłącznik lub
   zadziałanie zabezpieczenia go zastępują*. Naciśnij ponownie, aby zwolnić. (Planowane są kolejne
-  tryby przycisku; pole jest na nie przygotowane.)
+  tryby przycisku; pole jest na nie przygotowane.) Przycisk jest dostępny tylko dla **zaworu napowietrzania** — punkt znajdujący się na kanale przekaźnika ESP32 **pompy** lub **zaworu awaryjnego** nie może go mieć (opcja jest wyszarzona). W backendzie ESP32 przycisk naciśnięty **na urządzeniu** jest odzwierciedlany z powrotem w ioBroker (`aeration.point.<n>.buttonOn`) i otrzymuje ten sam priorytet.
 
 ### Grupy
 Grupuj punkty, aby przełączać je razem (np. jeden przycisk otwiera kilka dyfuzorów). Nadaj grupie

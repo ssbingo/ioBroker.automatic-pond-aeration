@@ -216,7 +216,11 @@ Jeder Punkt kann zusätzlich einen optionalen *Übersteuerungs-Taster* haben —
 (z. B. einen ESP32-Digitaleingang oder einen beliebigen booleschen State). Er arbeitet als *Toggle*:
 Ein Druck erzwingt diesen Punkt *mit Vorrang vor der Automatik* (Zeitplan, Sequenz, Winter,
 Sauerstoff) und sogar vor einer Fütterungspause; nur der Hauptschalter oder eine
-Sicherheitsauslösung heben ihn auf. Erneut drücken hebt ihn auf. (Weitere Taster-Modi sind geplant.)
+Sicherheitsauslösung heben ihn auf. Erneut drücken hebt ihn auf. Ein Taster ist nur für ein
+*Belüftungsventil* verfügbar: Ein Punkt auf dem ESP32-Pumpen- oder Notventil-Relaiskanal kann keinen
+haben (die Option ist ausgegraut, da diese Kanäle sicherheitskritisch sind). Beim ESP32-Backend wird
+ein *am Gerät* gedrückter Taster in ioBroker zurückgespiegelt (`aeration.point.<n>.buttonOn`) und
+erhält denselben Vorrang. (Weitere Taster-Modi sind geplant.)
 
 == Gruppen
 
@@ -474,9 +478,15 @@ dazwischen.
   Deshalb wird der ESP32 direkt angesteuert statt „dumm" aus der Ferne geschaltet.
 ]
 
-#tipbox("Mobile Webseite (Port 80)")[
-  Öffnen Sie die IP des Boards im Handy-Browser — die Firmware liefert eine kleine, eigenständige
-  Seite, um Relais/Sensoren zu sehen und Kanäle vor Ort zu schalten, ganz ohne ioBroker.
+#tipbox("Geräte-Weboberfläche (Port 80)")[
+  Öffnen Sie die IP des Boards im Browser — die Firmware liefert vier eigenständige Seiten (ohne
+  Cloud, ohne App): *Home* (Relais/Sensoren ansehen und Kanäle vor Ort schalten), *Settings*
+  (DHCP oder statische IP / DNS / Hostname, der *NTP-Server* — Standard `de.pool.ntp.org` — sowie
+  WS2812-LED / Buzzer), *Update* (Firmware-Aktualisierung *über das Netz* mit GitHub-Versionsabgleich)
+  und *Info* (Uhrzeit, IP, MAC, Hostname, Version, Speicher und Laufzeit). Die Status-LED zeigt
+  grün = normal, orange = kein Link, blau = ein Taster-Override ist aktiv, rot-blinkend = Failsafe;
+  der Buzzer piept einmal, wenn die Ausfallsicherung auslöst. Eine anfängertaugliche
+  Installationsanleitung (Deutsch + Englisch, mit Grafiken) liegt im Firmware-Repository unter `docs/`.
 ]
 
 = FAQ

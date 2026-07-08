@@ -1,85 +1,20 @@
 {
 	"common": {
 		"name": "automatic-pond-aeration",
-		"version": "0.0.17",
+		"version": "0.0.18",
 		"news": {
-			"0.0.17": {
-				"en": "Direct ESP32 hardware backend: drives the Waveshare board via the separate reference firmware over HTTP, with a heartbeat that arms the firmware's on-device failsafe.",
-				"de": "Direktes ESP32-Backend: steuert das Waveshare-Board über die separate Referenz-Firmware per HTTP, mit Heartbeat für die On-Device-Ausfallsicherung der Firmware.",
-				"ru": "Прямой аппаратный бэкенд ESP32: управляет платой Waveshare через отдельную эталонную прошивку по HTTP, с heartbeat для аппаратной защиты прошивки.",
-				"pt": "Backend de hardware ESP32 direto: controla a placa Waveshare através do firmware de referência separado por HTTP, com heartbeat para a proteção no dispositivo.",
-				"nl": "Directe ESP32-hardwarebackend: stuurt het Waveshare-board via de aparte referentiefirmware over HTTP, met heartbeat voor de failsafe op het apparaat.",
-				"fr": "Backend matériel ESP32 direct : pilote la carte Waveshare via le firmware de référence séparé en HTTP, avec un heartbeat pour la sécurité embarquée du firmware.",
-				"it": "Backend hardware ESP32 diretto: controlla la scheda Waveshare tramite il firmware di riferimento separato via HTTP, con heartbeat per il failsafe sul dispositivo.",
-				"es": "Backend de hardware ESP32 directo: controla la placa Waveshare mediante el firmware de referencia separado por HTTP, con heartbeat para el failsafe en el dispositivo.",
-				"pl": "Bezpośredni backend sprzętowy ESP32: steruje płytą Waveshare przez osobny firmware referencyjny po HTTP, z heartbeat dla zabezpieczenia na urządzeniu.",
-				"uk": "Прямий апаратний бекенд ESP32: керує платою Waveshare через окрему еталонну прошивку по HTTP, із heartbeat для апаратного захисту.",
-				"zh-cn": "直连 ESP32 硬件后端：通过独立参考固件以 HTTP 控制 Waveshare 板，并用心跳启用固件的板载故障保护。"
-			},
-			"0.0.16": {
-				"en": "Per-point manual override push-button (toggle): forces a point on with priority over the automatic control; only the master switch or a safety trip overrides it.",
-				"de": "Manueller Übersteuerungs-Taster je Stelle (Toggle): erzwingt eine Stelle mit Vorrang vor der Automatik; nur Hauptschalter oder Sicherheitsauslösung heben ihn auf.",
-				"ru": "Кнопка ручного управления для каждой точки (переключатель): принудительно включает точку с приоритетом над автоматикой; отменяют только главный выключатель или срабатывание защиты.",
-				"pt": "Botão de substituição manual por ponto (comutação): força um ponto com prioridade sobre o controlo automático; só o interruptor principal ou uma proteção o anulam.",
-				"nl": "Handmatige overname-knop per punt (toggle): forceert een punt met voorrang op de automatiek; alleen de hoofdschakelaar of een veiligheidsingreep heffen het op.",
-				"fr": "Bouton de dérogation manuelle par point (bascule) : force un point en priorité sur la commande automatique ; seul l'interrupteur principal ou une sécurité l'annule.",
-				"it": "Pulsante di override manuale per punto (toggle): forza un punto con priorità sul controllo automatico; solo l'interruttore principale o una sicurezza lo annullano.",
-				"es": "Botón de anulación manual por punto (conmutación): fuerza un punto con prioridad sobre el control automático; solo el interruptor principal o una seguridad lo anulan.",
-				"pl": "Przycisk ręcznego nadpisania na punkt (przełącznik): wymusza punkt z priorytetem nad automatyką; anuluje go tylko główny wyłącznik lub zabezpieczenie.",
-				"uk": "Кнопка ручного перевизначення для кожної точки (перемикач): примусово вмикає точку з пріоритетом над автоматикою; скасовують лише головний вимикач або спрацювання захисту.",
-				"zh-cn": "每个增氧点的手动优先按钮（切换）：以高于自动控制的优先级强制开启；仅总开关或安全触发可覆盖。"
-			},
-			"0.0.15": {
-				"en": "Admin usability: calendar picker for winter dates, clock picker for schedules, full scrolling, per-parameter safety explanations, and selectable notification events.",
-				"de": "Admin-Bedienung: Kalenderauswahl für Winter-Daten, Uhrzeit-Picker für Zeitpläne, vollständiges Scrollen, Erklärungen je Sicherheitsparameter und wählbare Benachrichtigungs-Ereignisse.",
-				"ru": "Удобство админки: выбор дат зимы через календарь, выбор времени для расписаний, полная прокрутка, пояснения к параметрам безопасности и выбор событий уведомлений.",
-				"pt": "Usabilidade do admin: seletor de calendário para datas de inverno, seletor de hora para agendamentos, rolagem completa, explicações por parâmetro de segurança e eventos de notificação selecionáveis.",
-				"nl": "Admin-gebruiksgemak: kalenderkiezer voor winterdatums, tijdkiezer voor schema's, volledig scrollen, uitleg per veiligheidsparameter en selecteerbare meldingsgebeurtenissen.",
-				"fr": "Ergonomie de l'admin : sélecteur de calendrier pour les dates d'hiver, sélecteur d'heure pour les horaires, défilement complet, explications par paramètre de sécurité et événements de notification sélectionnables.",
-				"it": "Usabilità admin: selettore calendario per le date invernali, selettore orario per le pianificazioni, scorrimento completo, spiegazioni per ogni parametro di sicurezza ed eventi di notifica selezionabili.",
-				"es": "Usabilidad del admin: selector de calendario para fechas de invierno, selector de hora para horarios, desplazamiento completo, explicaciones por parámetro de seguridad y eventos de notificación seleccionables.",
-				"pl": "Wygoda panelu: kalendarz do dat zimowych, wybór godziny dla harmonogramów, pełne przewijanie, objaśnienia dla parametrów bezpieczeństwa i wybieralne zdarzenia powiadomień.",
-				"uk": "Зручність адмінки: вибір дат зими через календар, вибір часу для розкладів, повне прокручування, пояснення до параметрів безпеки та вибір подій сповіщень.",
-				"zh-cn": "管理界面易用性：冬季日期日历选择、计划时间选择、完整滚动、每个安全参数的说明，以及可选择的通知事件。"
-			},
-			"0.0.14": {
-				"en": "Cyclic sequence over points and groups (mixed), with an optional per-step dwell time.",
-				"de": "Zyklische Sequenz über Stellen und Gruppen (gemischt), mit optionaler Verweildauer je Schritt.",
-				"ru": "Циклическая последовательность по точкам и группам (смешанно), с опциональным временем задержки на шаг.",
-				"pt": "Sequência cíclica por pontos e grupos (misturados), com tempo de permanência opcional por passo.",
-				"nl": "Cyclische reeks over punten en groepen (gemengd), met optionele verblijftijd per stap.",
-				"fr": "Séquence cyclique sur points et groupes (mixtes), avec un temps de maintien optionnel par étape.",
-				"it": "Sequenza ciclica su punti e gruppi (mista), con tempo di permanenza opzionale per passo.",
-				"es": "Secuencia cíclica sobre puntos y grupos (mixta), con tiempo de permanencia opcional por paso.",
-				"pl": "Cykliczna sekwencja punktów i grup (mieszana), z opcjonalnym czasem postoju na krok.",
-				"uk": "Циклічна послідовність за точками та групами (змішано), з опціональним часом затримки на крок.",
-				"zh-cn": "对增氧点和分组的循环序列（可混合），每步可选停留时间。"
-			},
-			"0.0.13": {
-				"en": "Winter/ice-free mode, oxygen closed loop, notifications, runtime statistics and a dry-run test mode.",
-				"de": "Winter-/Eisfrei-Modus, Sauerstoff-Regelkreis, Benachrichtigungen, Laufzeitstatistik und ein Testlauf-Modus.",
-				"ru": "Зимний режим, кислородный контур регулирования, уведомления, статистика работы и режим тестового прогона.",
-				"pt": "Modo de inverno/livre de gelo, malha fechada de oxigénio, notificações, estatísticas de funcionamento e um modo de simulação.",
-				"nl": "Winter-/ijsvrij-modus, zuurstofregelkring, meldingen, looptijdstatistieken en een testmodus (dry-run).",
-				"fr": "Mode hiver/sans glace, boucle de régulation d'oxygène, notifications, statistiques de fonctionnement et un mode simulation.",
-				"it": "Modalità invernale/anti-ghiaccio, anello di regolazione dell'ossigeno, notifiche, statistiche di funzionamento e una modalità di prova.",
-				"es": "Modo invierno/sin hielo, lazo cerrado de oxígeno, notificaciones, estadísticas de funcionamiento y un modo de simulación.",
-				"pl": "Tryb zimowy/przeciwoblodzeniowy, pętla regulacji tlenu, powiadomienia, statystyki pracy i tryb testowy.",
-				"uk": "Зимовий режим, контур регулювання кисню, сповіщення, статистика роботи та режим тестового прогону.",
-				"zh-cn": "冬季／防冰模式、溶氧闭环控制、通知、运行统计以及试运行测试模式。"
-			},
-			"0.0.12": {
-				"en": "Documentation and release hardening: a full multi-language manual with a detailed per-tab configuration guide, corrected io-package schema (encryptedNative/protectedNative), a new icon and changelog housekeeping.",
-				"de": "Doku- und Release-Härtung: vollständiges mehrsprachiges Handbuch mit detaillierter Konfigurationsanleitung, korrigiertes io-package-Schema (encryptedNative/protectedNative), neues Icon und Changelog-Pflege.",
-				"ru": "Документация и подготовка к релизу: полное многоязычное руководство с подробной инструкцией по настройке, исправленная схема io-package (encryptedNative/protectedNative), новый значок и упорядочивание журнала изменений.",
-				"pt": "Documentação e preparação para o lançamento: manual multilíngue completo com um guia de configuração detalhado, esquema io-package corrigido (encryptedNative/protectedNative), novo ícone e organização do changelog.",
-				"nl": "Documentatie en release-hardening: volledig meertalig handboek met een gedetailleerde configuratiegids, gecorrigeerd io-package-schema (encryptedNative/protectedNative), nieuw pictogram en changelog-onderhoud.",
-				"fr": "Documentation et préparation de la version : manuel multilingue complet avec un guide de configuration détaillé, schéma io-package corrigé (encryptedNative/protectedNative), nouvelle icône et entretien du changelog.",
-				"it": "Documentazione e preparazione al rilascio: manuale multilingue completo con una guida di configurazione dettagliata, schema io-package corretto (encryptedNative/protectedNative), nuova icona e manutenzione del changelog.",
-				"es": "Documentación y preparación de la versión: manual multilingüe completo con una guía de configuración detallada, esquema io-package corregido (encryptedNative/protectedNative), nuevo icono y mantenimiento del registro de cambios.",
-				"pl": "Dokumentacja i przygotowanie wydania: pełny wielojęzyczny podręcznik ze szczegółowym przewodnikiem konfiguracji, poprawiony schemat io-package (encryptedNative/protectedNative), nowa ikona i porządki w changelogu.",
-				"uk": "Документація та підготовка до випуску: повний багатомовний посібник із докладною інструкцією з налаштування, виправлена схема io-package (encryptedNative/protectedNative), нова іконка та впорядкування журналу змін.",
-				"zh-cn": "文档与发布加固：完整的多语言手册及详细的配置指南，修正 io-package 结构（encryptedNative/protectedNative），新图标，并整理更新日志。"
+			"0.0.18": {
+				"en": "Override-button safety: a manual override button is now only allowed on an aeration-valve channel (greyed out on the pump/emergency-valve channel), and a button pressed at the ESP32 device is reflected back into ioBroker. The companion firmware gained an on-device web UI (network/NTP, OTA update, info), SNTP time and status LED/buzzer signalling.",
+				"de": "Übersteuerungstaster-Sicherheit: ein manueller Übersteuerungstaster ist jetzt nur noch an einem Belüftungsventil-Kanal erlaubt (am Pumpen-/Notventil-Kanal ausgegraut), und ein am ESP32-Gerät gedrückter Taster wird in ioBroker zurückgespiegelt. Die zugehörige Firmware erhielt eine Weboberfläche auf dem Gerät (Netzwerk/NTP, OTA-Update, Info), SNTP-Zeit und Status-LED-/Summer-Signalisierung.",
+				"ru": "Безопасность кнопки переопределения: ручная кнопка переопределения теперь разрешена только на канале клапана аэрации (недоступна на канале насоса/аварийного клапана), а кнопка, нажатая на устройстве ESP32, отражается обратно в ioBroker. Сопутствующая прошивка получила веб-интерфейс на устройстве (сеть/NTP, OTA-обновление, информация), время SNTP и сигнализацию светодиодом состояния/зуммером.",
+				"pt": "Segurança do botão de substituição: um botão de substituição manual só é permitido num canal de válvula de arejamento (desativado no canal da bomba/válvula de emergência), e um botão premido no dispositivo ESP32 é refletido de volta no ioBroker. O firmware complementar ganhou uma interface web no dispositivo (rede/NTP, atualização OTA, informação), hora SNTP e sinalização por LED de estado/buzzer.",
+				"nl": "Veiligheid van de overrideknop: een handmatige overrideknop is nu alleen toegestaan op een beluchtingsklep-kanaal (grijs weergegeven op het pomp-/noodklep-kanaal), en een op het ESP32-apparaat ingedrukte knop wordt teruggespiegeld naar ioBroker. De bijbehorende firmware kreeg een webinterface op het apparaat (netwerk/NTP, OTA-update, info), SNTP-tijd en status-LED-/zoemer-signalering.",
+				"fr": "Sécurité du bouton de forçage : un bouton de forçage manuel n'est désormais autorisé que sur un canal de vanne d'aération (grisé sur le canal de la pompe/vanne de secours), et un bouton pressé sur l'appareil ESP32 est répercuté dans ioBroker. Le firmware associé a gagné une interface web embarquée (réseau/NTP, mise à jour OTA, infos), l'heure SNTP et une signalisation par LED d'état/buzzer.",
+				"it": "Sicurezza del pulsante di override: un pulsante di override manuale è ora consentito solo su un canale di valvola di aerazione (disattivato sul canale pompa/valvola di emergenza), e un pulsante premuto sul dispositivo ESP32 viene riflesso in ioBroker. Il firmware companion ha ottenuto un'interfaccia web sul dispositivo (rete/NTP, aggiornamento OTA, info), ora SNTP e segnalazione tramite LED di stato/cicalino.",
+				"es": "Seguridad del botón de anulación: un botón de anulación manual solo se permite ahora en un canal de válvula de aireación (deshabilitado en el canal de la bomba/válvula de emergencia), y un botón pulsado en el dispositivo ESP32 se refleja de vuelta en ioBroker. El firmware complementario incorporó una interfaz web en el dispositivo (red/NTP, actualización OTA, información), hora SNTP y señalización mediante LED de estado/zumbador.",
+				"pl": "Bezpieczeństwo przycisku wymuszenia: ręczny przycisk wymuszenia jest teraz dozwolony tylko na kanale zaworu napowietrzania (wyszarzony na kanale pompy/zaworu awaryjnego), a przycisk naciśnięty na urządzeniu ESP32 jest odzwierciedlany z powrotem w ioBroker. Towarzyszący firmware zyskał interfejs webowy na urządzeniu (sieć/NTP, aktualizacja OTA, informacje), czas SNTP oraz sygnalizację diodą stanu/brzęczykiem.",
+				"uk": "Безпека кнопки перевизначення: ручна кнопка перевизначення тепер дозволена лише на каналі клапана аерації (неактивна на каналі насоса/аварійного клапана), а кнопка, натиснута на пристрої ESP32, відображається назад в ioBroker. Супутня прошивка отримала вебінтерфейс на пристрої (мережа/NTP, OTA-оновлення, інформація), час SNTP та сигналізацію світлодіодом стану/зумером.",
+				"zh-cn": "强制按钮安全性：手动强制按钮现在仅允许用于增氧阀通道（在水泵/应急阀通道上置灰），在 ESP32 设备上按下的按钮会回传到 ioBroker。配套固件新增了板载网页界面（网络/NTP、OTA 更新、信息）、SNTP 时间以及状态 LED／蜂鸣器提示。"
 			}
 		},
 		"titleLang": {

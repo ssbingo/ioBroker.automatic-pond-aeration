@@ -137,7 +137,7 @@ O coração da configuração. Adicione **até 8** pontos; cada ponto é uma vá
   pressão força o ponto **ligado com prioridade sobre o controle automático**
   (horário/sequência/inverno/oxigênio) e até sobre uma pausa do feeder — *apenas o interruptor
   principal ou um disparo de segurança o anulam*. Pressione novamente para soltá-lo. (Mais modos de
-  botão estão planejados; o campo está preparado para eles.)
+  botão estão planejados; o campo está preparado para eles.) Um botão só está disponível para uma **válvula de arejamento** — um ponto que fica no canal de relé do ESP32 da **bomba** ou da **válvula de emergência** não pode ter um (a opção fica desativada). Com o backend ESP32, um botão premido **no dispositivo** é refletido de volta no ioBroker (`aeration.point.<n>.buttonOn`) e recebe a mesma prioridade.
 
 ### Grupos
 Agrupe pontos para comutá-los juntos (por ex. um botão abre vários difusores). Dê um nome ao grupo e

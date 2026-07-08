@@ -140,7 +140,7 @@ Punkt:
   Druck erzwingt den Punkt **ein, mit Vorrang vor der automatischen Steuerung**
   (Zeitplan/Sequenz/Winter/Sauerstoff) und sogar vor einer Feeder-Pause — *nur der Hauptschalter oder
   eine Sicherheitsauslösung setzt ihn außer Kraft*. Zum Freigeben erneut drücken. (Weitere
-  Tastermodi sind geplant; das Feld ist dafür vorbereitet.)
+  Tastermodi sind geplant; das Feld ist dafür vorbereitet.) Ein Taster ist nur für ein **Belüftungsventil** verfügbar — eine Stelle, die auf dem ESP32-Relaiskanal der **Pumpe** oder des **Notventils** liegt, kann keinen haben (die Option ist ausgegraut). Beim ESP32-Backend wird ein **am Gerät** gedrückter Taster in ioBroker zurückgespiegelt (`aeration.point.<n>.buttonOn`) und erhält dieselbe Priorität.
 
 ### Gruppen
 Punkte zu Gruppen zusammenfassen, um sie gemeinsam zu schalten (z. B. öffnet eine Schaltfläche

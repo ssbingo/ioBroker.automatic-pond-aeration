@@ -135,7 +135,7 @@ Het hart van de configuratie. Voeg **maximaal 8** punten toe; elk punt is één 
   forceert het punt **aan met voorrang op de automatische besturing**
   (tijdschema/reeks/winter/zuurstof) en zelfs op een feeder-pauze — *alleen de hoofdschakelaar of een
   veiligheidsactivering heffen dit op*. Druk nogmaals om los te laten. (Er zijn meer knopmodi
-  gepland; het veld is daarop voorbereid.)
+  gepland; het veld is daarop voorbereid.) Een knop is alleen beschikbaar voor een **beluchtingsklep** — een punt dat op het ESP32-relaiskanaal van de **pomp** of de **noodklep** zit, kan er geen hebben (de optie is grijs weergegeven). Bij de ESP32-backend wordt een **op het apparaat** ingedrukte knop teruggespiegeld naar ioBroker (`aeration.point.<n>.buttonOn`) en krijgt dezelfde prioriteit.
 
 ### Groepen
 Groepeer punten om ze samen te schakelen (bijv. één knop opent meerdere uitstromers). Geef de groep
