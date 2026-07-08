@@ -1,0 +1,3 @@
+# Build cache (typst binary is downloaded on demand by build.mjs)
+.cache/
+*.log
