@@ -142,11 +142,12 @@ name and tick its member points. **There can never be more groups than points.**
     you run e.g. *group 1 → group 3 → point 1 → …* and freely **mix** points and groups. Reorder the
     steps with the up/down arrows. Leave the sequence empty to fall back to the plain round-robin
     over all points.
-- **Schedules** – open selected points/groups during a weekday time window (`From`/`To`, e.g.
-  `08:00`–`18:00`; overnight windows like `22:00`–`06:00` are supported). An active schedule has
-  **priority over the round-robin / sequence**.
-- **Winter / ice-free mode** – during the configured season (**Start**/**End** as recurring `MM-DD`,
-  e.g. `11-01`–`03-15`, wrapping across the new year) the selected points are forced on to keep an
+- **Schedules** – open selected points/groups during a weekday time window. Pick **From**/**To**
+  from a **clock picker** (hour/minute, 24 h; overnight windows like `22:00`–`06:00` are supported).
+  An active schedule has **priority over the round-robin / sequence**.
+- **Winter / ice-free mode** – during the configured season (**Start**/**End** chosen from a
+  **calendar** — only **day and month** count, recurring every year, e.g. 1 Nov – 15 Mar, wrapping
+  across the new year) the selected points are forced on to keep an
   ice-free hole open. Optionally tick **Only when it is cold (frost protection)** and set an **air
   temperature threshold** so the pond is only aerated while it is actually freezing (this needs
   air-temperature monitoring). Leave **Points kept open** empty to aerate the whole pond. Winter mode
@@ -181,6 +182,8 @@ is feeding, so the food is not blown around.
 - **Affected points** – which points pause during feeding.
 
 ### Safety
+Every field on this tab carries an **in-admin explanation** of what it does and its effect — read
+them, because this is the tab where a wrong value matters most.
 - **Min. open valves while pump runs** – the dead-head protection (default `1`).
 - **Watchdog interval (s)** and **make-before-break overlap (s)**.
 - **Pump** – whether it is controllable (then the interlock can switch it off), its state, and
@@ -190,9 +193,12 @@ is feeding, so the food is not blown around.
 
 ### Notifications
 Enable notifications and pick a **messaging instance** (any adapter of type `messaging`, e.g.
-Telegram or Pushover). The adapter then sends a short, localized message when the **safety interlock**
-trips or clears, when the **oxygen alarm** raises or recovers, and when the **pressure** leaves or
-re-enters its range.
+Telegram or Pushover), then **tick which events** should send a message:
+- **Safety interlock** – when the dead-head interlock trips or clears;
+- **Oxygen alarm** – when dissolved oxygen drops too low or recovers;
+- **Pressure alarm** – when the pressure leaves or re-enters its range.
+
+A short, localized text is sent on each edge (raise and clear). With no event ticked, nothing is sent.
 
 ## 6. Objects / data points
 
@@ -317,6 +323,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.0.15 (2026-07-08)
+* (ssbingo) Admin usability: winter start/end are now picked from a **calendar** (day + month only, recurring); schedule From/To use a **clock (hour/minute) picker**; the Control page scrolls fully to the bottom; every **Safety** parameter now shows an inline explanation of what it does and its effect. **Notifications** let you choose **which events** are sent (safety interlock / oxygen alarm / pressure alarm) via a new `notifyEvents` option — before, only the messaging instance was selectable. New docs: the manual gained wiring diagrams (failsafe relay wiring, ESP32 sensor wiring), a quick-start and a glossary, and is linked (EN/DE PDF) from all READMEs
+
 ### 0.0.14 (2026-07-08)
 * (ssbingo) Cyclic sequence over points AND groups (M11): the round-robin can now follow an ordered list of steps where each step targets a single point or a whole group, with an optional per-step dwell time and free mixing (e.g. group 1 → group 3 → point 1). Reorder in the admin; an empty sequence keeps the plain round-robin over all points. New `sequenceSteps` config, pure/unit-tested `lib/control/sequence.js`, admin builder and 5 new admin strings in 11 languages
 
@@ -343,9 +352,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.0.6 (2026-07-07)
 * (ssbingo) Comprehensive, meaningful logging on all levels (error/warn/info/debug/silly). Operational INFO messages are localized to the ioBroker system language (`lib/messages.js`, 11 languages, English fallback); warnings, errors and debug output stay in English for log analysis
-
-### 0.0.5 (2026-07-07)
-* (ssbingo) Control engine: an arbiter drives the valves from the operating mode (`auto`/`manual`/`off`), time schedules, a cyclic round-robin and group activation (`control.mode`, `control.point.<n>.open`, `control.group.<g>.active`). Schedules take priority over the round-robin; valves switch make-before-break; the safety interlock runs on top of every result
 
 ---
 

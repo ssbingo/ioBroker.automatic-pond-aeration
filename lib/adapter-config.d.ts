@@ -171,6 +171,8 @@ declare global {
 			/** Notifications via a messaging adapter (Telegram/Pushover). */
 			notifyEnabled: boolean;
 			messagingInstance: string;
+			/** Which event categories send a message ("interlock" | "oxygen" | "pressure"). */
+			notifyEvents: string[];
 
 			/** The configured aeration points (max 8). */
 			points: AerationPointConfig[];

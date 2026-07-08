@@ -142,10 +142,12 @@ gruppo e spunta i punti che ne fanno parte. **Non ci possono mai essere più gru
     liberamente punti e gruppi. Riordina i passi con le frecce su/giù nell'admin. Lascia vuota la
     sequenza per tornare al semplice round-robin su tutti i punti.
 - **Programmi orari** – aprire punti/gruppi selezionati durante una fascia oraria per giorno della
-  settimana (`Da`/`A`, ad es. `08:00`–`18:00`; sono supportate fasce che attraversano la notte come
-  `22:00`–`06:00`). Un programma attivo ha **priorità sul round-robin / sulla sequenza**.
-- **Modalità inverno / anti-ghiaccio** – durante la stagione configurata (**Inizio**/**Fine** come
-  `MM-DD` ricorrente, ad es. `11-01`–`03-15`, con passaggio oltre il nuovo anno) i punti selezionati
+  settimana. **Da**/**A** si scelgono con un **selettore d'orologio** (ora/minuto, 24 h; sono
+  supportate fasce che attraversano la notte come `22:00`–`06:00`). Un programma attivo ha **priorità
+  sul round-robin / sulla sequenza**.
+- **Modalità inverno / anti-ghiaccio** – durante la stagione configurata (**Inizio**/**Fine** scelti
+  con un **calendario** — contano solo **giorno e mese**, ricorrenti ogni anno, ad es. 1 nov – 15 mar,
+  con passaggio oltre il nuovo anno) i punti selezionati
   vengono forzati in accensione per mantenere aperto un foro libero dal ghiaccio. Facoltativamente
   spunta **Solo quando fa freddo (protezione antigelo)** e imposta una **soglia di temperatura
   dell'aria**, così il laghetto viene aerato solo quando sta effettivamente gelando (ciò richiede il
@@ -187,6 +189,8 @@ così il cibo non viene disperso.
 - **Punti interessati** – quali punti vanno in pausa durante l'alimentazione.
 
 ### Sicurezza
+Ogni campo di questa scheda riporta una **spiegazione nell'admin** di ciò che fa e del suo effetto —
+leggile, perché questa è la scheda in cui un valore sbagliato conta di più.
 - **Valvole aperte min. mentre la pompa è in funzione** – la protezione contro il dead-heading
   (predefinito `1`).
 - **Intervallo del watchdog (s)** e **sovrapposizione make-before-break (s)**.
@@ -198,9 +202,13 @@ così il cibo non viene disperso.
 
 ### Notifiche
 Abilita le notifiche e scegli un'**istanza di messaging** (un qualsiasi adattatore di tipo
-`messaging`, ad es. Telegram o Pushover). L'adattatore invia quindi un breve messaggio localizzato
-quando il blocco di sicurezza interviene o si disattiva, quando l'allarme dell'ossigeno scatta o
-rientra, e quando la pressione esce dal suo intervallo o vi rientra.
+`messaging`, ad es. Telegram o Pushover), poi **spunta quali eventi** devono inviare un messaggio:
+- **Blocco di sicurezza** – quando il blocco contro il dead-heading interviene o si disattiva;
+- **Allarme ossigeno** – quando l'ossigeno disciolto scende troppo o si riprende;
+- **Allarme pressione** – quando la pressione esce dal suo intervallo o vi rientra.
+
+A ogni fronte (intervento e rientro) viene inviato un breve testo localizzato. Se non è spuntato alcun
+evento, non viene inviato nulla.
 
 ## 6. Oggetti / punti dati
 

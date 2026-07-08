@@ -143,11 +143,12 @@ Gruppen als Punkte geben.**
     und Gruppen frei **mischen**. Die Schritte lassen sich im Admin mit den Pfeilen nach oben/unten
     umsortieren. Lasse die Sequenz leer, um auf den einfachen Round-Robin über alle Punkte
     zurückzufallen.
-- **Zeitpläne** – ausgewählte Punkte/Gruppen während eines Wochentags-Zeitfensters öffnen
-  (`Von`/`Bis`, z. B. `08:00`–`18:00`; über Nacht reichende Fenster wie `22:00`–`06:00` werden
-  unterstützt). Ein aktiver Zeitplan hat **Vorrang vor dem Round-Robin / der Sequenz**.
-- **Winter-/Eisfrei-Modus** – während der konfigurierten Saison (**Start**/**Ende** als
-  wiederkehrendes `MM-DD`, z. B. `11-01`–`03-15`, über den Jahreswechsel hinweg) werden die
+- **Zeitpläne** – ausgewählte Punkte/Gruppen während eines Wochentags-Zeitfensters öffnen. **Von**/**Bis**
+  werden über eine **Uhr-Auswahl** gewählt (Stunde/Minute, 24 h; über Nacht reichende Fenster wie
+  `22:00`–`06:00` werden unterstützt). Ein aktiver Zeitplan hat **Vorrang vor dem Round-Robin / der Sequenz**.
+- **Winter-/Eisfrei-Modus** – während der konfigurierten Saison (**Start**/**Ende** über einen
+  **Kalender** gewählt — nur **Tag und Monat** zählen, jährlich wiederkehrend, z. B. 1. Nov. – 15. März,
+  über den Jahreswechsel hinweg) werden die
   ausgewählten Punkte zwangsweise eingeschaltet, um ein eisfreies Loch offen zu halten. Optional **Nur
   wenn es kalt ist (Frostschutz)** anhaken und einen **Lufttemperatur-Schwellenwert** setzen, damit
   der Teich nur belüftet wird, solange es tatsächlich friert (dazu wird die Lufttemperatur-Überwachung
@@ -187,6 +188,8 @@ Futter nicht verwirbelt wird.
 - **Betroffene Punkte** – welche Punkte während der Fütterung pausieren.
 
 ### Sicherheit
+Jedes Feld auf diesem Tab trägt eine **In-Admin-Erklärung**, was es bewirkt und welche Auswirkung es
+hat — lies sie, denn dies ist der Tab, auf dem ein falscher Wert am meisten zählt.
 - **Min. offene Ventile bei laufender Pumpe** – der Schutz gegen Nullförderung (Standard `1`).
 - **Watchdog-Intervall (s)** und **Make-before-break-Überlappung (s)**.
 - **Pumpe** – ob sie steuerbar ist (dann kann die Verriegelung sie abschalten), ihr State sowie
@@ -196,9 +199,14 @@ Futter nicht verwirbelt wird.
 
 ### Benachrichtigungen
 Benachrichtigungen aktivieren und eine **Messaging-Instanz** wählen (ein beliebiger Adapter vom Typ
-`messaging`, z. B. Telegram oder Pushover). Der Adapter sendet dann eine kurze, lokalisierte
-Nachricht, wenn die Sicherheitsverriegelung auslöst oder wieder freigibt, wenn der Sauerstoffalarm
-ausgelöst wird oder sich erholt und wenn der Druck seinen Bereich verlässt oder wieder erreicht.
+`messaging`, z. B. Telegram oder Pushover), dann **ankreuzen, welche Ereignisse** eine Nachricht
+senden sollen:
+- **Sicherheitsverriegelung** – wenn die Nullförderungs-Verriegelung auslöst oder wieder freigibt;
+- **Sauerstoffalarm** – wenn der gelöste Sauerstoff zu tief fällt oder sich erholt;
+- **Druckalarm** – wenn der Druck seinen Bereich verlässt oder wieder erreicht.
+
+Bei jeder Flanke (Auslösen und Freigabe) wird ein kurzer, lokalisierter Text gesendet. Ist kein
+Ereignis angehakt, wird nichts gesendet.
 
 ## 6. Objekte / Datenpunkte
 

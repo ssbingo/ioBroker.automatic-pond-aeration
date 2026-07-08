@@ -482,10 +482,10 @@ class AutomaticPondAeration extends utils.Adapter {
 		const interlockChanged = decision.interlockActive !== this.interlockWasActive;
 		if (interlockChanged && decision.interlockActive) {
 			this.log.error(`Safety interlock TRIPPED (${source}): ${decision.tripReason}`);
-			this.notify('notifyInterlockTripped', { reason: decision.tripReason || '' });
+			this.notify('interlock', 'notifyInterlockTripped', { reason: decision.tripReason || '' });
 		} else if (interlockChanged && !decision.interlockActive) {
 			this.logInfo('interlockCleared');
-			this.notify('notifyInterlockCleared');
+			this.notify('interlock', 'notifyInterlockCleared');
 		} else if (decision.interlockActive) {
 			this.log.silly(`Safety interlock still active (${source}); ${decision.openValveCount} valve(s) open.`);
 		}
@@ -610,9 +610,12 @@ class AutomaticPondAeration extends utils.Adapter {
 			);
 			await this.setStateChangedAsync('sensors.oxygenAlarm', { val: this.oxygenAlarm, ack: true });
 			if (this.oxygenAlarm && !wasAlarm) {
-				this.notify('notifyOxygenLow', { value: Number(s.oxygen), threshold: Number(this.cfg.o2LowThreshold) });
+				this.notify('oxygen', 'notifyOxygenLow', {
+					value: Number(s.oxygen),
+					threshold: Number(this.cfg.o2LowThreshold),
+				});
 			} else if (!this.oxygenAlarm && wasAlarm) {
-				this.notify('notifyOxygenRecovered', { value: Number(s.oxygen) });
+				this.notify('oxygen', 'notifyOxygenRecovered', { value: Number(s.oxygen) });
 			}
 			const sat = oxygenSaturationPct(s.oxygen, s.waterTemp);
 			if (sat !== null) {
@@ -630,9 +633,9 @@ class AutomaticPondAeration extends utils.Adapter {
 			);
 			await this.setStateChangedAsync('sensors.pressureAlarm', { val: this.pressureAlarm, ack: true });
 			if (this.pressureAlarm && !wasAlarm) {
-				this.notify('notifyPressureAlarm', { value: Number(s.pressure) });
+				this.notify('pressure', 'notifyPressureAlarm', { value: Number(s.pressure) });
 			} else if (!this.pressureAlarm && wasAlarm) {
-				this.notify('notifyPressureCleared');
+				this.notify('pressure', 'notifyPressureCleared');
 			}
 		}
 	}
@@ -710,14 +713,20 @@ class AutomaticPondAeration extends utils.Adapter {
 	/**
 	 * Send a localized notification through the configured messaging adapter (Telegram,
 	 * Pushover, …). Best-effort and fire-and-forget: both the `text` and `message` keys are
-	 * provided so the common messaging adapters all pick it up. No-op when notifications are off.
+	 * provided so the common messaging adapters all pick it up. No-op when notifications are off
+	 * or when the user disabled this event category (config `notifyEvents`).
 	 *
+	 * @param {string} category - event category ("interlock" | "oxygen" | "pressure")
 	 * @param {string} key - message key from lib/messages.js
 	 * @param {Record<string, string | number>} [params] - placeholder values
 	 * @returns {void}
 	 */
-	notify(key, params) {
+	notify(category, key, params) {
 		if (!this.cfg.notifyEnabled || !this.cfg.messagingInstance) {
+			return;
+		}
+		if (Array.isArray(this.cfg.notifyEvents) && !this.cfg.notifyEvents.includes(category)) {
+			this.log.silly(`Notification "${category}" skipped (not selected in notifyEvents).`);
 			return;
 		}
 		const text = translate(key, this.sysLang, params);

@@ -139,11 +139,13 @@ marque seus pontos membros. **Nunca pode haver mais grupos do que pontos.**
     permanência. Isso permite executar por ex. *grupo 1 → grupo 3 → ponto 1 → …* e **misturar**
     livremente pontos e grupos. Reordene os passos com as setas para cima/baixo no admin. Deixe a
     sequência vazia para voltar ao round-robin simples sobre todos os pontos.
-- **Horários** – abrir pontos/grupos selecionados durante uma janela de tempo por dia da semana
-  (`De`/`Até`, por ex. `08:00`–`18:00`; janelas que atravessam a noite, como `22:00`–`06:00`, são
-  suportadas). Um horário ativo tem **prioridade sobre o round-robin / a sequência**.
-- **Modo inverno / livre de gelo** – durante a estação configurada (**Início**/**Fim** como `MM-DD`
-  recorrentes, por ex. `11-01`–`03-15`, atravessando a virada do ano) os pontos selecionados são
+- **Horários** – abrir pontos/grupos selecionados durante uma janela de tempo por dia da semana.
+  **De**/**Até** são escolhidos com um **seletor de relógio** (hora/minuto, 24 h; janelas que
+  atravessam a noite, como `22:00`–`06:00`, são suportadas). Um horário ativo tem **prioridade sobre o
+  round-robin / a sequência**.
+- **Modo inverno / livre de gelo** – durante a estação configurada (**Início**/**Fim** escolhidos com
+  um **calendário** — contam apenas o **dia e o mês**, recorrentes a cada ano, por ex. 1 nov – 15 mar,
+  atravessando a virada do ano) os pontos selecionados são
   forçados a abrir para manter um buraco livre de gelo. Opcionalmente marque **Apenas quando está frio
   (proteção contra congelamento)** e defina um **limite de temperatura do ar** para que o lago só seja
   aerado enquanto realmente estiver congelando (isto requer o monitoramento da temperatura do ar).
@@ -183,6 +185,8 @@ para que a ração não seja espalhada.
 - **Pontos afetados** – quais pontos são pausados durante a alimentação.
 
 ### Segurança
+Cada campo desta aba traz uma **explicação no admin** do que ele faz e do seu efeito — leia-as, pois
+esta é a aba em que um valor errado mais importa.
 - **Válvulas abertas mín. enquanto a bomba funciona** – a proteção contra o dead-heading (padrão `1`).
 - **Intervalo do watchdog (s)** e **sobreposição make-before-break (s)**.
 - **Bomba** – se é controlável (então o bloqueio pode desligá-la), seu estado e os tempos mínimos de
@@ -193,9 +197,13 @@ para que a ração não seja espalhada.
 
 ### Notificações
 Habilite as notificações e escolha uma **instância de messaging** (qualquer adaptador do tipo
-`messaging`, por ex. Telegram ou Pushover). O adaptador então envia uma mensagem curta e localizada
-quando o bloqueio de segurança dispara ou é liberado, quando o alarme de oxigênio é acionado ou se
-recupera, e quando a pressão sai ou volta a entrar na sua faixa.
+`messaging`, por ex. Telegram ou Pushover), depois **marque quais eventos** devem enviar uma mensagem:
+- **Bloqueio de segurança** – quando o bloqueio contra o dead-heading dispara ou é liberado;
+- **Alarme de oxigênio** – quando o oxigênio dissolvido cai demais ou se recupera;
+- **Alarme de pressão** – quando a pressão sai ou volta a entrar na sua faixa.
+
+A cada transição (disparo e liberação) é enviado um texto curto e localizado. Sem nenhum evento
+marcado, nada é enviado.
 
 ## 6. Objetos / pontos de dados
 

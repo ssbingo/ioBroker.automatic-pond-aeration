@@ -210,14 +210,15 @@ Here you decide *when* the aeration runs automatically.
     targets a single point *or* a whole group, with its own optional dwell time. This lets you run
     e.g. _group 1 → group 3 → point 1 → …_ and freely mix points and groups. Reorder steps with the
     up/down arrows. An empty sequence just rotates through all points.
-- *Schedules* — open selected points/groups during weekday time windows (`From`/`To`, e.g.
-  `08:00`–`18:00`; overnight windows like `22:00`–`06:00` work too). *An active schedule has priority
-  over the round-robin / sequence.*
-- *Winter / ice-free mode* — during a season you set as a recurring `MM-DD` window (e.g. `11-01`–
-  `03-15`, which correctly wraps across New Year) the chosen points are forced on to keep an ice-free
-  hole open. Optionally tick *"only when it is cold"* and set an air-temperature threshold so the pond
-  is only aerated while it is actually freezing (needs air-temperature monitoring). Leave the point
-  selection empty to aerate the whole pond.
+- *Schedules* — open selected points/groups during weekday time windows. Pick *From* and *To* from a
+  *clock picker* (hour/minute, 24 h; overnight windows like `22:00`–`06:00` work too). *An active
+  schedule has priority over the round-robin / sequence.*
+- *Winter / ice-free mode* — pick the season *start* and *end* from a *calendar* — only the *day and
+  month* count and the window recurs every year (e.g. 1 Nov – 15 Mar, which correctly wraps across New
+  Year). The chosen points are then forced on to keep an ice-free hole open. Optionally tick *"only
+  when it is cold"* and set an air-temperature threshold so the pond is only aerated while it is
+  actually freezing (needs air-temperature monitoring). Leave the point selection empty to aerate the
+  whole pond.
 
 == Sensors
 
@@ -255,8 +256,13 @@ time the animals need to eat).
 == Notifications
 
 Enable notifications and pick a *messaging instance* (any adapter of type `messaging`, e.g. Telegram
-or Pushover). The adapter then sends a short message when the safety interlock trips or clears, when
-the oxygen alarm raises or recovers, and when the pressure leaves or re-enters its range.
+or Pushover), then *tick which events* should send a message:
+
+- *safety interlock* — when it trips or clears;
+- *oxygen alarm* — when dissolved oxygen drops too low or recovers;
+- *pressure alarm* — when the pressure leaves or re-enters its range.
+
+A short, localized text is sent on each edge. With no event ticked, nothing is sent.
 
 = Using the adapter day to day
 

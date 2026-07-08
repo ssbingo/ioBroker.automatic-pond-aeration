@@ -135,11 +135,13 @@ een naam en vink de bijbehorende punten aan. **Er kunnen nooit meer groepen dan 
     kun je bijv. *groep 1 → groep 3 → punt 1 → …* draaien en punten en groepen vrij **mengen**. Herschik
     de stappen met de pijltjes omhoog/omlaag in de admin. Laat de reeks leeg om terug te vallen op de
     gewone roundrobin over alle punten.
-- **Tijdschema's** – geselecteerde punten/groepen openen tijdens een tijdvenster per weekdag
-  (`Van`/`Tot`, bijv. `08:00`–`18:00`; vensters die over de nacht heen lopen, zoals `22:00`–`06:00`,
-  worden ondersteund). Een actief tijdschema heeft **voorrang op de roundrobin / reeks**.
-- **Winter-/ijsvrijmodus** – tijdens het ingestelde seizoen (**Start**/**Einde** als terugkerende
-  `MM-DD`, bijv. `11-01`–`03-15`, doorlopend over de jaarwisseling) worden de geselecteerde punten
+- **Tijdschema's** – geselecteerde punten/groepen openen tijdens een tijdvenster per weekdag.
+  **Van**/**Tot** worden gekozen met een **klok-kiezer** (uur/minuut, 24 u; vensters die over de nacht
+  heen lopen, zoals `22:00`–`06:00`, worden ondersteund). Een actief tijdschema heeft **voorrang op de
+  roundrobin / reeks**.
+- **Winter-/ijsvrijmodus** – tijdens het ingestelde seizoen (**Start**/**Einde** gekozen met een
+  **kalender** — alleen **dag en maand** tellen, jaarlijks terugkerend, bijv. 1 nov – 15 mrt,
+  doorlopend over de jaarwisseling) worden de geselecteerde punten
   geforceerd ingeschakeld om een ijsvrij wak open te houden. Vink optioneel **Alleen wanneer het koud
   is (vorstbescherming)** aan en stel een **luchttemperatuurdrempel** in, zodat de vijver alleen wordt
   belucht wanneer het daadwerkelijk vriest (dit vereist luchttemperatuurbewaking). Laat **Open te
@@ -178,6 +180,8 @@ zodat het voer niet wordt weggeblazen.
 - **Betrokken punten** – welke punten tijdens het voeren pauzeren.
 
 ### Veiligheid
+Elk veld op dit tabblad heeft een **uitleg in de admin** van wat het doet en het effect ervan — lees
+ze, want dit is het tabblad waar een verkeerde waarde het meest telt.
 - **Min. open kleppen terwijl de pomp draait** – de dead-heading-beveiliging (standaard `1`).
 - **Watchdog-interval (s)** en **make-before-break-overlap (s)**.
 - **Pomp** – of deze bestuurbaar is (dan kan de vergrendeling hem uitschakelen), zijn state en
@@ -187,9 +191,13 @@ zodat het voer niet wordt weggeblazen.
 
 ### Meldingen
 Schakel meldingen in en kies een **messaging-instantie** (elke adapter van het type `messaging`,
-bijv. Telegram of Pushover). De adapter stuurt dan een kort, gelokaliseerd bericht wanneer de
-veiligheidsvergrendeling in- of uitschakelt, wanneer het zuurstofalarm afgaat of herstelt, en wanneer
-de druk zijn bereik verlaat of weer binnenkomt.
+bijv. Telegram of Pushover), en **vink vervolgens aan welke gebeurtenissen** een bericht sturen:
+- **Veiligheidsvergrendeling** – wanneer de dead-heading-vergrendeling in- of uitschakelt;
+- **Zuurstofalarm** – wanneer de opgeloste zuurstof te laag daalt of herstelt;
+- **Drukalarm** – wanneer de druk zijn bereik verlaat of weer binnenkomt.
+
+Bij elke flank (in- en uitschakelen) wordt een korte, gelokaliseerde tekst gestuurd. Als er geen
+gebeurtenis is aangevinkt, wordt er niets gestuurd.
 
 ## 6. Objecten / datapunten
 

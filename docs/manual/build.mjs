@@ -23,11 +23,21 @@ const TYPST_VERSION = 'v0.12.0';
 function typstTriple() {
 	const p = process.platform;
 	const a = process.arch;
-	if (p === 'linux' && a === 'x64') return 'x86_64-unknown-linux-musl';
-	if (p === 'linux' && a === 'arm64') return 'aarch64-unknown-linux-musl';
-	if (p === 'darwin' && a === 'arm64') return 'aarch64-apple-darwin';
-	if (p === 'darwin' && a === 'x64') return 'x86_64-apple-darwin';
-	if (p === 'win32' && a === 'x64') return 'x86_64-pc-windows-msvc';
+	if (p === 'linux' && a === 'x64') {
+		return 'x86_64-unknown-linux-musl';
+	}
+	if (p === 'linux' && a === 'arm64') {
+		return 'aarch64-unknown-linux-musl';
+	}
+	if (p === 'darwin' && a === 'arm64') {
+		return 'aarch64-apple-darwin';
+	}
+	if (p === 'darwin' && a === 'x64') {
+		return 'x86_64-apple-darwin';
+	}
+	if (p === 'win32' && a === 'x64') {
+		return 'x86_64-pc-windows-msvc';
+	}
 	throw new Error(`Unsupported platform ${p}/${a} — install typst manually and put it at .cache/typst`);
 }
 
@@ -35,7 +45,9 @@ function typstTriple() {
 function ensureTypst() {
 	const isWin = process.platform === 'win32';
 	const bin = join(cache, isWin ? 'typst.exe' : 'typst');
-	if (existsSync(bin)) return bin;
+	if (existsSync(bin)) {
+		return bin;
+	}
 	mkdirSync(cache, { recursive: true });
 	const triple = typstTriple();
 	const ext = isWin ? 'zip' : 'tar.xz';
@@ -46,11 +58,16 @@ function ensureTypst() {
 	if (isWin) {
 		execFileSync('tar', ['-xf', archive, '-C', cache], { stdio: 'inherit' }); // bsdtar on win10+
 	} else {
-		execFileSync('tar', ['-xf', archive, '-C', cache, '--strip-components=1',
-			`typst-${triple}/typst`], { stdio: 'inherit' });
+		execFileSync('tar', ['-xf', archive, '-C', cache, '--strip-components=1', `typst-${triple}/typst`], {
+			stdio: 'inherit',
+		});
 	}
-	if (!isWin) chmodSync(bin, 0o755);
-	if (!existsSync(bin)) throw new Error('typst download/extract failed');
+	if (!isWin) {
+		chmodSync(bin, 0o755);
+	}
+	if (!existsSync(bin)) {
+		throw new Error('typst download/extract failed');
+	}
 	return bin;
 }
 

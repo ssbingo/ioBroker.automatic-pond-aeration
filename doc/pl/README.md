@@ -135,11 +135,13 @@ nazwę i zaznacz jej punkty składowe. **Nigdy nie może być więcej grup niż 
     Pozwala to uruchomić np. *grupa 1 → grupa 3 → punkt 1 → …* i swobodnie **mieszać** punkty i grupy.
     Zmieniaj kolejność kroków strzałkami w górę/w dół w adminie. Pozostaw sekwencję pustą, aby wrócić
     do zwykłej rotacji round-robin po wszystkich punktach.
-- **Harmonogramy** – otwieranie wybranych punktów/grup w oknie czasowym dla dnia tygodnia (`Od`/`Do`,
-  np. `08:00`–`18:00`; okna przechodzące przez noc, takie jak `22:00`–`06:00`, są obsługiwane).
-  Aktywny harmonogram ma **priorytet nad rotacją round-robin / sekwencją**.
-- **Tryb zimowy / bez lodu** – w skonfigurowanym sezonie (**Początek**/**Koniec** jako powtarzalne
-  `MM-DD`, np. `11-01`–`03-15`, z przejściem przez przełom roku) wybrane punkty są wymuszane na wł.,
+- **Harmonogramy** – otwieranie wybranych punktów/grup w oknie czasowym dla dnia tygodnia. **Od**/**Do**
+  wybiera się za pomocą **selektora zegara** (godzina/minuta, 24 h; okna przechodzące przez noc, takie
+  jak `22:00`–`06:00`, są obsługiwane). Aktywny harmonogram ma **priorytet nad rotacją round-robin /
+  sekwencją**.
+- **Tryb zimowy / bez lodu** – w skonfigurowanym sezonie (**Początek**/**Koniec** wybierane z
+  **kalendarza** — liczą się tylko **dzień i miesiąc**, powtarzane co roku, np. 1 lis – 15 mar, z
+  przejściem przez przełom roku) wybrane punkty są wymuszane na wł.,
   aby utrzymać otwartą przeręblę wolną od lodu. Opcjonalnie zaznacz **Tylko gdy jest zimno (ochrona
   przed mrozem)** i ustaw **próg temperatury powietrza**, aby staw był napowietrzany tylko wtedy, gdy
   faktycznie marznie (wymaga to monitorowania temperatury powietrza). Pozostaw **Punkty utrzymywane
@@ -178,6 +180,8 @@ nie była rozdmuchiwana.
 - **Punkty, których dotyczy** – które punkty są wstrzymywane podczas karmienia.
 
 ### Bezpieczeństwo
+Każde pole na tej karcie zawiera **objaśnienie w adminie** tego, co robi, i jego skutku — przeczytaj
+je, bo to karta, na której błędna wartość ma największe znaczenie.
 - **Min. otwartych zaworów przy pracującej pompie** – zabezpieczenie przed pracą przy zamkniętych
   zaworach (domyślnie `1`).
 - **Interwał watchdoga (s)** oraz **nakładanie make-before-break (s)**.
@@ -188,9 +192,13 @@ nie była rozdmuchiwana.
 
 ### Powiadomienia
 Włącz powiadomienia i wybierz **instancję messaging** (dowolny adapter typu `messaging`, np. Telegram
-lub Pushover). Adapter wysyła wtedy krótki, zlokalizowany komunikat, gdy blokada bezpieczeństwa
-zadziała lub ustąpi, gdy alarm tlenowy się pojawi lub ustąpi oraz gdy ciśnienie wyjdzie poza zakres
-lub do niego wróci.
+lub Pushover), a następnie **zaznacz, które zdarzenia** mają wysyłać komunikat:
+- **Blokada bezpieczeństwa** – gdy blokada przed pracą przy zamkniętych zaworach zadziała lub ustąpi;
+- **Alarm tlenowy** – gdy rozpuszczony tlen spadnie za nisko lub wróci do normy;
+- **Alarm ciśnienia** – gdy ciśnienie wyjdzie poza zakres lub do niego wróci.
+
+Przy każdym zboczu (zadziałanie i ustąpienie) wysyłany jest krótki, zlokalizowany tekst. Gdy nie
+zaznaczono żadnego zdarzenia, nic nie jest wysyłane.
 
 ## 6. Obiekty / punkty danych
 

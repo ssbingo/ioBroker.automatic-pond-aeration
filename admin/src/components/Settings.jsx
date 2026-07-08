@@ -27,6 +27,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import { LocalizationProvider, DatePicker, TimePicker } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
 import { I18n } from '@iobroker/adapter-react-v5';
 import ObjectSelect from './ObjectSelect';
 import LocationPicker from './LocationPicker';
@@ -34,6 +37,36 @@ import FeederTab from './FeederTab';
 import NotifyTab from './NotifyTab';
 
 const MAX_POINTS = 8;
+
+// A leap year so 29.02. is selectable; only day+month are stored (recurring "MM-DD").
+const WINTER_REF_YEAR = 2024;
+
+/** Parse a stored recurring "MM-DD" into a dayjs date (fixed reference year), or null. */
+function mdToDayjs(md) {
+	const m = typeof md === 'string' && md.match(/^(\d{1,2})-(\d{1,2})$/);
+	if (!m) {
+		return null;
+	}
+	const d = dayjs(`${WINTER_REF_YEAR}-${String(Number(m[1])).padStart(2, '0')}-${String(Number(m[2])).padStart(2, '0')}`);
+	return d.isValid() ? d : null;
+}
+/** Format a dayjs date back to the stored "MM-DD" (empty string when null/invalid). */
+function dayjsToMD(d) {
+	return d && d.isValid() ? d.format('MM-DD') : '';
+}
+/** Parse a stored "HH:mm" into a dayjs time (today's date), or null. */
+function hhmmToDayjs(hhmm) {
+	const m = typeof hhmm === 'string' && hhmm.match(/^(\d{1,2}):(\d{2})$/);
+	if (!m) {
+		return null;
+	}
+	const d = dayjs().hour(Number(m[1])).minute(Number(m[2])).second(0).millisecond(0);
+	return d.isValid() ? d : null;
+}
+/** Format a dayjs time back to the stored "HH:mm" (empty string when null/invalid). */
+function dayjsToHHmm(d) {
+	return d && d.isValid() ? d.format('HH:mm') : '';
+}
 const WEEKDAYS = [
 	{ v: 1, l: 'Mon' },
 	{ v: 2, l: 'Tue' },
@@ -96,6 +129,18 @@ function Section({ title, desc, children }) {
 			) : null}
 			{children}
 		</Paper>
+	);
+}
+
+/** An input with a small explanatory caption underneath (used on the Safety tab). */
+function Field({ help, children }) {
+	return (
+		<Box sx={{ display: 'flex', flexDirection: 'column', maxWidth: 320 }}>
+			{children}
+			<Typography variant="caption" color="textSecondary" sx={{ mt: 0.5, lineHeight: 1.3 }}>
+				{help}
+			</Typography>
+		</Box>
 	);
 }
 
@@ -346,8 +391,22 @@ function Settings(props) {
 					<Box key={s.id || i} sx={{ border: '1px solid rgba(128,128,128,0.3)', p: 1, mb: 1, borderRadius: 1 }}>
 						<Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
 							<Switch checked={s.enabled !== false} onChange={e => updateSchedule(i, 'enabled', e.target.checked)} />
-							<TextField variant="standard" label={I18n.t('From')} value={s.from || ''} onChange={e => updateSchedule(i, 'from', e.target.value)} sx={{ width: 90 }} />
-							<TextField variant="standard" label={I18n.t('To')} value={s.to || ''} onChange={e => updateSchedule(i, 'to', e.target.value)} sx={{ width: 90 }} />
+							<TimePicker
+								label={I18n.t('From')}
+								ampm={false}
+								format="HH:mm"
+								value={hhmmToDayjs(s.from)}
+								onChange={v => updateSchedule(i, 'from', dayjsToHHmm(v))}
+								slotProps={{ textField: { variant: 'standard', size: 'small', sx: { width: 120 } } }}
+							/>
+							<TimePicker
+								label={I18n.t('To')}
+								ampm={false}
+								format="HH:mm"
+								value={hhmmToDayjs(s.to)}
+								onChange={v => updateSchedule(i, 'to', dayjsToHHmm(v))}
+								slotProps={{ textField: { variant: 'standard', size: 'small', sx: { width: 120 } } }}
+							/>
 							<IconButton size="small" onClick={() => removeSchedule(i)}>
 								<DeleteIcon fontSize="small" />
 							</IconButton>
@@ -382,9 +441,26 @@ function Settings(props) {
 				{native.winterEnabled ? (
 					<Box sx={{ mt: 1 }}>
 						<Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-							<TextField variant="standard" label={I18n.t('Start (MM-DD)')} value={native.winterStart || ''} onChange={e => set('winterStart', e.target.value)} sx={{ width: 120 }} />
-							<TextField variant="standard" label={I18n.t('End (MM-DD)')} value={native.winterEnd || ''} onChange={e => set('winterEnd', e.target.value)} sx={{ width: 120 }} />
+							<DatePicker
+								label={I18n.t('Winter start')}
+								views={['month', 'day']}
+								format="DD.MM"
+								value={mdToDayjs(native.winterStart)}
+								onChange={v => set('winterStart', dayjsToMD(v))}
+								slotProps={{ textField: { variant: 'standard', size: 'small', sx: { width: 160 } } }}
+							/>
+							<DatePicker
+								label={I18n.t('Winter end')}
+								views={['month', 'day']}
+								format="DD.MM"
+								value={mdToDayjs(native.winterEnd)}
+								onChange={v => set('winterEnd', dayjsToMD(v))}
+								slotProps={{ textField: { variant: 'standard', size: 'small', sx: { width: 160 } } }}
+							/>
 						</Box>
+						<Typography variant="caption" color="textSecondary" sx={{ display: 'block', mt: 0.5 }}>
+							{I18n.t('Only day and month are used (recurring every year).')}
+						</Typography>
 						<Box sx={{ mt: 1, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
 							<Sw label={I18n.t('Only when it is cold (frost protection)')} checked={native.winterFrostProtect} onChange={v => set('winterFrostProtect', v)} />
 							{native.winterFrostProtect ? (
@@ -500,40 +576,65 @@ function Settings(props) {
 	const safetyTab = (
 		<Box>
 			<TabTitle>{I18n.t('Safety')}</TabTitle>
-			<Section>
-				<Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-					<Num label={I18n.t('Min. open valves while pump runs')} value={native.minOpenValves} onChange={v => set('minOpenValves', v)} min={1} />
-					<Num label={I18n.t('Watchdog interval (s)')} value={native.watchdogIntervalSec} onChange={v => set('watchdogIntervalSec', v)} min={1} />
-					<Num label={I18n.t('Make-before-break overlap (s)')} value={native.overlapSec} onChange={v => set('overlapSec', v)} min={0} />
+			<Alert severity="warning" sx={{ mb: 2 }}>
+				{I18n.t('These settings protect the pump and the animals. Read the notes and test on your own hardware before unattended use.')}
+			</Alert>
+			<Section title={I18n.t('Dead-head interlock')} desc={I18n.t('An air pump must never run against fully closed valves (dead-heading) — it overheats and can be damaged.')}>
+				<Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+					<Field help={I18n.t('While the pump runs, at least this many valves are always kept open. If that cannot be reached, the emergency valve opens and the pump is switched off. Higher = safer against dead-heading, but forces more points open.')}>
+						<Num label={I18n.t('Min. open valves while pump runs')} value={native.minOpenValves} onChange={v => set('minOpenValves', v)} min={1} />
+					</Field>
+					<Field help={I18n.t('How often the interlock is re-checked (seconds). Smaller = reacts faster to a dangerous state, but a little more load. 5 s is a good default.')}>
+						<Num label={I18n.t('Watchdog interval (s)')} value={native.watchdogIntervalSec} onChange={v => set('watchdogIntervalSec', v)} min={1} />
+					</Field>
+					<Field help={I18n.t('When switching from one point to the next, the new valve opens this many seconds before the old one closes (make-before-break), so there is never a moment with everything shut. 0 disables the overlap.')}>
+						<Num label={I18n.t('Make-before-break overlap (s)')} value={native.overlapSec} onChange={v => set('overlapSec', v)} min={0} />
+					</Field>
 				</Box>
 			</Section>
-			<Section title={I18n.t('Pump')}>
-				<Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-					<Sw label={I18n.t('Pump is controllable')} checked={native.pumpControllable} onChange={v => set('pumpControllable', v)} />
-					<Box sx={{ minWidth: 260 }}>
-						<ObjectSelect label={I18n.t('Pump state')} value={native.pumpObjectId} onChange={v => set('pumpObjectId', v)} {...objProps} />
-					</Box>
-					<Num label={I18n.t('Min. on-time (s)')} value={native.pumpMinOnSec} onChange={v => set('pumpMinOnSec', v)} min={0} />
-					<Num label={I18n.t('Min. off-time (s)')} value={native.pumpMinOffSec} onChange={v => set('pumpMinOffSec', v)} min={0} />
+			<Section title={I18n.t('Pump')} desc={I18n.t('Tell the adapter about your air pump. If it is controllable, the interlock may switch it off in an emergency; if it is only observed, the emergency valve alone protects it.')}>
+				<Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+					<Field help={I18n.t('On: the adapter may switch the pump off (needs the pump state below). Off: the pump is only observed — the adapter never switches it, and relies on the emergency valve.')}>
+						<Sw label={I18n.t('Pump is controllable')} checked={native.pumpControllable} onChange={v => set('pumpControllable', v)} />
+					</Field>
+					<Field help={I18n.t('The ioBroker state that reports (and, if controllable, switches) the pump. Leave empty if you have no pump signal.')}>
+						<Box sx={{ minWidth: 260 }}>
+							<ObjectSelect label={I18n.t('Pump state')} value={native.pumpObjectId} onChange={v => set('pumpObjectId', v)} {...objProps} />
+						</Box>
+					</Field>
+					<Field help={I18n.t('Anti short-cycle: once ON, the pump stays on at least this long before it may be switched off (protects the motor). 0 = no limit.')}>
+						<Num label={I18n.t('Min. on-time (s)')} value={native.pumpMinOnSec} onChange={v => set('pumpMinOnSec', v)} min={0} />
+					</Field>
+					<Field help={I18n.t('Anti short-cycle: once OFF, the pump stays off at least this long before it may restart. 0 = no limit. (An emergency stop always bypasses this.)')}>
+						<Num label={I18n.t('Min. off-time (s)')} value={native.pumpMinOffSec} onChange={v => set('pumpMinOffSec', v)} min={0} />
+					</Field>
 				</Box>
 			</Section>
-			<Section title={I18n.t('Emergency valve')}>
-				<Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-					<Box sx={{ minWidth: 260 }}>
-						<ObjectSelect label={I18n.t('Emergency valve state')} value={native.emergencyObjectId} onChange={v => set('emergencyObjectId', v)} {...objProps} />
-					</Box>
-					<Sw label={I18n.t('Normally open (fail-safe)')} checked={native.emergencyNormallyOpen} onChange={v => set('emergencyNormallyOpen', v)} />
-					<Sel
-						label={I18n.t('Valve type')}
-						value={native.emergencyValveType || 'solenoid'}
-						onChange={v => set('emergencyValveType', v)}
-						options={[
-							{ value: 'solenoid', label: I18n.t('Solenoid') },
-							{ value: 'motorBallValve', label: I18n.t('Motorized ball valve') },
-						]}
-					/>
+			<Section title={I18n.t('Emergency valve')} desc={I18n.t('The relief valve the interlock opens when too few normal valves are open. Wire it normally-open (NO) so it opens by itself on a power cut.')}>
+				<Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+					<Field help={I18n.t('The ioBroker state that opens/closes the emergency valve.')}>
+						<Box sx={{ minWidth: 260 }}>
+							<ObjectSelect label={I18n.t('Emergency valve state')} value={native.emergencyObjectId} onChange={v => set('emergencyObjectId', v)} {...objProps} />
+						</Box>
+					</Field>
+					<Field help={I18n.t('On (recommended): the valve is open without power (fail-safe) — on a power cut the pump can always vent. Off: it is closed without power.')}>
+						<Sw label={I18n.t('Normally open (fail-safe)')} checked={native.emergencyNormallyOpen} onChange={v => set('emergencyNormallyOpen', v)} />
+					</Field>
+					<Field help={I18n.t('Solenoid = opens/closes almost instantly. Motorized ball valve (e.g. CWX-15N) needs a travel time and does not spring open on power loss — the dead-head protection then relies on the pump also losing power.')}>
+						<Sel
+							label={I18n.t('Valve type')}
+							value={native.emergencyValveType || 'solenoid'}
+							onChange={v => set('emergencyValveType', v)}
+							options={[
+								{ value: 'solenoid', label: I18n.t('Solenoid') },
+								{ value: 'motorBallValve', label: I18n.t('Motorized ball valve') },
+							]}
+						/>
+					</Field>
 					{native.emergencyValveType === 'motorBallValve' ? (
-						<Num label={I18n.t('Motor travel time (s)')} value={native.emergencyMotorTravelSec} onChange={v => set('emergencyMotorTravelSec', v)} min={0} />
+						<Field help={I18n.t('How long the motor valve needs to travel fully open/closed. The safety logic waits this long instead of assuming an instant reaction.')}>
+							<Num label={I18n.t('Motor travel time (s)')} value={native.emergencyMotorTravelSec} onChange={v => set('emergencyMotorTravelSec', v)} min={0} />
+						</Field>
 					) : null}
 				</Box>
 			</Section>
@@ -562,14 +663,17 @@ function Settings(props) {
 	];
 
 	return (
-		<Box sx={{ p: 2 }}>
-			<Tabs value={tab} onChange={(e, v) => setTab(v)} variant="scrollable" scrollButtons="auto">
-				{tabs.map((t, i) => (
-					<Tab key={i} label={t.label} />
-				))}
-			</Tabs>
-			<Box sx={{ mt: 2, maxWidth: 900 }}>{tabs[tab].content}</Box>
-		</Box>
+		<LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={I18n.getLanguage()}>
+			<Box sx={{ p: 2, pb: 12 }}>
+				<Tabs value={tab} onChange={(e, v) => setTab(v)} variant="scrollable" scrollButtons="auto">
+					{tabs.map((t, i) => (
+						<Tab key={i} label={t.label} />
+					))}
+				</Tabs>
+				{/* pb leaves room so the last controls are not hidden behind the Save/Close bar */}
+				<Box sx={{ mt: 2, maxWidth: 900 }}>{tabs[tab].content}</Box>
+			</Box>
+		</LocalizationProvider>
 	);
 }
 

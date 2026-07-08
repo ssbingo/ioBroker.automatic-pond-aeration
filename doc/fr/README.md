@@ -145,10 +145,12 @@ points.**
     groupes. Réordonne les étapes avec les flèches haut/bas dans l'admin. Laisse la séquence vide pour
     revenir au round-robin simple sur tous les points.
 - **Plannings** – ouvrir des points/groupes sélectionnés pendant une plage horaire par jour de
-  semaine (`De`/`À`, p. ex. `08:00`–`18:00` ; les plages de nuit comme `22:00`–`06:00` sont prises en
-  charge). Un planning actif est **prioritaire sur le round-robin / la séquence**.
-- **Mode hiver / hors-gel** – pendant la saison configurée (**Début**/**Fin** sous forme de `MM-DD`
-  récurrent, p. ex. `11-01`–`03-15`, à cheval sur le nouvel an) les points sélectionnés sont forcés
+  semaine. **De**/**À** se choisissent via un **sélecteur d'horloge** (heure/minute, 24 h ; les plages
+  de nuit comme `22:00`–`06:00` sont prises en charge). Un planning actif est **prioritaire sur le
+  round-robin / la séquence**.
+- **Mode hiver / hors-gel** – pendant la saison configurée (**Début**/**Fin** choisis via un
+  **calendrier** — seuls le **jour et le mois** comptent, récurrent chaque année, p. ex. 1 nov – 15 mars,
+  à cheval sur le nouvel an) les points sélectionnés sont forcés
   en marche afin de maintenir un trou hors gel. Coche éventuellement **Seulement quand il fait froid
   (protection antigel)** et fixe un **seuil de température de l'air** pour que le bassin ne soit aéré
   que lorsqu'il gèle réellement (cela nécessite la surveillance de la température de l'air). Laisse
@@ -189,6 +191,8 @@ nourriture, afin qu'elle ne soit pas dispersée.
 - **Points concernés** – quels points se mettent en pause pendant la distribution.
 
 ### Sécurité
+Chaque champ de cet onglet comporte une **explication dans l'admin** de ce qu'il fait et de son effet
+— lis-les, car c'est l'onglet où une mauvaise valeur importe le plus.
 - **Vannes ouvertes min. pendant que la pompe tourne** – la protection contre le dead-heading (par
   défaut `1`).
 - **Intervalle du watchdog (s)** et **chevauchement make-before-break (s)**.
@@ -200,9 +204,14 @@ nourriture, afin qu'elle ne soit pas dispersée.
 
 ### Notifications
 Active les notifications et choisis une **instance de messagerie** (n'importe quel adaptateur de type
-`messaging`, p. ex. Telegram ou Pushover). L'adaptateur envoie alors un court message localisé lorsque
-le verrouillage de sécurité se déclenche ou se relâche, lorsque l'alarme d'oxygène s'active ou revient
-à la normale, et lorsque la pression sort de sa plage ou y revient.
+`messaging`, p. ex. Telegram ou Pushover), puis **coche les événements** qui doivent envoyer un
+message :
+- **Verrouillage de sécurité** – lorsque le verrouillage contre le dead-heading se déclenche ou se relâche ;
+- **Alarme d'oxygène** – lorsque l'oxygène dissous descend trop bas ou revient à la normale ;
+- **Alarme de pression** – lorsque la pression sort de sa plage ou y revient.
+
+À chaque front (déclenchement et relâchement), un court texte localisé est envoyé. Si aucun événement
+n'est coché, rien n'est envoyé.
 
 ## 6. Objets / points de données
 

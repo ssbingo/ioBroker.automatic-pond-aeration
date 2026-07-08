@@ -230,15 +230,17 @@ Hier entscheiden Sie, *wann* die Belüftung automatisch läuft.
     optionaler Verweilzeit. So können Sie z. B. _Gruppe 1 → Gruppe 3 → Punkt 1 → …_ ausführen und
     Punkte und Gruppen frei mischen. Ordnen Sie Schritte mit den Pfeilen nach oben/unten neu. Eine
     leere Sequenz rotiert einfach durch alle Punkte.
-- *Zeitpläne* — öffnen Sie ausgewählte Punkte/Gruppen während der Zeitfenster an Wochentagen
-  (`From`/`To`, z. B. `08:00`–`18:00`; über Nacht reichende Fenster wie `22:00`–`06:00` funktionieren
-  ebenfalls). *Ein aktiver Zeitplan hat Vorrang vor dem Round-Robin / der Sequenz.*
-- *Winter- / Eisfrei-Modus* — während einer Saison, die Sie als wiederkehrendes `MM-DD`-Fenster
-  festlegen (z. B. `11-01`–`03-15`, was korrekt über den Jahreswechsel läuft), werden die gewählten
-  Punkte zwangsweise eingeschaltet, um ein eisfreies Loch offen zu halten. Haken Sie optional *„nur
-  wenn es kalt ist“* an und setzen Sie einen Lufttemperaturschwellwert, sodass der Teich nur belüftet
-  wird, solange es tatsächlich friert (erfordert die Lufttemperaturüberwachung). Lassen Sie die
-  Punktauswahl leer, um den ganzen Teich zu belüften.
+- *Zeitpläne* — öffnen Sie ausgewählte Punkte/Gruppen während der Zeitfenster an Wochentagen. Wählen
+  Sie *Von* und *Bis* über einen *Uhrzeit-Picker* (Stunde/Minute, 24 h; über Nacht reichende Fenster wie
+  `22:00`–`06:00` funktionieren ebenfalls). *Ein aktiver Zeitplan hat Vorrang vor dem Round-Robin /
+  der Sequenz.*
+- *Winter- / Eisfrei-Modus* — wählen Sie *Beginn* und *Ende* der Saison über einen *Kalender* — nur
+  *Tag und Monat* zählen, das Fenster wiederholt sich jedes Jahr (z. B. 1. Nov – 15. März, was korrekt
+  über den Jahreswechsel läuft). Die gewählten Punkte werden dann zwangsweise eingeschaltet, um ein
+  eisfreies Loch offen zu halten. Haken Sie optional *„nur wenn es kalt ist“* an und setzen Sie einen
+  Lufttemperaturschwellwert, sodass der Teich nur belüftet wird, solange es tatsächlich friert
+  (erfordert die Lufttemperaturüberwachung). Lassen Sie die Punktauswahl leer, um den ganzen Teich zu
+  belüften.
 
 == Sensoren
 
@@ -280,9 +282,15 @@ benötigen).
 == Benachrichtigungen
 
 Aktivieren Sie Benachrichtigungen und wählen Sie eine *Messaging-Instanz* (jeder Adapter vom Typ
-`messaging`, z. B. Telegram oder Pushover). Der Adapter sendet dann eine kurze Nachricht, wenn die
-Sicherheitsverriegelung auslöst oder sich löst, wenn der Sauerstoffalarm ausgelöst wird oder sich
-erholt und wenn der Druck seinen Bereich verlässt oder wieder erreicht.
+`messaging`, z. B. Telegram oder Pushover). Anschließend *wählen Sie aus, welche Ereignisse* eine
+Nachricht senden sollen:
+
+- *Sicherheitsverriegelung* — wenn sie auslöst oder sich löst;
+- *Sauerstoffalarm* — wenn der gelöste Sauerstoff zu niedrig wird oder sich erholt;
+- *Druckalarm* — wenn der Druck seinen Bereich verlässt oder wieder erreicht.
+
+Bei jeder Flanke wird ein kurzer, lokalisierter Text gesendet. Ist kein Ereignis angehakt, wird
+nichts gesendet.
 
 = Den Adapter im Alltag nutzen
 

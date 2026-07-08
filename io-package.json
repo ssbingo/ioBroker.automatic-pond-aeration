@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "automatic-pond-aeration",
-		"version": "0.0.14",
+		"version": "0.0.15",
 		"news": {
+			"0.0.15": {
+				"en": "Admin usability: calendar picker for winter dates, clock picker for schedules, full scrolling, per-parameter safety explanations, and selectable notification events.",
+				"de": "Admin-Bedienung: Kalenderauswahl für Winter-Daten, Uhrzeit-Picker für Zeitpläne, vollständiges Scrollen, Erklärungen je Sicherheitsparameter und wählbare Benachrichtigungs-Ereignisse.",
+				"ru": "Удобство админки: выбор дат зимы через календарь, выбор времени для расписаний, полная прокрутка, пояснения к параметрам безопасности и выбор событий уведомлений.",
+				"pt": "Usabilidade do admin: seletor de calendário para datas de inverno, seletor de hora para agendamentos, rolagem completa, explicações por parâmetro de segurança e eventos de notificação selecionáveis.",
+				"nl": "Admin-gebruiksgemak: kalenderkiezer voor winterdatums, tijdkiezer voor schema's, volledig scrollen, uitleg per veiligheidsparameter en selecteerbare meldingsgebeurtenissen.",
+				"fr": "Ergonomie de l'admin : sélecteur de calendrier pour les dates d'hiver, sélecteur d'heure pour les horaires, défilement complet, explications par paramètre de sécurité et événements de notification sélectionnables.",
+				"it": "Usabilità admin: selettore calendario per le date invernali, selettore orario per le pianificazioni, scorrimento completo, spiegazioni per ogni parametro di sicurezza ed eventi di notifica selezionabili.",
+				"es": "Usabilidad del admin: selector de calendario para fechas de invierno, selector de hora para horarios, desplazamiento completo, explicaciones por parámetro de seguridad y eventos de notificación seleccionables.",
+				"pl": "Wygoda panelu: kalendarz do dat zimowych, wybór godziny dla harmonogramów, pełne przewijanie, objaśnienia dla parametrów bezpieczeństwa i wybieralne zdarzenia powiadomień.",
+				"uk": "Зручність адмінки: вибір дат зими через календар, вибір часу для розкладів, повне прокручування, пояснення до параметрів безпеки та вибір подій сповіщень.",
+				"zh-cn": "管理界面易用性：冬季日期日历选择、计划时间选择、完整滚动、每个安全参数的说明，以及可选择的通知事件。"
+			},
 			"0.0.14": {
 				"en": "Cyclic sequence over points and groups (mixed), with an optional per-step dwell time.",
 				"de": "Zyklische Sequenz über Stellen und Gruppen (gemischt), mit optionaler Verweildauer je Schritt.",
@@ -181,6 +194,7 @@
 
 		"notifyEnabled": false,
 		"messagingInstance": "",
+		"notifyEvents": ["interlock", "oxygen", "pressure"],
 
 		"points": [],
 		"groups": [],

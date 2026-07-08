@@ -143,11 +143,13 @@ y marca sus puntos miembros. **Nunca puede haber más grupos que puntos.**
     permanencia. Esto permite ejecutar p. ej. *grupo 1 → grupo 3 → punto 1 → …* y **mezclar**
     libremente puntos y grupos. Reordena los pasos con las flechas arriba/abajo en el admin. Deja la
     secuencia vacía para volver al round-robin simple sobre todos los puntos.
-- **Horarios** – abrir puntos/grupos seleccionados durante una franja horaria por día de la semana
-  (`Desde`/`Hasta`, p. ej. `08:00`–`18:00`; se admiten franjas nocturnas como `22:00`–`06:00`). Un
-  horario activo tiene **prioridad sobre el round-robin / la secuencia**.
-- **Modo invierno / libre de hielo** – durante la temporada configurada (**Inicio**/**Fin** como
-  `MM-DD` recurrente, p. ej. `11-01`–`03-15`, cruzando el cambio de año) los puntos seleccionados se
+- **Horarios** – abrir puntos/grupos seleccionados durante una franja horaria por día de la semana.
+  **Desde**/**Hasta** se eligen con un **selector de reloj** (hora/minuto, 24 h; se admiten franjas
+  nocturnas como `22:00`–`06:00`). Un horario activo tiene **prioridad sobre el round-robin / la
+  secuencia**.
+- **Modo invierno / libre de hielo** – durante la temporada configurada (**Inicio**/**Fin** elegidos
+  con un **calendario** — solo cuentan el **día y el mes**, recurrente cada año, p. ej. 1 nov – 15 mar,
+  cruzando el cambio de año) los puntos seleccionados se
   fuerzan a abrir para mantener un agujero libre de hielo. Opcionalmente marca **Solo cuando hace
   frío (protección contra heladas)** y define un **umbral de temperatura del aire** para que el
   estanque solo se airee mientras realmente está helando (esto requiere la supervisión de la
@@ -188,6 +190,8 @@ para que la comida no se disperse.
 - **Puntos afectados** – qué puntos se pausan durante la alimentación.
 
 ### Seguridad
+Cada campo de esta pestaña incluye una **explicación en el admin** de lo que hace y su efecto — léelas,
+porque esta es la pestaña donde un valor equivocado más importa.
 - **Válvulas abiertas mín. mientras la bomba funciona** – la protección contra el dead-heading
   (predeterminado `1`).
 - **Intervalo del watchdog (s)** y **solapamiento make-before-break (s)**.
@@ -199,9 +203,13 @@ para que la comida no se disperse.
 
 ### Notificaciones
 Habilita las notificaciones y elige una **instancia de mensajería** (cualquier adaptador de tipo
-`messaging`, p. ej. Telegram o Pushover). El adaptador envía entonces un mensaje breve y localizado
-cuando el enclavamiento de seguridad se dispara o se libera, cuando la alarma de oxígeno se activa o
-se recupera y cuando la presión sale o vuelve a entrar en su rango.
+`messaging`, p. ej. Telegram o Pushover), luego **marca qué eventos** deben enviar un mensaje:
+- **Enclavamiento de seguridad** – cuando el enclavamiento contra el dead-heading se dispara o se libera;
+- **Alarma de oxígeno** – cuando el oxígeno disuelto baja demasiado o se recupera;
+- **Alarma de presión** – cuando la presión sale o vuelve a entrar en su rango.
+
+En cada flanco (activación y liberación) se envía un texto breve y localizado. Si no se marca ningún
+evento, no se envía nada.
 
 ## 6. Objetos / puntos de datos
 
