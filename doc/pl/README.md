@@ -122,6 +122,12 @@ Serce konfiguracji. Dodaj **do 8** punktów; każdy punkt to jeden zawór. Dla k
 - **Backend** – `ioBroker` (obcy stan) lub `ESP32` (kanał przekaźnika, planowany).
 - **Stan zaworu / kanał** – dla backendu ioBroker wybierz stan przełącznika, który otwiera zawór
   (przez przeglądarkę obiektów); dla ESP32 numer kanału.
+- **Przycisk wymuszenia (override)** *(opcjonalny)* – fizyczny przycisk na każdy punkt (np. wejście
+  cyfrowe ESP32 lub dowolny stan logiczny). Działa jako **przełącznik (toggle)**: jedno naciśnięcie
+  wymusza punkt **wł. z priorytetem nad sterowaniem automatycznym**
+  (harmonogram/sekwencja/zima/tlen), a nawet nad pauzą feedera — *tylko główny wyłącznik lub
+  zadziałanie zabezpieczenia go zastępują*. Naciśnij ponownie, aby zwolnić. (Planowane są kolejne
+  tryby przycisku; pole jest na nie przygotowane.)
 
 ### Grupy
 Grupuj punkty, aby przełączać je razem (np. jeden przycisk otwiera kilka dyfuzorów). Nadaj grupie
@@ -231,6 +237,7 @@ zapisywalne; wszystkie pozostałe to wartości stanu tylko do odczytu aktualizow
 |--------|-----|------|------|
 | `aeration.point.<n>.valveState` | boolean | `indicator` | Zawór jest otwarty |
 | `aeration.point.<n>.active` | boolean | `indicator` | Punkt obecnie napowietrza |
+| `aeration.point.<n>.buttonOn` | boolean | `indicator` | Ręczny przycisk wymuszenia aktywny (tylko przy skonfigurowanym przycisku) |
 | `aeration.point.<n>.runtimeTodaySec` | number | `value` | Dzisiejszy czas pracy (sekundy) |
 | `aeration.point.<n>.runtimeTotalH` | number | `value` | Całkowity czas pracy (godziny, do konserwacji) |
 | `aeration.point.<n>.lastChange` | number | `value.time` | Znacznik czasu ostatniej zmiany zaworu |

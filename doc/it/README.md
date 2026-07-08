@@ -128,6 +128,12 @@ punto:
 - **Backend** – `ioBroker` (uno stato esterno) o `ESP32` (un canale relè, pianificato).
 - **Stato valvola / canale** – per il backend ioBroker, scegli lo stato interruttore che apre la
   valvola (tramite il browser degli oggetti); per ESP32, il numero del canale.
+- **Pulsante di override** *(opzionale)* – un pulsante fisico per punto (ad es. un ingresso digitale
+  di un ESP32, o un qualsiasi stato booleano). Funziona come un **interruttore a commutazione
+  (toggle)**: una pressione forza il punto **acceso con priorità sul controllo automatico**
+  (programma/sequenza/inverno/ossigeno) e persino su una pausa del feeder — *solo l'interruttore
+  principale o un intervento di sicurezza lo annullano*. Premi di nuovo per rilasciarlo. (Sono
+  previste altre modalità del pulsante; il campo è predisposto per esse.)
 
 ### Gruppi
 Raggruppa i punti per commutarli insieme (ad es. un pulsante apre più diffusori). Assegna un nome al
@@ -241,6 +247,7 @@ comandi scrivibili; tutti gli altri sono valori di stato in sola lettura aggiorn
 |---------|------|-------|-------------|
 | `aeration.point.<n>.valveState` | boolean | `indicator` | La valvola è aperta |
 | `aeration.point.<n>.active` | boolean | `indicator` | Il punto sta aerando |
+| `aeration.point.<n>.buttonOn` | boolean | `indicator` | Pulsante di override manuale attivo (solo con un pulsante configurato) |
 | `aeration.point.<n>.runtimeTodaySec` | number | `value` | Tempo di funzionamento odierno (secondi) |
 | `aeration.point.<n>.runtimeTotalH` | number | `value` | Tempo di funzionamento totale (ore, per la manutenzione) |
 | `aeration.point.<n>.lastChange` | number | `value.time` | Marca temporale dell'ultimo cambio valvola |

@@ -31,6 +31,7 @@ const { evaluateSafety, planValveTransition } = require('./lib/safety');
 const { resolveDesiredValves } = require('./lib/control/arbiter');
 const { resolveWinter } = require('./lib/control/winter');
 const { resolveOxygenControl } = require('./lib/control/o2-control');
+const { nextButtonState, buttonForcedOn } = require('./lib/control/button');
 const { elapsedSec, localDayKey, secToHours } = require('./lib/statistics');
 const { translate, SUPPORTED_LANGUAGES } = require('./lib/messages');
 const { evaluateOxygenAlarm, evaluatePressureAlarm, oxygenSaturationPct } = require('./lib/monitoring/alarms');
@@ -98,6 +99,10 @@ class AutomaticPondAeration extends utils.Adapter {
 		// Runtime statistics (M10): accumulated on-time / switch cycles.
 		this.stats = null;
 		this.statsTimer = null;
+		// Per-point manual override buttons (M7): toggle state + input routing.
+		this.buttonStates = [];
+		this.buttonSet = new Set();
+		this.buttonMap = new Map();
 		// Feeder coupling runtime state.
 		this.feederSwitchSet = new Set();
 		this.feederFeedingActive = {};
@@ -193,6 +198,9 @@ class AutomaticPondAeration extends utils.Adapter {
 			this.updateAstro().catch(e => this.log.warn(`Astro update failed: ${e.message}`));
 		}, 60000);
 
+		// Per-point manual override buttons (M7): subscribe the button inputs.
+		await this.initButtons(config);
+
 		// Feeder coupling (M6): pause selected points while ioBroker.automatic-feeder is feeding.
 		await this.initFeeder(config);
 
@@ -287,6 +295,14 @@ class AutomaticPondAeration extends utils.Adapter {
 		if (this.feederSwitchSet.has(id)) {
 			this.handleFeederChange(id, state).catch(e =>
 				this.log.warn(`Feeder change for ${id} failed: ${e.message}`),
+			);
+			return;
+		}
+
+		// Watched manual override buttons → per-point toggle state machine (M7).
+		if (this.buttonSet.has(id)) {
+			this.handleButtonChange(id, state).catch(e =>
+				this.log.warn(`Button change for ${id} failed: ${e.message}`),
 			);
 			return;
 		}
@@ -407,6 +423,7 @@ class AutomaticPondAeration extends utils.Adapter {
 			elapsedMs: Date.now() - this.roundRobinStartMs,
 			forcedOn,
 			feederForcedOff: this.getFeederForcedOff(),
+			buttonOn: this.getButtonForcedOn(),
 		});
 
 		const cur = this.backend.getCurrentState();
@@ -1001,6 +1018,78 @@ class AutomaticPondAeration extends utils.Adapter {
 	 */
 	getFeederForcedOff() {
 		return feederForcedOff(this.feederPauseActive, this.cfg.feederAffectedPoints, this.cfg.points.length);
+	}
+
+	/**
+	 * Initialize the per-point manual override buttons (M7): subscribe each configured button
+	 * input (a foreign boolean state / ESP32 DI) and seed its raw state without toggling on startup.
+	 *
+	 * @param {ioBroker.AdapterConfig} config - the normalized configuration
+	 * @returns {Promise<void>}
+	 */
+	async initButtons(config) {
+		this.buttonStates = config.points.map(() => ({ on: false, raw: false }));
+		this.buttonSet = new Set();
+		this.buttonMap = new Map();
+		for (let i = 0; i < config.points.length; i++) {
+			const p = config.points[i];
+			if (!p.buttonEnabled) {
+				continue;
+			}
+			if (p.buttonObjectId) {
+				this.buttonMap.set(p.buttonObjectId, i);
+				this.buttonSet.add(p.buttonObjectId);
+				await this.subscribeForeignStatesAsync(p.buttonObjectId);
+				try {
+					const st = await this.getForeignStateAsync(p.buttonObjectId);
+					// Seed the raw level so we only toggle on a genuine press after startup.
+					this.buttonStates[i].raw = Boolean(st && st.val);
+				} catch (e) {
+					this.log.debug(`Could not read override button ${p.buttonObjectId}: ${e.message}`);
+				}
+			}
+			await this.setStateChangedAsync(`aeration.point.${i}.buttonOn`, { val: false, ack: true });
+		}
+		if (this.buttonSet.size) {
+			this.log.debug(`Manual override buttons active on ${this.buttonSet.size} point(s).`);
+		}
+	}
+
+	/**
+	 * React to a change of a watched override button input and drive the per-point toggle state
+	 * machine (v1: each press flips the override on/off). A change re-runs the control tick so the
+	 * arbiter applies the override immediately.
+	 *
+	 * @param {string} id - the button input state id
+	 * @param {ioBroker.State | null | undefined} state - the new state
+	 * @returns {Promise<void>}
+	 */
+	async handleButtonChange(id, state) {
+		const index = this.buttonMap.get(id);
+		if (index === undefined) {
+			return;
+		}
+		const p = this.cfg.points[index];
+		const next = nextButtonState(this.buttonStates[index], Boolean(state && state.val), p.buttonMode);
+		this.buttonStates[index] = { on: next.on, raw: next.raw };
+		if (next.changed) {
+			this.logInfo(next.on ? 'buttonOverrideOn' : 'buttonOverrideOff', { point: p.name });
+			await this.setStateChangedAsync(`aeration.point.${index}.buttonOn`, { val: next.on, ack: true });
+			await this.controlTick('button');
+		}
+	}
+
+	/**
+	 * The per-point "force open" mask from the manual override buttons (all-false when none active).
+	 *
+	 * @returns {boolean[]} mask of points forced open by a pressed override button
+	 */
+	getButtonForcedOn() {
+		return buttonForcedOn(
+			this.cfg.points,
+			this.buttonStates,
+			this.cfg.points.map(p => p.buttonEnabled),
+		);
 	}
 
 	/**

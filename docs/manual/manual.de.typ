@@ -210,6 +210,12 @@ Das ist das Herzstück der Einrichtung. Fügen Sie *bis zu 8* Punkte hinzu; jede
   ihn nicht schalten.
 ]
 
+Jeder Punkt kann zusätzlich einen optionalen *Übersteuerungs-Taster* haben — einen physischen Taster
+(z. B. einen ESP32-Digitaleingang oder einen beliebigen booleschen State). Er arbeitet als *Toggle*:
+Ein Druck erzwingt diesen Punkt *mit Vorrang vor der Automatik* (Zeitplan, Sequenz, Winter,
+Sauerstoff) und sogar vor einer Fütterungspause; nur der Hauptschalter oder eine
+Sicherheitsauslösung heben ihn auf. Erneut drücken hebt ihn auf. (Weitere Taster-Modi sind geplant.)
+
 == Gruppen
 
 Fassen Sie mehrere Punkte zusammen, um sie gemeinsam zu steuern (z. B. öffnet ein Schalter drei
@@ -326,6 +332,7 @@ Statuswerte.
   [`control.enabled` *(w)*], [Hauptfreigabe],
   [`control.mode` *(w)*], [`auto` / `manual` / `off`],
   [`aeration.point.<n>.valveState`], [Ventil ist offen],
+  [`aeration.point.<n>.buttonOn`], [Übersteuerungs-Taster aktiv (nur mit konfiguriertem Taster)],
   [`aeration.point.<n>.active`], [Punkt belüftet gerade],
   [`aeration.point.<n>.runtimeTodaySec` / `.runtimeTotalH`], [Laufzeit heute / gesamt],
   [`safety.interlockActive`], [Sicherheitsverriegelung gerade aktiv],

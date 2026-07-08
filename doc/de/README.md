@@ -128,6 +128,12 @@ Punkt:
 - **Backend** – `ioBroker` (ein fremder State) oder `ESP32` (ein Relaiskanal, geplant).
 - **Ventil-State / Kanal** – für das ioBroker-Backend den Schalter-State wählen, der das Ventil
   öffnet (über den Objektbrowser); für ESP32 die Kanalnummer.
+- **Übersteuerungstaster** *(optional)* – ein physischer Taster pro Punkt (z. B. ein digitaler
+  ESP32-Eingang oder ein beliebiger boolescher State). Er wirkt als **Umschalter (Toggle)**: ein
+  Druck erzwingt den Punkt **ein, mit Vorrang vor der automatischen Steuerung**
+  (Zeitplan/Sequenz/Winter/Sauerstoff) und sogar vor einer Feeder-Pause — *nur der Hauptschalter oder
+  eine Sicherheitsauslösung setzt ihn außer Kraft*. Zum Freigeben erneut drücken. (Weitere
+  Tastermodi sind geplant; das Feld ist dafür vorbereitet.)
 
 ### Gruppen
 Punkte zu Gruppen zusammenfassen, um sie gemeinsam zu schalten (z. B. öffnet eine Schaltfläche
@@ -239,6 +245,7 @@ Befehle; alle anderen sind schreibgeschützte Statuswerte, die der Adapter aktua
 |--------|-----|-------|--------------|
 | `aeration.point.<n>.valveState` | boolean | `indicator` | Ventil ist geöffnet |
 | `aeration.point.<n>.active` | boolean | `indicator` | Punkt belüftet gerade |
+| `aeration.point.<n>.buttonOn` | boolean | `indicator` | Manueller Übersteuerungstaster aktiv (nur mit konfiguriertem Taster) |
 | `aeration.point.<n>.runtimeTodaySec` | number | `value` | Heutige Laufzeit (Sekunden) |
 | `aeration.point.<n>.runtimeTotalH` | number | `value` | Gesamtlaufzeit (Stunden, für Wartung) |
 | `aeration.point.<n>.lastChange` | number | `value.time` | Zeitstempel der letzten Ventiländerung |

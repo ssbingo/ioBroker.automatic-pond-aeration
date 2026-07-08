@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "automatic-pond-aeration",
-		"version": "0.0.15",
+		"version": "0.0.16",
 		"news": {
+			"0.0.16": {
+				"en": "Per-point manual override push-button (toggle): forces a point on with priority over the automatic control; only the master switch or a safety trip overrides it.",
+				"de": "Manueller Übersteuerungs-Taster je Stelle (Toggle): erzwingt eine Stelle mit Vorrang vor der Automatik; nur Hauptschalter oder Sicherheitsauslösung heben ihn auf.",
+				"ru": "Кнопка ручного управления для каждой точки (переключатель): принудительно включает точку с приоритетом над автоматикой; отменяют только главный выключатель или срабатывание защиты.",
+				"pt": "Botão de substituição manual por ponto (comutação): força um ponto com prioridade sobre o controlo automático; só o interruptor principal ou uma proteção o anulam.",
+				"nl": "Handmatige overname-knop per punt (toggle): forceert een punt met voorrang op de automatiek; alleen de hoofdschakelaar of een veiligheidsingreep heffen het op.",
+				"fr": "Bouton de dérogation manuelle par point (bascule) : force un point en priorité sur la commande automatique ; seul l'interrupteur principal ou une sécurité l'annule.",
+				"it": "Pulsante di override manuale per punto (toggle): forza un punto con priorità sul controllo automatico; solo l'interruttore principale o una sicurezza lo annullano.",
+				"es": "Botón de anulación manual por punto (conmutación): fuerza un punto con prioridad sobre el control automático; solo el interruptor principal o una seguridad lo anulan.",
+				"pl": "Przycisk ręcznego nadpisania na punkt (przełącznik): wymusza punkt z priorytetem nad automatyką; anuluje go tylko główny wyłącznik lub zabezpieczenie.",
+				"uk": "Кнопка ручного перевизначення для кожної точки (перемикач): примусово вмикає точку з пріоритетом над автоматикою; скасовують лише головний вимикач або спрацювання захисту.",
+				"zh-cn": "每个增氧点的手动优先按钮（切换）：以高于自动控制的优先级强制开启；仅总开关或安全触发可覆盖。"
+			},
 			"0.0.15": {
 				"en": "Admin usability: calendar picker for winter dates, clock picker for schedules, full scrolling, per-parameter safety explanations, and selectable notification events.",
 				"de": "Admin-Bedienung: Kalenderauswahl für Winter-Daten, Uhrzeit-Picker für Zeitpläne, vollständiges Scrollen, Erklärungen je Sicherheitsparameter und wählbare Benachrichtigungs-Ereignisse.",

@@ -92,6 +92,7 @@
 - **已启用** – 将该点纳入控制。
 - **后端** – `ioBroker`（一个外部状态）或 `ESP32`（一个继电器通道，计划中）。
 - **阀门状态 / 通道** – 对于 ioBroker 后端，选择打开阀门的开关状态（通过对象浏览器）；对于 ESP32，则填写通道编号。
+- **强制按钮（override）** *(可选)* – 每个点一个物理按钮（例如 ESP32 的数字输入，或任意布尔状态）。它以**切换（toggle）**方式工作：按一次即强制该点**开启，并优先于自动控制**（时间计划/序列/冬季/氧气），甚至优先于 feeder 暂停——*只有主开关或安全跳闸才能将其覆盖*。再按一次即可释放。（计划支持更多按钮模式；该字段已为此预留。）
 
 ### 分组
 将多个点分组以便一起切换（例如一个按钮打开多个散气器）。为分组命名并勾选其成员点。**分组数量永远不能多于点的数量。**
@@ -164,6 +165,7 @@
 |------|------|------|------|
 | `aeration.point.<n>.valveState` | boolean | `indicator` | 阀门已打开 |
 | `aeration.point.<n>.active` | boolean | `indicator` | 该点当前正在增氧 |
+| `aeration.point.<n>.buttonOn` | boolean | `indicator` | 手动强制按钮已激活（仅在配置了按钮时） |
 | `aeration.point.<n>.runtimeTodaySec` | number | `value` | 今日运行时长（秒） |
 | `aeration.point.<n>.runtimeTotalH` | number | `value` | 总运行时长（小时，用于维护） |
 | `aeration.point.<n>.lastChange` | number | `value.time` | 上次阀门变更的时间戳 |

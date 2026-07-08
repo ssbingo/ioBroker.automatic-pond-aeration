@@ -130,6 +130,12 @@ Le cœur de la configuration. Ajoute **jusqu'à 8** points ; chaque point est un
 - **Backend** – `ioBroker` (un état étranger) ou `ESP32` (un canal de relais, prévu).
 - **État de vanne / canal** – pour le backend ioBroker, choisis l'état commutateur qui ouvre la vanne
   (via l'explorateur d'objets) ; pour ESP32, le numéro de canal.
+- **Bouton de forçage** *(optionnel)* – un bouton-poussoir physique par point (p. ex. une entrée
+  numérique d'un ESP32, ou n'importe quel état booléen). Il fonctionne comme un **inverseur
+  (toggle)** : une pression force le point **en marche, avec priorité sur la commande automatique**
+  (planning/séquence/hiver/oxygène) et même sur une pause du feeder — *seuls l'interrupteur principal
+  ou un déclenchement de sécurité le supplantent*. Appuie de nouveau pour le relâcher. (D'autres
+  modes de bouton sont prévus ; le champ est préparé pour eux.)
 
 ### Groupes
 Regroupe des points pour les commuter ensemble (p. ex. un bouton ouvre plusieurs diffuseurs). Donne
@@ -245,6 +251,7 @@ jour par l'adaptateur.
 |-------|------|------|-------------|
 | `aeration.point.<n>.valveState` | boolean | `indicator` | La vanne est ouverte |
 | `aeration.point.<n>.active` | boolean | `indicator` | Le point est en cours d'aération |
+| `aeration.point.<n>.buttonOn` | boolean | `indicator` | Bouton de forçage manuel actif (uniquement avec un bouton configuré) |
 | `aeration.point.<n>.runtimeTodaySec` | number | `value` | Durée de fonctionnement aujourd'hui (secondes) |
 | `aeration.point.<n>.runtimeTotalH` | number | `value` | Durée de fonctionnement totale (heures, pour la maintenance) |
 | `aeration.point.<n>.lastChange` | number | `value.time` | Horodatage du dernier changement de vanne |

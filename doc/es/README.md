@@ -130,6 +130,12 @@ El núcleo de la configuración. Añade **hasta 8** puntos; cada punto es una v�
 - **Backend** – `ioBroker` (un estado externo) o `ESP32` (un canal de relé, previsto).
 - **Estado de válvula / canal** – para el backend ioBroker, elige el estado interruptor que abre la
   válvula (mediante el explorador de objetos); para ESP32, el número de canal.
+- **Botón de anulación** *(opcional)* – un pulsador físico por punto (p. ej. una entrada digital de
+  un ESP32, o cualquier estado booleano). Funciona como **conmutador (toggle)**: una pulsación fuerza
+  el punto **encendido con prioridad sobre el control automático**
+  (horario/secuencia/invierno/oxígeno) e incluso sobre una pausa del feeder — *solo el interruptor
+  principal o un disparo de seguridad lo anulan*. Pulsa de nuevo para soltarlo. (Se prevén más modos
+  de botón; el campo está preparado para ellos.)
 
 ### Grupos
 Agrupa puntos para conmutarlos juntos (p. ej. un botón abre varios difusores). Da un nombre al grupo
@@ -243,6 +249,7 @@ actualiza.
 |--------|------|-----|-------------|
 | `aeration.point.<n>.valveState` | boolean | `indicator` | La válvula está abierta |
 | `aeration.point.<n>.active` | boolean | `indicator` | El punto está aireando actualmente |
+| `aeration.point.<n>.buttonOn` | boolean | `indicator` | Botón de anulación manual activo (solo con un botón configurado) |
 | `aeration.point.<n>.runtimeTodaySec` | number | `value` | Tiempo de funcionamiento de hoy (segundos) |
 | `aeration.point.<n>.runtimeTotalH` | number | `value` | Tiempo de funcionamiento total (horas, para mantenimiento) |
 | `aeration.point.<n>.lastChange` | number | `value.time` | Marca de tiempo del último cambio de válvula |

@@ -130,6 +130,11 @@ The heart of the configuration. Add **up to 8** points; each one is one valve. P
 - **Backend** – `ioBroker` (a foreign state) or `ESP32` (a relay channel, planned).
 - **Valve state / channel** – for the ioBroker backend, pick the switch state that opens the valve
   (via the object browser); for ESP32, the channel number.
+- **Override button** *(optional)* – a physical push-button per point (e.g. an ESP32 digital input,
+  or any boolean state). It works as a **toggle**: one press forces the point **on with priority over
+  the automatic control** (schedule/sequence/winter/oxygen) and even over a feeder pause — *only the
+  master switch or a safety trip overrides it*. Press again to release. (More button modes are
+  planned; the field is prepared for them.)
 
 ### Groups
 Group points to switch them together (e.g. one button opens several diffusers). Give the group a
@@ -231,6 +236,7 @@ read-only status values updated by the adapter.
 |--------|------|------|-------------|
 | `aeration.point.<n>.valveState` | boolean | `indicator` | Valve is open |
 | `aeration.point.<n>.active` | boolean | `indicator` | Point is currently aerating |
+| `aeration.point.<n>.buttonOn` | boolean | `indicator` | Manual override button active (only with a button configured) |
 | `aeration.point.<n>.runtimeTodaySec` | number | `value` | Runtime today (seconds) |
 | `aeration.point.<n>.runtimeTotalH` | number | `value` | Total runtime (hours, for maintenance) |
 | `aeration.point.<n>.lastChange` | number | `value.time` | Timestamp of the last valve change |
@@ -323,6 +329,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.0.16 (2026-07-08)
+* (ssbingo) Per-point manual override push-button (M7 groundwork): each aeration point can have a physical button (an ESP32 digital input or any boolean state). It toggles — one press forces the point on with **priority over the automatic control** (schedule/sequence/winter/oxygen) and even over a feeder pause; only the master switch or a safety trip overrides it. New per-point config (`buttonEnabled`/`buttonMode`/`buttonObjectId`), state `aeration.point.<n>.buttonOn`, pure/unit-tested `lib/control/button.js`, admin column and localized messages/strings in 11 languages. The button mode is an enum, so more behaviours can be added later
+
 ### 0.0.15 (2026-07-08)
 * (ssbingo) Admin usability: winter start/end are now picked from a **calendar** (day + month only, recurring); schedule From/To use a **clock (hour/minute) picker**; the Control page scrolls fully to the bottom; every **Safety** parameter now shows an inline explanation of what it does and its effect. **Notifications** let you choose **which events** are sent (safety interlock / oxygen alarm / pressure alarm) via a new `notifyEvents` option — before, only the messaging instance was selectable. New docs: the manual gained wiring diagrams (failsafe relay wiring, ESP32 sensor wiring), a quick-start and a glossary, and is linked (EN/DE PDF) from all READMEs
 
@@ -349,9 +358,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.0.7 (2026-07-07)
 * (ssbingo) Monitoring, astronomical times and geolocation: oxygen, air/water temperature and pressure are read from foreign states and mirrored into `sensors.*`, with a low-oxygen alarm (hysteresis), a pressure-range alarm and a temperature-compensated oxygen saturation. Sunrise/sunset/solar-noon and the night flag are computed from the coordinates (ioBroker system config or an on-demand Nominatim address lookup, rule 12)
-
-### 0.0.6 (2026-07-07)
-* (ssbingo) Comprehensive, meaningful logging on all levels (error/warn/info/debug/silly). Operational INFO messages are localized to the ioBroker system language (`lib/messages.js`, 11 languages, English fallback); warnings, errors and debug output stay in English for log analysis
 
 ---
 

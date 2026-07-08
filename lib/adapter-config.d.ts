@@ -21,6 +21,12 @@ declare global {
 			onValue: boolean | number | string;
 			/** Value written to close the valve (default false). */
 			offValue: boolean | number | string;
+			/** A physical manual-override push-button is wired for this point (ESP32 DI / boolean state). */
+			buttonEnabled: boolean;
+			/** Button behaviour. Only "toggle" in v1; kept as an enum for future modes. */
+			buttonMode: 'toggle';
+			/** Foreign boolean state (or ESP32 DI) that reads the button; rising edge = press. */
+			buttonObjectId: string;
 		}
 
 		/** A group of aeration points. There must never be more groups than points. */

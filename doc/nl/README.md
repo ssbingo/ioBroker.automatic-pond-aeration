@@ -122,6 +122,12 @@ Het hart van de configuratie. Voeg **maximaal 8** punten toe; elk punt is één 
 - **Backend** – `ioBroker` (een vreemde state) of `ESP32` (een relaiskanaal, gepland).
 - **Klep-state / kanaal** – kies voor de ioBroker-backend de schakelaar-state die de klep opent (via
   de objectbrowser); voor ESP32 het kanaalnummer.
+- **Overrideknop** *(optioneel)* – een fysieke drukknop per punt (bijv. een digitale ingang van een
+  ESP32, of een willekeurige booleaanse state). Hij werkt als een **schakelaar (toggle)**: één druk
+  forceert het punt **aan met voorrang op de automatische besturing**
+  (tijdschema/reeks/winter/zuurstof) en zelfs op een feeder-pauze — *alleen de hoofdschakelaar of een
+  veiligheidsactivering heffen dit op*. Druk nogmaals om los te laten. (Er zijn meer knopmodi
+  gepland; het veld is daarop voorbereid.)
 
 ### Groepen
 Groepeer punten om ze samen te schakelen (bijv. één knop opent meerdere uitstromers). Geef de groep
@@ -230,6 +236,7 @@ commando's; alle andere zijn alleen-lezen statuswaarden die door de adapter word
 |--------|------|-----|--------------|
 | `aeration.point.<n>.valveState` | boolean | `indicator` | Klep is geopend |
 | `aeration.point.<n>.active` | boolean | `indicator` | Punt belucht momenteel |
+| `aeration.point.<n>.buttonOn` | boolean | `indicator` | Handmatige overrideknop actief (alleen met een geconfigureerde knop) |
 | `aeration.point.<n>.runtimeTodaySec` | number | `value` | Looptijd vandaag (seconden) |
 | `aeration.point.<n>.runtimeTotalH` | number | `value` | Totale looptijd (uren, voor onderhoud) |
 | `aeration.point.<n>.lastChange` | number | `value.time` | Tijdstip van de laatste klepwijziging |

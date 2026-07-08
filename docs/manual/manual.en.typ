@@ -192,6 +192,12 @@ This is the heart of the setup. Add *up to 8* points; each one is one valve.
   If a point is enabled but has no state mapped, the adapter warns in the log and cannot switch it.
 ]
 
+Each point may also have an optional *override button* — a physical push-button (e.g. an ESP32
+digital input, or any boolean state). It works as a *toggle*: one press forces that point *on with
+priority over the automatic control* (schedule, sequence, winter, oxygen) and even over a feeder
+pause; only the master switch or a safety trip overrides it. Press again to release. (More button
+modes are planned.)
+
 == Groups
 
 Group several points to control them together (e.g. one switch opens three diffusers). Give the
@@ -298,6 +304,7 @@ index. Items marked *(w)* are writable commands; the rest are read-only status v
   [`control.mode` *(w)*], [`auto` / `manual` / `off`],
   [`aeration.point.<n>.valveState`], [Valve is open],
   [`aeration.point.<n>.active`], [Point is currently aerating],
+  [`aeration.point.<n>.buttonOn`], [Override button active (only with a button configured)],
   [`aeration.point.<n>.runtimeTodaySec` / `.runtimeTotalH`], [Runtime today / total],
   [`safety.interlockActive`], [Safety interlock currently active],
   [`safety.emergencyValve`], [Emergency valve is open],

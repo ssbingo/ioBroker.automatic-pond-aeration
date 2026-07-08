@@ -268,6 +268,7 @@ function Settings(props) {
 							<TableCell>{I18n.t('Enabled')}</TableCell>
 							<TableCell>{I18n.t('Backend')}</TableCell>
 							<TableCell>{I18n.t('Valve state / channel')}</TableCell>
+							<TableCell>{I18n.t('Override button')}</TableCell>
 							<TableCell />
 						</TableRow>
 					</TableHead>
@@ -299,6 +300,12 @@ function Settings(props) {
 										<ObjectSelect label="" value={p.objectId} onChange={v => updatePoint(i, 'objectId', v)} {...objProps} />
 									)}
 								</TableCell>
+								<TableCell sx={{ minWidth: 210 }}>
+									<Switch checked={!!p.buttonEnabled} onChange={e => updatePoint(i, 'buttonEnabled', e.target.checked)} />
+									{p.buttonEnabled ? (
+										<ObjectSelect label={I18n.t('Button state')} value={p.buttonObjectId} onChange={v => updatePoint(i, 'buttonObjectId', v)} {...objProps} />
+									) : null}
+								</TableCell>
 								<TableCell>
 									<IconButton size="small" onClick={() => removePoint(i)}>
 										<DeleteIcon fontSize="small" />
@@ -311,6 +318,9 @@ function Settings(props) {
 				<Button startIcon={<AddIcon />} onClick={addPoint} disabled={points.length >= MAX_POINTS} sx={{ mt: 1 }}>
 					{I18n.t('Add point')}
 				</Button>
+				<Typography variant="caption" color="textSecondary" sx={{ display: 'block', mt: 1 }}>
+					{I18n.t('Override button: an optional physical push-button (e.g. an ESP32 digital input or any boolean state). It works as a toggle — one press forces the point on with priority over the automatic control; only the master switch or a safety trip overrides it. Press again to release.')}
+				</Typography>
 			</Section>
 		</Box>
 	);
