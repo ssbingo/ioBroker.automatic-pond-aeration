@@ -49,7 +49,7 @@ ein Ventil pro _Belüftungspunkt_ (bis zu 8). Er kann:
 - *Benachrichtigungen* (z. B. Telegram) senden und *Laufzeitstatistiken* sammeln.
 
 #figure(
-  image("assets/system-overview.svg", width: 100%),
+  image("assets/system-overview.de.svg", width: 100%),
   caption: [Wie die Teile zusammenpassen: Der Adapter (das „Gehirn“) entscheidet, welche Ventile
   öffnen; die Pumpe speist Luft durch den Verteiler; jedes offene Ventil sendet Luft zu einem
   Diffusor im Teich. Der direkte ESP32-Pfad ist geplant #src(3).],
@@ -364,7 +364,7 @@ die Spannung verliert, *fällt ab* (wird stromlos), wählen Sie daher die Verdra
 entsprechend:
 
 #figure(
-  image("assets/relay-wiring.svg", width: 100%),
+  image("assets/relay-wiring.de.svg", width: 100%),
   caption: [Ausfallsichere Verdrahtung: Belüftungsventile als *stromlos geschlossen (NC)*, das
   Notventil als *stromlos offen (NO)*, die Pumpe im stromlosen Zustand ausgeschaltet. Bei einem
   Stromausfall fällt alles von selbst in den sicheren Zustand.],
@@ -416,7 +416,7 @@ I²C-Sensoren teilen sich einen Bus mit dem Relais-Expander und der Uhr/RTC des 
 Temperaturfühler nutzt einen separaten 1-Wire-Pin.
 
 #figure(
-  image("assets/esp32-sensors.svg", width: 100%),
+  image("assets/esp32-sensors.de.svg", width: 100%),
   caption: [Sensor-Verdrahtung: Der Sauerstoffsensor (`0x61`) und der Drucksensor (`0x6D`/`0x58`)
   teilen sich den I²C-Bus (`SDA`=GPIO42, `SCL`=GPIO41) mit einem *einzigen* 4,7-kΩ-Pull-up-Paar; der
   DS18B20 sitzt an einem 1-Wire-GPIO mit eigenem 4,7-kΩ-Pull-up. Die Sauerstoffsonde und der

@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 500" font-family="DejaVu Sans">
+  <defs>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1B98B5"/>
+      <stop offset="1" stop-color="#0A4D68"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 z" fill="#1B98B5"/>
+    </marker>
+    <marker id="arrowg" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 z" fill="#5b7683"/>
+    </marker>
+  </defs>
+
+  <!-- Controller -->
+  <rect x="40" y="30" width="250" height="86" rx="12" fill="#0A4D68"/>
+  <text x="60" y="62" fill="#ffffff" font-size="17" font-weight="bold">ioBroker</text>
+  <text x="60" y="84" fill="#cdeaf2" font-size="13">automatic-pond-aeration</text>
+  <text x="60" y="103" fill="#9fd6e6" font-size="11">(der Adapter — das „Gehirn“)</text>
+
+  <!-- ESP32 optional -->
+  <rect x="560" y="30" width="240" height="86" rx="12" fill="#ffffff" stroke="#1B98B5" stroke-width="2" stroke-dasharray="5 4"/>
+  <text x="580" y="60" fill="#0A4D68" font-size="15" font-weight="bold">ESP32 (optional, geplant)</text>
+  <text x="580" y="80" fill="#5b7683" font-size="12">steuert Relais &amp; liest Sensoren</text>
+  <text x="580" y="99" fill="#5b7683" font-size="12">direkt — kein zusätzlicher PC nötig</text>
+
+  <!-- control link controller <-> esp -->
+  <line x1="290" y1="73" x2="560" y2="73" stroke="#5b7683" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrowg)"/>
+  <text x="360" y="66" fill="#5b7683" font-size="11">Netzwerk / Ethernet</text>
+
+  <!-- Air pump -->
+  <rect x="40" y="200" width="150" height="70" rx="10" fill="#5b7683"/>
+  <text x="115" y="230" fill="#ffffff" font-size="14" font-weight="bold" text-anchor="middle">Luftpumpe</text>
+  <text x="115" y="250" fill="#e5edf0" font-size="12" text-anchor="middle">(Kompressor)</text>
+
+  <!-- Manifold pipe -->
+  <rect x="190" y="228" width="560" height="14" rx="7" fill="#8aa2ad"/>
+  <text x="470" y="222" fill="#5b7683" font-size="11" text-anchor="middle">Luftverteiler</text>
+
+  <!-- Emergency valve on manifold -->
+  <circle cx="250" cy="235" r="16" fill="#fef6e6" stroke="#b9770e" stroke-width="3"/>
+  <text x="250" y="240" fill="#b9770e" font-size="13" font-weight="bold" text-anchor="middle">N</text>
+  <text x="250" y="284" fill="#b9770e" font-size="11" text-anchor="middle">Notventil</text>
+
+  <!-- Valves + drop pipes -->
+  <g>
+    <circle cx="420" cy="235" r="16" fill="#e8f4f8" stroke="#1B98B5" stroke-width="3"/>
+    <text x="420" y="240" fill="#0A4D68" font-size="13" font-weight="bold" text-anchor="middle">1</text>
+    <rect x="415" y="251" width="10" height="99" fill="#8aa2ad"/>
+    <circle cx="560" cy="235" r="16" fill="#e8f4f8" stroke="#1B98B5" stroke-width="3"/>
+    <text x="560" y="240" fill="#0A4D68" font-size="13" font-weight="bold" text-anchor="middle">2</text>
+    <rect x="555" y="251" width="10" height="99" fill="#8aa2ad"/>
+    <circle cx="700" cy="235" r="16" fill="#e8f4f8" stroke="#1B98B5" stroke-width="3"/>
+    <text x="700" y="240" fill="#0A4D68" font-size="13" font-weight="bold" text-anchor="middle">3</text>
+    <rect x="695" y="251" width="10" height="99" fill="#8aa2ad"/>
+  </g>
+  <text x="700" y="200" fill="#0A4D68" font-size="11" text-anchor="middle">Ventile = Belüftungsstellen</text>
+
+  <!-- Pond -->
+  <rect x="360" y="350" width="440" height="120" rx="16" fill="url(#water)"/>
+  <text x="775" y="372" fill="#cdeaf2" font-size="12" text-anchor="end">Teich</text>
+  <g fill="#eaf7fb">
+    <rect x="404" y="452" width="32" height="8" rx="3"/>
+    <rect x="544" y="452" width="32" height="8" rx="3"/>
+    <rect x="684" y="452" width="32" height="8" rx="3"/>
+    <circle cx="414" cy="430" r="4"/><circle cx="424" cy="410" r="5"/><circle cx="418" cy="390" r="3"/>
+    <circle cx="554" cy="430" r="4"/><circle cx="566" cy="408" r="5"/><circle cx="558" cy="388" r="3"/>
+    <circle cx="694" cy="430" r="4"/><circle cx="706" cy="410" r="5"/><circle cx="698" cy="388" r="3"/>
+  </g>
+
+  <!-- control wires -->
+  <path d="M165,116 C165,150 115,165 115,200" fill="none" stroke="#1B98B5" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+  <path d="M250,116 C250,150 250,170 250,219" fill="none" stroke="#1B98B5" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+  <path d="M290,90 C360,150 420,170 420,219" fill="none" stroke="#1B98B5" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+  <path d="M290,100 C450,160 560,175 560,219" fill="none" stroke="#1B98B5" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+  <path d="M290,110 C520,175 700,175 700,219" fill="none" stroke="#1B98B5" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+
+  <line x1="190" y1="235" x2="215" y2="235" stroke="#8aa2ad" stroke-width="14"/>
+
+  <!-- legend -->
+  <g font-size="11" fill="#5b7683">
+    <line x1="45" y1="330" x2="80" y2="330" stroke="#1B98B5" stroke-width="2" stroke-dasharray="5 4"/>
+    <text x="88" y="334">Steuersignal (ein/aus)</text>
+    <rect x="250" y="324" width="16" height="10" rx="5" fill="#8aa2ad"/>
+    <text x="274" y="334">Luftweg (Schlauch)</text>
+  </g>
+</svg>
