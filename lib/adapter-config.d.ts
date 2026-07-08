@@ -78,6 +78,8 @@ declare global {
 			esp32EmergencyRelay: number;
 			/** ESP32 relay channel (0–7) wired to the pump. */
 			esp32PumpRelay: number;
+			/** Let the ESP32 run the time schedules autonomously while the adapter heartbeat is lost. */
+			esp32AutonomousEnabled: boolean;
 			/** Polling interval for backend status in seconds. */
 			pollIntervalSec: number;
 

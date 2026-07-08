@@ -123,6 +123,10 @@ que usa.
   **relé da bomba** (0–7); os pontos de aeração usam o canal de relé definido por ponto. O adaptador
   envia uma configuração de segurança e um heartbeat para que a proteção contra falhas no próprio
   dispositivo do firmware proteja o lago mesmo se o ioBroker estiver fora do ar.
+  - **Agendamento autónomo (funciona sem o ioBroker)** *(apenas ESP32, opcional)* – quando ativado,
+    o adaptador também envia os seus agendamentos ao dispositivo; se a ligação cair, o ESP32
+    continua a executá-los sozinho usando o seu relógio NTP (o encravamento de segurança dead-head
+    continua a aplicar-se). A sequência cíclica permanece no adaptador.
 - **Intervalo de sondagem (s)** – com que frequência o status do backend é consultado (por ex. `30`).
 
 ### Pontos de aeração

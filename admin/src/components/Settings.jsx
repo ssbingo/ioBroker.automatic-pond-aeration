@@ -260,6 +260,12 @@ function Settings(props) {
 						<Typography variant="caption" color="textSecondary" sx={{ display: 'block', mt: 0.5 }}>
 							{I18n.t('The aeration-point valves use the relay channel set per point; here you map the emergency valve and the pump. The firmware runs an on-device failsafe from these settings.')}
 						</Typography>
+						<Box sx={{ mt: 1.5 }}>
+							<Sw label={I18n.t('Autonomous schedule (run without ioBroker)')} checked={native.esp32AutonomousEnabled} onChange={v => set('esp32AutonomousEnabled', v)} />
+						</Box>
+						<Typography variant="caption" color="textSecondary" sx={{ display: 'block', mt: 0.5 }}>
+							{I18n.t('If the adapter connection drops, the ESP32 keeps running your time schedules on its own using its NTP clock — the dead-head safety interlock still applies. The cyclic sequence is not run autonomously; it stays with the adapter.')}
+						</Typography>
 					</>
 				) : null}
 			</Section>

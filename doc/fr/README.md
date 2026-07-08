@@ -127,6 +127,10 @@ parties que tu utilises.
   le **relais de la pompe** (0–7) ; les points d'aération utilisent le canal de relais défini par
   point. L'adaptateur envoie une configuration de sécurité et un battement (heartbeat) pour que la
   sécurité intégrée à l'appareil du firmware protège le bassin même si ioBroker est hors service.
+  - **Horaire autonome (fonctionne sans ioBroker)** *(ESP32 uniquement, facultatif)* – lorsqu'il est
+    activé, l'adaptateur envoie aussi tes horaires à l'appareil ; si la connexion est perdue,
+    l'ESP32 continue de les exécuter lui-même à l'aide de son horloge NTP (le verrouillage de
+    sécurité dead-head reste actif). La séquence cyclique reste gérée par l'adaptateur.
 - **Intervalle d'interrogation (s)** – à quelle fréquence l'état du backend est interrogé (p. ex.
   `30`).
 

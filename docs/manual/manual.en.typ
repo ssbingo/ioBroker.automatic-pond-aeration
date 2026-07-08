@@ -433,9 +433,19 @@ With the board flashed and wired, the adapter can drive it directly — no relay
 )
 
 #safety("The failsafe lives on the device")[
-  The adapter sends a *heartbeat*; if it stops (network or ioBroker down) the firmware opens the
-  emergency valve and switches the pump off on its own. It also enforces the dead-head interlock
-  locally. This is why the ESP32 is driven directly rather than switched "dumb" from afar.
+  The adapter sends a *heartbeat*; if it stops (network or ioBroker down) the firmware protects the
+  pond on its own — it opens the emergency valve and switches the pump off, and it enforces the
+  dead-head interlock locally. This is why the ESP32 is driven directly rather than switched "dumb"
+  from afar.
+]
+
+#tipbox("Autonomous schedule (optional)")[
+  Turn on *Autonomous schedule (run without ioBroker)* in the General tab and the adapter also pushes
+  your *time schedules* to the device. Now, if the heartbeat is lost, the ESP32 does not just fail
+  safe — it *keeps running your schedule* against its own NTP clock, so the pond stays aerated while
+  ioBroker or the network is down. The pump only runs while at least *minimum open valves* are open
+  (otherwise pump off + emergency valve open), and the dead-head interlock still overrides everything.
+  The cyclic round-robin *sequence* is not run autonomously; it stays with the adapter.
 ]
 
 #tipbox("On-device web UI (port 80)")[

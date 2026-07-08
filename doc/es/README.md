@@ -127,6 +127,10 @@ uses.
   el **relé de la bomba** (0–7); los puntos de aireación usan el canal de relé configurado por punto.
   El adaptador envía una configuración de seguridad y un latido (heartbeat) para que el sistema de
   seguridad en el propio dispositivo del firmware proteja el estanque incluso si ioBroker está caído.
+  - **Programación autónoma (funciona sin ioBroker)** *(solo ESP32, opcional)* – cuando está
+    activada, el adaptador también envía tus programaciones al dispositivo; si se pierde la
+    conexión, el ESP32 sigue ejecutándolas por sí solo usando su reloj NTP (el enclavamiento de
+    seguridad dead-head sigue aplicándose). La secuencia cíclica permanece en el adaptador.
 - **Intervalo de sondeo (s)** – con qué frecuencia se consulta el estado del backend (p. ej. `30`).
 
 ### Puntos de aireación

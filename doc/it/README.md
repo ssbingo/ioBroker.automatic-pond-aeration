@@ -125,6 +125,10 @@ usi.
   il **relè della pompa** (0–7); i punti di aerazione usano il canale relè impostato per ciascun punto.
   L'adattatore invia una configurazione di sicurezza e un heartbeat affinché il failsafe integrato nel
   dispositivo del firmware protegga il laghetto anche se ioBroker è offline.
+  - **Pianificazione autonoma (funziona senza ioBroker)** *(solo ESP32, facoltativo)* – se
+    abilitata, l'adattatore invia anche le tue pianificazioni al dispositivo; se la connessione
+    cade, l'ESP32 continua a eseguirle da solo usando il suo orologio NTP (l'interblocco di
+    sicurezza dead-head resta valido). La sequenza ciclica resta gestita dall'adattatore.
 - **Intervallo di polling (s)** – ogni quanto viene interrogato lo stato del backend (ad es. `30`).
 
 ### Punti di aerazione

@@ -120,6 +120,10 @@ części, których używasz.
   i **przekaźnik pompy** (0–7); punkty napowietrzania używają kanału przekaźnika ustawionego dla
   każdego punktu. Adapter wysyła konfigurację bezpieczeństwa oraz sygnał kontrolny (heartbeat), aby
   wbudowane w urządzenie zabezpieczenie firmware chroniło staw, nawet gdy ioBroker jest niedostępny.
+  - **Autonomiczny harmonogram (działa bez ioBroker)** *(tylko ESP32, opcjonalnie)* – gdy włączone,
+    adapter wysyła też Twoje harmonogramy do urządzenia; jeśli połączenie zostanie przerwane, ESP32
+    samodzielnie kontynuuje ich realizację, korzystając z własnego zegara NTP (blokada
+    bezpieczeństwa dead-head nadal obowiązuje). Sekwencja cykliczna pozostaje po stronie adaptera.
 - **Interwał odpytywania (s)** – jak często odpytywany jest status backendu (np. `30`).
 
 ### Punkty napowietrzania

@@ -1,20 +1,20 @@
 {
 	"common": {
 		"name": "automatic-pond-aeration",
-		"version": "0.0.18",
+		"version": "0.0.19",
 		"news": {
-			"0.0.18": {
-				"en": "Override-button safety: a manual override button is now only allowed on an aeration-valve channel (greyed out on the pump/emergency-valve channel), and a button pressed at the ESP32 device is reflected back into ioBroker. The companion firmware gained an on-device web UI (network/NTP, OTA update, info), SNTP time and status LED/buzzer signalling.",
-				"de": "Übersteuerungstaster-Sicherheit: ein manueller Übersteuerungstaster ist jetzt nur noch an einem Belüftungsventil-Kanal erlaubt (am Pumpen-/Notventil-Kanal ausgegraut), und ein am ESP32-Gerät gedrückter Taster wird in ioBroker zurückgespiegelt. Die zugehörige Firmware erhielt eine Weboberfläche auf dem Gerät (Netzwerk/NTP, OTA-Update, Info), SNTP-Zeit und Status-LED-/Summer-Signalisierung.",
-				"ru": "Безопасность кнопки переопределения: ручная кнопка переопределения теперь разрешена только на канале клапана аэрации (недоступна на канале насоса/аварийного клапана), а кнопка, нажатая на устройстве ESP32, отражается обратно в ioBroker. Сопутствующая прошивка получила веб-интерфейс на устройстве (сеть/NTP, OTA-обновление, информация), время SNTP и сигнализацию светодиодом состояния/зуммером.",
-				"pt": "Segurança do botão de substituição: um botão de substituição manual só é permitido num canal de válvula de arejamento (desativado no canal da bomba/válvula de emergência), e um botão premido no dispositivo ESP32 é refletido de volta no ioBroker. O firmware complementar ganhou uma interface web no dispositivo (rede/NTP, atualização OTA, informação), hora SNTP e sinalização por LED de estado/buzzer.",
-				"nl": "Veiligheid van de overrideknop: een handmatige overrideknop is nu alleen toegestaan op een beluchtingsklep-kanaal (grijs weergegeven op het pomp-/noodklep-kanaal), en een op het ESP32-apparaat ingedrukte knop wordt teruggespiegeld naar ioBroker. De bijbehorende firmware kreeg een webinterface op het apparaat (netwerk/NTP, OTA-update, info), SNTP-tijd en status-LED-/zoemer-signalering.",
-				"fr": "Sécurité du bouton de forçage : un bouton de forçage manuel n'est désormais autorisé que sur un canal de vanne d'aération (grisé sur le canal de la pompe/vanne de secours), et un bouton pressé sur l'appareil ESP32 est répercuté dans ioBroker. Le firmware associé a gagné une interface web embarquée (réseau/NTP, mise à jour OTA, infos), l'heure SNTP et une signalisation par LED d'état/buzzer.",
-				"it": "Sicurezza del pulsante di override: un pulsante di override manuale è ora consentito solo su un canale di valvola di aerazione (disattivato sul canale pompa/valvola di emergenza), e un pulsante premuto sul dispositivo ESP32 viene riflesso in ioBroker. Il firmware companion ha ottenuto un'interfaccia web sul dispositivo (rete/NTP, aggiornamento OTA, info), ora SNTP e segnalazione tramite LED di stato/cicalino.",
-				"es": "Seguridad del botón de anulación: un botón de anulación manual solo se permite ahora en un canal de válvula de aireación (deshabilitado en el canal de la bomba/válvula de emergencia), y un botón pulsado en el dispositivo ESP32 se refleja de vuelta en ioBroker. El firmware complementario incorporó una interfaz web en el dispositivo (red/NTP, actualización OTA, información), hora SNTP y señalización mediante LED de estado/zumbador.",
-				"pl": "Bezpieczeństwo przycisku wymuszenia: ręczny przycisk wymuszenia jest teraz dozwolony tylko na kanale zaworu napowietrzania (wyszarzony na kanale pompy/zaworu awaryjnego), a przycisk naciśnięty na urządzeniu ESP32 jest odzwierciedlany z powrotem w ioBroker. Towarzyszący firmware zyskał interfejs webowy na urządzeniu (sieć/NTP, aktualizacja OTA, informacje), czas SNTP oraz sygnalizację diodą stanu/brzęczykiem.",
-				"uk": "Безпека кнопки перевизначення: ручна кнопка перевизначення тепер дозволена лише на каналі клапана аерації (неактивна на каналі насоса/аварійного клапана), а кнопка, натиснута на пристрої ESP32, відображається назад в ioBroker. Супутня прошивка отримала вебінтерфейс на пристрої (мережа/NTP, OTA-оновлення, інформація), час SNTP та сигналізацію світлодіодом стану/зумером.",
-				"zh-cn": "强制按钮安全性：手动强制按钮现在仅允许用于增氧阀通道（在水泵/应急阀通道上置灰），在 ESP32 设备上按下的按钮会回传到 ioBroker。配套固件新增了板载网页界面（网络/NTP、OTA 更新、信息）、SNTP 时间以及状态 LED／蜂鸣器提示。"
+			"0.0.19": {
+				"en": "Autonomous schedule on the ESP32: enable it and the device keeps running your time schedules on its own (against its NTP clock) if the adapter connection drops — the pond stays aerated while ioBroker is down. The on-device dead-head safety interlock still applies.",
+				"de": "Autonome Zeitpläne auf dem ESP32: aktivieren Sie sie, und das Gerät führt Ihre Zeitpläne selbstständig weiter aus (anhand seiner NTP-Uhr), falls die Adapter-Verbindung ausfällt — der Teich bleibt belüftet, während ioBroker nicht läuft. Die geräteinterne Dead-Head-Sicherheitsverriegelung gilt weiterhin.",
+				"ru": "Автономное расписание на ESP32: включите его, и устройство самостоятельно продолжает выполнять ваши расписания (по своим часам NTP), если прерывается соединение с адаптером — пруд остаётся аэрируемым, пока ioBroker не работает. Встроенная в устройство защитная блокировка dead-head по-прежнему действует.",
+				"pt": "Agendamento autónomo no ESP32: ative-o e o dispositivo continua a executar sozinho os seus agendamentos horários (segundo o seu relógio NTP) se a ligação do adaptador falhar — o lago permanece arejado enquanto o ioBroker está fora do ar. O encravamento de segurança dead-head no próprio dispositivo continua a aplicar-se.",
+				"nl": "Autonoom schema op de ESP32: schakel het in en het apparaat blijft uw schema's zelf uitvoeren (aan de hand van zijn NTP-klok) als de adapterverbinding wegvalt — de vijver blijft belucht terwijl ioBroker uit is. De dead-head-veiligheidsvergrendeling op het apparaat zelf blijft van kracht.",
+				"fr": "Horaire autonome sur l'ESP32 : activez-le et l'appareil continue d'exécuter vos horaires par lui-même (d'après son horloge NTP) si la connexion de l'adaptateur est perdue — le bassin reste aéré pendant que ioBroker est hors service. Le verrouillage de sécurité dead-head intégré à l'appareil reste actif.",
+				"it": "Pianificazione autonoma sull'ESP32: abilitala e il dispositivo continua a eseguire da solo le tue pianificazioni (in base al suo orologio NTP) se la connessione dell'adattatore cade — il laghetto resta aerato mentre ioBroker è offline. L'interblocco di sicurezza dead-head integrato nel dispositivo resta valido.",
+				"es": "Programación autónoma en el ESP32: actívala y el dispositivo sigue ejecutando por sí solo tus programaciones horarias (según su reloj NTP) si se pierde la conexión del adaptador — el estanque permanece aireado mientras ioBroker está caído. El enclavamiento de seguridad dead-head en el propio dispositivo sigue aplicándose.",
+				"pl": "Autonomiczny harmonogram na ESP32: włącz go, a urządzenie samodzielnie kontynuuje realizację Twoich harmonogramów (według własnego zegara NTP), jeśli połączenie z adapterem zostanie przerwane — staw pozostaje napowietrzany, gdy ioBroker nie działa. Wbudowana w urządzenie blokada bezpieczeństwa dead-head nadal obowiązuje.",
+				"uk": "Автономний розклад на ESP32: увімкніть його, і пристрій самостійно продовжує виконувати ваші розклади (за власним годинником NTP), якщо з'єднання з адаптером переривається — ставок залишається аерованим, поки ioBroker не працює. Вбудоване у пристрій захисне блокування dead-head продовжує діяти.",
+				"zh-cn": "ESP32 上的自主计划：启用后，如果适配器连接中断，设备会（依据其 NTP 时钟）自行继续运行你的时间计划 — 在 ioBroker 停机期间池塘仍保持增氧。设备本地的防憋压安全联锁仍然有效。"
 			}
 		},
 		"titleLang": {
@@ -97,6 +97,7 @@
 		"esp32AuthToken": "",
 		"esp32EmergencyRelay": 6,
 		"esp32PumpRelay": 7,
+		"esp32AutonomousEnabled": false,
 		"pollIntervalSec": 30,
 
 		"locationMode": "system",

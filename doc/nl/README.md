@@ -121,6 +121,10 @@ onderdelen die je gebruikt.
   **pomp-relais** (0–7) toe; de beluchtingspunten gebruiken het per punt ingestelde relaiskanaal. De
   adapter stuurt een veiligheidsconfiguratie en een heartbeat, zodat de failsafe op het apparaat zelf
   van de firmware de vijver beschermt, zelfs als ioBroker uitvalt.
+  - **Autonoom schema (draait zonder ioBroker)** *(alleen ESP32, optioneel)* – wanneer ingeschakeld,
+    stuurt de adapter ook je schema's naar het apparaat; valt de verbinding weg, dan blijft de ESP32
+    ze zelf uitvoeren met zijn NTP-klok (de dead-head-veiligheidsvergrendeling blijft van kracht).
+    De cyclische sequentie blijft bij de adapter.
 - **Pollinterval (s)** – hoe vaak de backendstatus wordt opgevraagd (bijv. `30`).
 
 ### Beluchtingspunten

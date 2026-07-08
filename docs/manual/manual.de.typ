@@ -473,9 +473,20 @@ dazwischen.
 )
 
 #safety("Die Ausfallsicherung liegt auf dem Gerät")[
-  Der Adapter sendet einen *Heartbeat*; bleibt er aus (Netz oder ioBroker weg), öffnet die Firmware
-  von selbst das Notventil und schaltet die Pumpe ab. Sie erzwingt auch den Dead-Head-Interlock lokal.
-  Deshalb wird der ESP32 direkt angesteuert statt „dumm" aus der Ferne geschaltet.
+  Der Adapter sendet einen *Heartbeat*; bleibt er aus (Netz oder ioBroker weg), schützt die Firmware
+  den Teich von selbst — sie öffnet das Notventil und schaltet die Pumpe ab und erzwingt den
+  Dead-Head-Interlock lokal. Deshalb wird der ESP32 direkt angesteuert statt „dumm" aus der Ferne
+  geschaltet.
+]
+
+#tipbox("Autonome Zeitpläne (optional)")[
+  Aktivieren Sie im Reiter „Allgemein" *Autonome Zeitpläne (ohne ioBroker laufen)*, dann pusht der
+  Adapter zusätzlich Ihre *Zeitpläne* auf das Gerät. Fällt nun der Heartbeat aus, geht der ESP32 nicht
+  einfach in die Ausfallsicherung — er *führt Ihre Zeitpläne weiter aus*, anhand seiner eigenen
+  NTP-Uhr, sodass der Teich belüftet bleibt, während ioBroker oder das Netz weg ist. Die Pumpe läuft
+  nur, solange mindestens *minimal offene Ventile* offen sind (sonst Pumpe aus + Notventil offen), und
+  der Dead-Head-Interlock übersteuert weiterhin alles. Die zyklische *Sequenz* wird nicht autonom
+  ausgeführt; sie bleibt beim Adapter.
 ]
 
 #tipbox("Geräte-Weboberfläche (Port 80)")[

@@ -125,6 +125,10 @@ die Teile, die du tatsächlich nutzt.
   **Pumpen-Relais** (0–7) zu; die Belüftungspunkte nutzen den pro Punkt eingestellten Relaiskanal. Der
   Adapter überträgt eine Sicherheitskonfiguration und einen Heartbeat, damit die geräteinterne
   Ausfallsicherung der Firmware den Teich schützt, selbst wenn ioBroker ausfällt.
+  - **Autonome Zeitpläne (ohne ioBroker laufen)** *(nur ESP32, optional)* – wenn aktiviert,
+    überträgt der Adapter auch deine Zeitpläne an das Gerät; fällt die Verbindung aus, führt der
+    ESP32 sie anhand seiner NTP-Uhr selbst weiter aus (die Dead-Head-Sicherheitsverriegelung gilt
+    weiterhin). Die zyklische Sequenz bleibt beim Adapter.
 - **Abfrageintervall (s)** – wie oft der Backend-Status abgefragt wird (z. B. `30`).
 
 ### Belüftungspunkte
