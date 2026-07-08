@@ -32,6 +32,15 @@ compute **astronomical times** from your **geolocation**, drive the hardware **d
 (no additional ioBroker instance required), and pause selected aeration points during feeding when
 [ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder) is installed.
 
+> 🛑 **WARNING — DEVELOPMENT STATUS, ANIMAL WELFARE (please read).**
+> This adapter is **still under active development and is NOT yet verified for unattended use.**
+> It controls a **life-support system for living animals** — a malfunction, misconfiguration or
+> bug can stop the aeration and **endanger the health and life of your fish and other pond life**
+> (oxygen depletion, no ice-free hole in winter, a dead-headed pump). **Do not use it unchecked:**
+> before any unattended operation, **observe it closely and verify every function** on your own
+> hardware over a meaningful period, and keep an independent, proven aeration/failsafe in place.
+> **Use at your own risk.** *(This notice remains until explicitly revoked.)*
+
 > ⚠️ **Project status.** Fully implemented and configurable from the admin: valve control
 > (schedule, cyclic round-robin, groups), the dead-head **safety interlock**, **monitoring**
 > (oxygen, air/water temperature, pressure with alarms), **astronomical times & geolocation**, the
@@ -289,7 +298,11 @@ interlock, monitoring, astro & geolocation, the feeder coupling, the **winter / 
 **oxygen closed loop**, **notifications**, **runtime statistics** and the **dry-run** test mode.
 **Still to come:**
 
-* the direct **ESP32** hardware backend + reference firmware (Waveshare ESP32-S3-POE-ETH-8DI-8RO);
+* the direct **ESP32** hardware backend + reference firmware (Waveshare ESP32-S3-POE-ETH-8DI-8RO),
+  incl. the reference sensors (dissolved oxygen, air-line pressure, water temperature) wired to the
+  ESP32 — see [dev/hardware/sensors.md](dev/hardware/sensors.md);
+* a **mobile-friendly web page served directly by the ESP32 (mandatory on port 80)** for on-site
+  control and monitoring from a phone — no ioBroker needed to operate it;
 * a follow-up **vis-2 widget adapter** for operation and monitoring.
 
 See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.

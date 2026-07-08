@@ -20,6 +20,16 @@ sprzętem **bezpośrednio na ESP32** (bez dodatkowej instancji ioBroker) oraz ws
 napowietrzania podczas karmienia, gdy zainstalowany jest
 [ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder).
 
+> 🛑 **OSTRZEŻENIE — STATUS ROZWOJU, DOBROSTAN ZWIERZĄT (przeczytaj).**
+> Ten adapter jest **wciąż w aktywnym rozwoju i NIE został jeszcze zweryfikowany do pracy bez
+> nadzoru.** Steruje **systemem podtrzymywania życia żywych zwierząt** – awaria, błędna konfiguracja
+> lub błąd oprogramowania może zatrzymać napowietrzanie i **zagrozić zdrowiu i życiu Twoich ryb oraz
+> pozostałego życia w stawie** (niedobór tlenu, brak przerębli wolnej od lodu zimą, pompa pracująca
+> przy zamkniętych zaworach). **Nie używaj go bez kontroli:** przed jakąkolwiek pracą bez nadzoru
+> **obserwuj go uważnie i sprawdź każdą funkcję** na własnym sprzęcie przez znaczący okres oraz
+> utrzymuj niezależne, sprawdzone napowietrzanie/zabezpieczenie awaryjne. **Używasz na własne
+> ryzyko.** *(Niniejsza informacja obowiązuje do chwili jej wyraźnego odwołania.)*
+
 > ⚠️ **Status projektu.** W pełni zaimplementowane i konfigurowalne z panelu admin: sterowanie
 > zaworami (harmonogram, cykliczna rotacja round-robin, grupy), **blokada bezpieczeństwa** przeciw
 > pracy przy zamkniętych zaworach (dead-heading), **monitorowanie** (tlen, temperatura
@@ -286,7 +296,12 @@ bezpieczeństwa przeciw pracy przy zamkniętych zaworach, monitorowanie, astro i
 sprzężenie z feederem, tryb zimowy / bez lodu, zamknięta pętla tlenowa, powiadomienia, statystyki
 czasu pracy oraz testowy tryb dry-run. **Wciąż przed nami:**
 
-* bezpośredni sprzętowy backend **ESP32** + referencyjne oprogramowanie układowe (Waveshare ESP32-S3-POE-ETH-8DI-8RO);
+* bezpośredni sprzętowy backend **ESP32** + referencyjne oprogramowanie układowe (Waveshare ESP32-S3-POE-ETH-8DI-8RO),
+  wraz z czujnikami referencyjnymi (rozpuszczony tlen, ciśnienie w linii powietrza, temperatura wody)
+  podłączonymi do ESP32 — zobacz [dev/hardware/sensors.md](../../dev/hardware/sensors.md);
+* **przyjazna dla urządzeń mobilnych strona internetowa serwowana bezpośrednio przez ESP32
+  (obowiązkowo na porcie 80)** do sterowania i monitorowania na miejscu z telefonu — bez potrzeby
+  ioBroker do obsługi;
 * kolejny **adapter widżetów vis-2** do obsługi i monitorowania.
 
 Pełny, oparty na kamieniach milowych plan znajdziesz w [PROJECT_PLAN.md](../../PROJECT_PLAN.md).

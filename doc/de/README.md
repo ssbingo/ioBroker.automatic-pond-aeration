@@ -20,6 +20,17 @@ einem ESP32** ansteuern (ohne zusätzliche ioBroker-Instanz) und ausgewählte Be
 der Fütterung pausieren, wenn
 [ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder) installiert ist.
 
+> 🛑 **WARNUNG — ENTWICKLUNGSSTAND, TIERWOHL (bitte lesen).**
+> Dieser Adapter befindet sich **noch in aktiver Entwicklung und ist für den unbeaufsichtigten
+> Betrieb noch NICHT verifiziert.** Er steuert ein **lebenserhaltendes System für lebende Tiere** –
+> eine Fehlfunktion, Fehlkonfiguration oder ein Bug kann die Belüftung stoppen und **die Gesundheit
+> und das Leben deiner Fische und des übrigen Teichlebens gefährden** (Sauerstoffmangel, kein
+> eisfreies Loch im Winter, eine gegen geschlossene Ventile fördernde Pumpe). **Nutze ihn nicht
+> ungeprüft:** Beobachte ihn vor jedem unbeaufsichtigten Betrieb **genau und überprüfe jede Funktion**
+> auf deiner eigenen Hardware über einen aussagekräftigen Zeitraum und halte eine unabhängige,
+> bewährte Belüftung/Ausfallsicherung bereit. **Nutzung auf eigene Gefahr.** *(Dieser Hinweis bleibt
+> bestehen, bis er ausdrücklich widerrufen wird.)*
+
 > ⚠️ **Projektstatus.** Vollständig implementiert und über den Admin konfigurierbar: die
 > Ventilsteuerung (Zeitplan, zyklischer Round-Robin, Gruppen), die **Sicherheitsverriegelung** gegen
 > Nullförderung, die **Überwachung** (Sauerstoff, Luft-/Wassertemperatur, Druck mit Alarmen),
@@ -293,7 +304,11 @@ Sicherheitsverriegelung gegen Nullförderung, Überwachung, Astro & Geoposition,
 der **Winter-/Eisfrei-Modus**, der **Sauerstoff-Regelkreis**, **Benachrichtigungen**, die
 **Laufzeitstatistik** sowie der **Trockenlauf-Testmodus**. **Noch ausstehend:**
 
-* das direkte **ESP32**-Hardware-Backend + Referenz-Firmware (Waveshare ESP32-S3-POE-ETH-8DI-8RO);
+* das direkte **ESP32**-Hardware-Backend + Referenz-Firmware (Waveshare ESP32-S3-POE-ETH-8DI-8RO),
+  inkl. der Referenzsensoren (gelöster Sauerstoff, Luftleitungsdruck, Wassertemperatur), die an den
+  ESP32 angeschlossen sind – siehe [dev/hardware/sensors.md](../../dev/hardware/sensors.md);
+* eine **mobilfreundliche Webseite, die direkt vom ESP32 (verpflichtend auf Port 80) bereitgestellt
+  wird**, zur Steuerung und Überwachung vor Ort vom Smartphone – ohne ioBroker für den Betrieb;
 * ein nachgelagerter **vis-2-Widget-Adapter** für Bedienung und Überwachung.
 
 Den vollständigen, meilensteinbasierten Plan findest du in [PROJECT_PLAN.md](../../PROJECT_PLAN.md).

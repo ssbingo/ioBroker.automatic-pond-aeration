@@ -21,6 +21,17 @@ Opcionalmente puede supervisar el **oxígeno disuelto**, la **temperatura del ai
 aireación seleccionados durante la alimentación cuando
 [ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder) está instalado.
 
+> 🛑 **ADVERTENCIA — ESTADO DE DESARROLLO, BIENESTAR ANIMAL (por favor, léelo).**
+> Este adaptador **todavía está en desarrollo activo y AÚN NO está verificado para el uso sin
+> supervisión.** Controla un **sistema de soporte vital para animales vivos**: un fallo de
+> funcionamiento, una configuración incorrecta o un error pueden detener la aireación y **poner en
+> peligro la salud y la vida de tus peces y del resto de la vida del estanque** (agotamiento del
+> oxígeno, ausencia de un agujero libre de hielo en invierno, una bomba trabajando contra válvulas
+> cerradas). **No lo uses sin control:** antes de cualquier funcionamiento sin supervisión,
+> **obsérvalo de cerca y verifica cada función** en tu propio hardware durante un periodo
+> significativo, y mantén una aireación/salvaguarda independiente y probada. **Úsalo bajo tu propia
+> responsabilidad.** *(Este aviso permanece hasta que se revoque explícitamente.)*
+
 > ⚠️ **Estado del proyecto.** Totalmente implementado y configurable desde el admin: el control de las
 > válvulas (horario programado, ciclo rotativo round-robin, grupos), el **enclavamiento de seguridad**
 > contra el dead-heading, la **supervisión** (oxígeno, temperatura aire/agua, presión con alarmas),
@@ -297,7 +308,12 @@ de seguridad contra el dead-heading, la supervisión, astro y geolocalización, 
 feeder, el modo invierno / libre de hielo, el lazo cerrado de oxígeno, las notificaciones, las
 estadísticas de funcionamiento y el modo de prueba dry-run. **Todavía pendiente:**
 
-* el backend de hardware **ESP32** directo + firmware de referencia (Waveshare ESP32-S3-POE-ETH-8DI-8RO);
+* el backend de hardware **ESP32** directo + firmware de referencia (Waveshare ESP32-S3-POE-ETH-8DI-8RO),
+  incl. los sensores de referencia (oxígeno disuelto, presión de la línea de aire, temperatura del
+  agua) cableados al ESP32 — consulta [dev/hardware/sensors.md](../../dev/hardware/sensors.md);
+* una **página web apta para móviles servida directamente por el ESP32 (obligatoria en el puerto
+  80)** para el control y la supervisión in situ desde un teléfono, sin necesidad de ioBroker para
+  manejarla;
 * un posterior **adaptador de widgets vis-2** para el manejo y la supervisión.
 
 Consulta [PROJECT_PLAN.md](../../PROJECT_PLAN.md) para el plan completo basado en hitos.

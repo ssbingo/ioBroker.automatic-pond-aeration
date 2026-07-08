@@ -20,6 +20,17 @@ aansturen (zonder extra ioBroker-instantie) en geselecteerde beluchtingspunten p
 voeren wanneer [ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder) is
 geïnstalleerd.
 
+> 🛑 **WAARSCHUWING — ONTWIKKELINGSSTATUS, DIERENWELZIJN (lees dit).**
+> Deze adapter is **nog volop in ontwikkeling en is NOG NIET geverifieerd voor onbeheerd gebruik.**
+> Hij bestuurt een **levensondersteunend systeem voor levende dieren** – een storing, verkeerde
+> configuratie of bug kan de beluchting stoppen en **de gezondheid en het leven van je vissen en het
+> overige vijverleven in gevaar brengen** (zuurstoftekort, geen ijsvrij wak in de winter, een pomp
+> die tegen gesloten kleppen draait). **Gebruik hem niet ongecontroleerd:** observeer hem vóór elk
+> onbeheerd gebruik **nauwlettend en controleer elke functie** op je eigen hardware gedurende een
+> betekenisvolle periode, en houd een onafhankelijke, beproefde beluchting/failsafe achter de hand.
+> **Gebruik op eigen risico.** *(Deze kennisgeving blijft van kracht tot ze uitdrukkelijk wordt
+> ingetrokken.)*
+
 > ⚠️ **Projectstatus.** Volledig geïmplementeerd en configureerbaar vanuit de admin: de
 > klepbesturing (tijdschema, cyclische roundrobin, groepen), de **veiligheidsvergrendeling** tegen
 > dead-heading, de **bewaking** (zuurstof, lucht-/watertemperatuur, druk met alarmen),
@@ -283,7 +294,12 @@ Klaar: configuratie-UI, klepbesturing (tijdschema/roundrobin/groepen), de veilig
 tegen dead-heading, bewaking, astro & geolocatie, de feeder-koppeling, de winter-/ijsvrijmodus, de
 zuurstofregelkring, meldingen, looptijdstatistieken en de dry-run-testmodus. **Nog te komen:**
 
-* de directe **ESP32**-hardware-backend + referentiefirmware (Waveshare ESP32-S3-POE-ETH-8DI-8RO);
+* de directe **ESP32**-hardware-backend + referentiefirmware (Waveshare ESP32-S3-POE-ETH-8DI-8RO),
+  incl. de referentiesensoren (opgeloste zuurstof, luchtleidingdruk, watertemperatuur) die op de
+  ESP32 zijn aangesloten — zie [dev/hardware/sensors.md](../../dev/hardware/sensors.md);
+* een **mobielvriendelijke webpagina die rechtstreeks door de ESP32 wordt geserveerd (verplicht op
+  poort 80)** voor bediening en bewaking ter plaatse vanaf een telefoon — zonder ioBroker om hem te
+  bedienen;
 * een daaropvolgende **vis-2-widget-adapter** voor bediening en bewaking.
 
 Zie [PROJECT_PLAN.md](../../PROJECT_PLAN.md) voor het volledige, op mijlpalen gebaseerde plan.

@@ -20,6 +20,17 @@ hardware **diretamente em um ESP32** (sem uma instância adicional do ioBroker) 
 aeração selecionados durante a alimentação quando
 [ioBroker.automatic-feeder](https://github.com/ssbingo/ioBroker.automatic-feeder) estiver instalado.
 
+> 🛑 **AVISO — ESTADO DE DESENVOLVIMENTO, BEM-ESTAR ANIMAL (por favor, leia).**
+> Este adaptador **ainda está em desenvolvimento ativo e AINDA NÃO foi verificado para uso sem
+> supervisão.** Ele controla um **sistema de suporte à vida de animais vivos** – um mau
+> funcionamento, uma configuração incorreta ou um bug podem interromper a aeração e **colocar em
+> risco a saúde e a vida dos seus peixes e da demais vida do lago** (falta de oxigênio, ausência de
+> um buraco livre de gelo no inverno, uma bomba trabalhando contra válvulas fechadas). **Não o use
+> sem controle:** antes de qualquer operação sem supervisão, **observe-o de perto e verifique cada
+> função** no seu próprio hardware durante um período significativo, e mantenha uma aeração/proteção
+> independente e comprovada. **Use por sua conta e risco.** *(Este aviso permanece até ser
+> explicitamente revogado.)*
+
 > ⚠️ **Estado do projeto.** Totalmente implementado e configurável a partir do admin: o controle das
 > válvulas (horário programado, rodízio cíclico round-robin, grupos), o **bloqueio de segurança**
 > contra o dead-heading, o **monitoramento** (oxigênio, temperatura ar/água, pressão com alarmes), os
@@ -290,7 +301,12 @@ de segurança contra o dead-heading, o monitoramento, astro e geolocalização, 
 feeder, o **modo inverno / livre de gelo**, a **malha fechada de oxigênio**, as **notificações**, as
 **estatísticas de funcionamento** e o **modo de teste dry-run**. **Ainda por vir:**
 
-* o backend de hardware **ESP32** direto + firmware de referência (Waveshare ESP32-S3-POE-ETH-8DI-8RO);
+* o backend de hardware **ESP32** direto + firmware de referência (Waveshare ESP32-S3-POE-ETH-8DI-8RO),
+  incl. os sensores de referência (oxigênio dissolvido, pressão da linha de ar, temperatura da água)
+  ligados ao ESP32 — consulte [dev/hardware/sensors.md](../../dev/hardware/sensors.md);
+* uma **página web adequada a dispositivos móveis servida diretamente pelo ESP32 (obrigatoriamente na
+  porta 80)** para controle e monitoramento no local a partir de um telefone — sem necessidade de
+  ioBroker para operá-la;
 * um **adaptador de widgets vis-2** subsequente para operação e monitoramento.
 
 Consulte [PROJECT_PLAN.md](../../PROJECT_PLAN.md) para o plano completo, baseado em marcos.

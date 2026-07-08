@@ -366,11 +366,13 @@ Widget-Adapter darauf aufsetzen kann.
 | **M4.1** | Logging & Debugging | Umfangreiches, aussagekräftiges Logging auf allen Ebenen (error/warn/**debug**/silly) durchgängig **Englisch** (greppbar); **INFO-Meldungen lokalisiert** an der ioBroker-Systemsprache über `lib/messages.js` (11 Sprachen, `translate()` mit EN-Fallback + `{placeholder}`) | Log deckt Start/Config/Kommandos/Control-Tick/Sicherheit/Backend ab; INFO folgt Systemsprache; error/warn/debug/silly bleiben EN |
 | **M5** | Monitoring + Astro/Geo | O₂/Temp/Wassertemp/Druck, Alarme; SunCalc + Nominatim (R12, debounced) | Sensorwerte + Astro-States korrekt |
 | **M6** | Feeder-Kopplung | Discovery (`onMessage`) + Pause-Logik (measure/configured/pulse) + Offset | Fütterung pausiert gewählte Stellen korrekt |
-| **M7** | ESP32-Backend + Firmware | HTTP/WS-Backend, Discovery, Heartbeat/Failsafe; Referenz-Firmware für **Waveshare ESP32-S3-POE-ETH-8DI-8RO** (8 Relais via TCA9554, 8 DI, PoE-Ethernet) — **hardwaregenau nach [Anhang A](#anhang-a--zielhardware-m7-waveshare-esp32-s3-poe-eth-8di-8ro)** | ESP32 direkt steuerbar, Boot-/Netz-Failsafe getestet |
+| **M7** | ESP32-Backend + Firmware | HTTP/WS-Backend, Discovery, Heartbeat/Failsafe; Referenz-Firmware für **Waveshare ESP32-S3-POE-ETH-8DI-8RO** (8 Relais via TCA9554, 8 DI, PoE-Ethernet) — **hardwaregenau nach [Anhang A](#anhang-a--zielhardware-m7-waveshare-esp32-s3-poe-eth-8di-8ro)**; **Referenzsensoren O₂/Druck/Wassertemp am ESP** (siehe `dev/hardware/sensors.md`) inkl. Sensor-Quellen-/Typ-Modell; **mobile Weboberfläche direkt vom ESP (zwingend Port 80)** | ESP32 direkt steuerbar, Boot-/Netz-Failsafe getestet; Weboberfläche per Handy erreichbar |
 | **M8** | Admin-UI-Feinschliff | Alle Tabs, sendTo-Aktionen, responsive, i18n 11 Sprachen | Responsive-Design-Initiative erfüllt |
 | **M9** | Doku + Release-Härtung | Doku 11 Sprachen (R14/R20), Changelog-Disziplin (R15/R17), Repochecker 0 E/0 W | Release `v0.x`, Aufnahme-Anforderungen erfüllt |
-| **M10** | Erweiterungen | Winter-Modus, O₂-Regelkreis, Statistik, Notifications, Dry-Run | nach Priorität |
-| **M11** | Widget-Adapter (separat) | eigenes Repo auf Basis der State-API | Folgeprojekt |
+| **M10** | Erweiterungen | Winter-Modus, O₂-Regelkreis, Statistik, Notifications, Dry-Run | ✅ abgeschlossen (0.0.13) |
+| **M11** | Zyklische Sequenz | Rundlauf verallgemeinert zu geordneter Sequenz über **Punkte UND Gruppen** (Mischbetrieb, per-Schritt-Verweildauer) | ✅ abgeschlossen (0.0.14) |
+| **M12** | Mobile ESP-Weboberfläche | vom ESP direkt ausgelieferte, handytaugliche Seite (**zwingend Port 80**) zur Steuerung/Überwachung ohne ioBroker; Teil der M7-Firmware | Handy-Bedienung im lokalen Netz |
+| **M13** | Widget-Adapter (separat) | eigenes Repo auf Basis der State-API | Folgeprojekt |
 
 Erst **M0** aufsetzen; danach nach Freigabe iterativ. **M3 (Sicherheit) vor M4/M7** – die Hardware-Sicherheit ist Fundament.
 **Scope-Festlegung (voller Umfang v1):** M5 (Sensoren/Astro/Geo) und der **Winter-/Eisfrei-Modus** (aus M10) sind
@@ -478,8 +480,15 @@ in Safety/Monitoring gespeist:
   Leckschalter** · **Pumpen-Lauf-Feedback** · **Handtaster** (lokaler Not-Aus/Override).
 
 ### A.6 Sensoren & lokale Autonomie
-- **RS485 (Modbus RTU):** O₂-/Temperatur-/Drucksensoren können **direkt am Board** hängen; die Firmware liest sie
-  und exponiert sie im `/api/status` → spart separate ioBroker-Adapter (Alternative zum M5-Fremd-States-Weg).
+- **Referenz-Sensorik festgelegt (2026-07-08) → siehe [`dev/hardware/sensors.md`](dev/hardware/sensors.md)**
+  (Datenblätter, Bestellnummern, EUR-Preise/Bezugsquellen, Verdrahtung, I²C-Adress-Map, Caveats, Quellen):
+  **O₂ = Atlas EZO-DO** (I²C 0x61, Premium) **oder DFRobot SEN0237-A** (analog, Budget-Default; O₂ bleibt optional);
+  **Druck = CFSensor XGZP6897D…KPDG** (I²C 0x6D **oder** C-Serie 0x58 → Firmware tastet beide ab; Default 0–100 kPa,
+  kleiner nach Messung); **Wassertemp = DS18B20** (1-Wire, GPIO1/2). Alle 3,3 V, ein I²C-Pull-up-Paar. Der
+  DS18B20-Wert speist die O₂-Kompensation. **Sensor-Quellen-/Typ-Modell in M7:** je Messgröße „ESP32-Sensor (Typ X)"
+  **oder** „ioBroker-State" (rückwärtskompatibel); Typ-Enum später um getestete Varianten erweiterbar.
+- Sensoren hängen an **I²C (GPIO41/42) bzw. 1-Wire**; die Firmware liest sie und exponiert sie im `/api/status`
+  → spart separate ioBroker-Adapter (Alternative zum M5-Fremd-States-Weg). RS485 bleibt für Modbus-Sensoren optional.
 - **RTC PCF85063 + NVS/Flash:** autonome Zeit & Zeitplan-Fallback, damit die Firmware auch **ohne Netz** sicher
   weiterläuft (On-Device-Watchdog, Rundlauf, Notventil-Logik).
 - **Summer (GPIO46):** akustischer Alarm bei Interlock-Trip · **RGB-LED (WS2812, GPIO38):** Statusfarbe
@@ -492,3 +501,12 @@ in Safety/Monitoring gespeist:
 - **Firmware-Stack-Empfehlung:** Arduino-ESP32 oder ESP-IDF; W5500-Ethernet-Lib; TCA9554 über I²C; AsyncWebServer
   für HTTP+WS; WS2812/Buzzer für lokale Signalisierung. **Protokoll-versioniert** (`/api/info.protocol`), Adapter
   prüft Kompatibilität.
+
+### A.8 Mobile Weboberfläche direkt vom ESP (M12, zwingend Port 80)
+- Die Firmware liefert eine **handytaugliche, responsive Weboberfläche** direkt vom ESP aus — **zwingend auf
+  Port 80** (Standard-HTTP, ohne Portangabe im Browser erreichbar). Zweck: **Bedienung/Überwachung per Handy im
+  lokalen Netz ohne ioBroker** (Ventile schalten, Status/Sensoren sehen, Not-Aus).
+- Umsetzung: AsyncWebServer serviert eine **self-contained** Seite (inline HTML/CSS/JS, keine externen CDNs) unter
+  `GET /`; nutzt dieselbe `/api/*`-REST/WS-Schnittstelle wie der Adapter. **Sicherheit:** optionaler Auth-Token
+  (`encryptedNative`), gleiche On-Device-Failsafe/Watchdog-Logik greift unabhängig von der Weboberfläche.
+- Gehört zur **M7-Firmware**, in der Roadmap als **M12** geführt.
