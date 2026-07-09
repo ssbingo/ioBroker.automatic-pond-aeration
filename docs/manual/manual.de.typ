@@ -490,14 +490,16 @@ dazwischen.
 ]
 
 #tipbox("Geräte-Weboberfläche (Port 80)")[
-  Öffnen Sie die IP des Boards im Browser — die Firmware liefert vier eigenständige Seiten (ohne
-  Cloud, ohne App): *Home* (Relais/Sensoren ansehen und Kanäle vor Ort schalten), *Settings*
-  (DHCP oder statische IP / DNS / Hostname, der *NTP-Server* — Standard `de.pool.ntp.org` — sowie
-  WS2812-LED / Buzzer), *Update* (Firmware-Aktualisierung *über das Netz* mit GitHub-Versionsabgleich)
-  und *Info* (Uhrzeit, IP, MAC, Hostname, Version, Speicher und Laufzeit). Die Status-LED zeigt
-  grün = normal, orange = kein Link, blau = ein Taster-Override ist aktiv, rot-blinkend = Failsafe;
-  der Buzzer piept einmal, wenn die Ausfallsicherung auslöst. Eine anfängertaugliche
-  Installationsanleitung (Deutsch + Englisch, mit Grafiken) liegt im Firmware-Repository unter `docs/`.
+  Öffnen Sie die IP des Boards im Browser — die Firmware liefert fünf eigenständige Seiten (ohne
+  Cloud, ohne App): *Home* (Relais/Sensoren ansehen und Kanäle vor Ort schalten), *Schedule*
+  (autonomen Zeitplan auf dem Gerät ansehen/bearbeiten), *Settings* (DHCP oder statische IP / DNS /
+  Hostname, der *NTP-Server* — Standard `de.pool.ntp.org` — sowie WS2812-LED / Buzzer), *Update*
+  (Firmware-Aktualisierung *über das Netz* mit GitHub-Versionsabgleich) und *Info* (Uhrzeit, IP, MAC,
+  Hostname, Version, Speicher und Laufzeit). Die Zeit hält NTP, gepuffert von der eingebauten *RTC* —
+  so übersteht die Uhr Stromausfall und NTP-Ausfälle. Die Status-LED zeigt grün = normal, orange =
+  kein Link, blau = ein Taster-Override ist aktiv, rot-blinkend = Failsafe; der Buzzer piept einmal,
+  wenn die Ausfallsicherung auslöst. Eine anfängertaugliche Installationsanleitung (Deutsch +
+  Englisch, mit Grafiken) liegt im Firmware-Repository unter `docs/`.
 ]
 
 = FAQ

@@ -449,14 +449,16 @@ With the board flashed and wired, the adapter can drive it directly — no relay
 ]
 
 #tipbox("On-device web UI (port 80)")[
-  Open the board's IP in a browser — the firmware serves four self-contained pages (no cloud, no app):
-  *Home* (watch the relays / sensors and toggle channels on site), *Settings* (DHCP or static IP /
-  DNS / hostname, the *NTP server* — default `de.pool.ntp.org` — and the WS2812 LED / buzzer),
-  *Update* (an *over-the-air* firmware update with a GitHub "latest version" check) and *Info* (time,
-  IP, MAC, hostname, version, memory and uptime). The status LED shows green = normal, orange = no
-  link, blue = a button override is active, red-blinking = failsafe; the buzzer beeps once when the
-  failsafe engages. A step-by-step beginner install guide (English + German, with diagrams) ships in
-  the firmware repository under `docs/`.
+  Open the board's IP in a browser — the firmware serves five self-contained pages (no cloud, no app):
+  *Home* (watch the relays / sensors and toggle channels on site), *Schedule* (view / edit the
+  autonomous schedule on the device), *Settings* (DHCP or static IP / DNS / hostname, the *NTP server*
+  — default `de.pool.ntp.org` — and the WS2812 LED / buzzer), *Update* (an *over-the-air* firmware
+  update with a GitHub "latest version" check) and *Info* (time, IP, MAC, hostname, version, memory
+  and uptime). Time is kept by NTP and backed by the on-board *RTC*, so the clock survives a power
+  loss and NTP outages. The status LED shows green = normal, orange = no link, blue = a button
+  override is active, red-blinking = failsafe; the buzzer beeps once when the failsafe engages. A
+  step-by-step beginner install guide (English + German, with diagrams) ships in the firmware
+  repository under `docs/`.
 ]
 
 = FAQ
