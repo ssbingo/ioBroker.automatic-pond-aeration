@@ -25,7 +25,7 @@
 > **监测**（溶解氧、气温/水温、带报警的压力）、**天文时间与地理位置**、**feeder 联动**、**冬季 / 防结冰模式**、**氧闭环**、
 > 通过 **messaging 适配器**发送的通知、运行时长统计、**试运行（dry-run）测试模式**、每个点的**强制按钮**，以及直接的
 > **ESP32** 硬件后端（通过 HTTP 与独立的
-> [参考固件](https://github.com/ssbingo/pond-aeration-esp32-firmware)通信；该固件仍在完善中）。默认后端通过现有的
+> [参考固件](https://ssbingo.github.io/pond-aeration-flash/)通信；该固件已可用，可从刷写页面在浏览器中直接刷写（Chrome/Edge，无需额外软件）。默认后端通过现有的
 > ioBroker 状态驱动你的阀门和气泵，因此任何继电器板都可使用。
 
 > 📘 **完整的分步手册（PDF，面向初学者 —— 含接线图、常见问题与故障排查）：**
@@ -85,9 +85,9 @@
 ### 常规
 - **主使能** – 整个适配器的开/关开关。关闭时不进行任何控制。
 - **试运行（仅记录日志，不切换硬件）** – 整个控制引擎照常运行、数据点也会更新，但阀门/气泵命令只写入日志（`[DRY-RUN] would …`），而不写入真实状态。非常适合在实际接线之前对配置进行调试与测试。
-- **硬件后端** – `现有 ioBroker 状态`（默认）通过其他适配器的状态驱动你的阀门/气泵。`ESP32（直接）`通过 HTTP 与 Waveshare ESP32-S3-POE-ETH-8DI-8RO 上的 [参考固件](https://github.com/ssbingo/pond-aeration-esp32-firmware) 通信——设置**主机/IP**，并映射**应急阀继电器**和**气泵继电器**（0–7）；各增氧点使用为每个点设置的继电器通道。适配器会推送一份安全配置和一个心跳（heartbeat），使固件在设备本地的故障保护即使在 ioBroker 宕机时也能保护池塘。
+- **硬件后端** – `现有 ioBroker 状态`（默认）通过其他适配器的状态驱动你的阀门/气泵。`ESP32（直接）`通过 HTTP 与 Waveshare ESP32-S3-POE-ETH-8DI-8RO 上的[参考固件](https://ssbingo.github.io/pond-aeration-flash/)通信（该固件可从刷写页面在浏览器中直接刷写——Chrome/Edge，无需额外软件）——设置**主机/IP**，并映射**应急阀继电器**和**气泵继电器**（0–7）；各增氧点使用为每个点设置的继电器通道。适配器会推送一份安全配置和一个心跳（heartbeat），使固件在设备本地的故障保护即使在 ioBroker 宕机时也能保护池塘。
   - **自主计划（无需 ioBroker 运行）** *(仅 ESP32，可选)* – 启用后，适配器也会把你的时间计划推送到设备；如果连接中断，ESP32 会使用其 NTP 时钟自行继续运行它们（防憋压安全联锁仍然有效）。循环序列仍由适配器负责。
-  - **固件兼容性** – 适配器与固件通过**协议版本**（硬性约定）进行匹配，而不是按精确的发布编号。此适配器版本使用**协议 1**并**推荐固件 v1.1.0**（最低 v1.0.0）；ESP32 配置选项卡会显示这一点，并链接到[固件发布页](https://github.com/ssbingo/pond-aeration-esp32-firmware/releases)。连接时，设备的版本和一个兼容性标志会作为 `info.deviceFirmware` 和 `info.firmwareCompatible` 发布，任何协议不匹配都会写入日志。
+  - **固件兼容性** – 适配器与固件通过**协议版本**（硬性约定）进行匹配，而不是按精确的发布编号。此适配器版本使用**协议 1**并**推荐固件 v1.1.0**（最低 v1.0.0）；ESP32 配置选项卡会显示这一点，并链接到[固件刷写页面](https://ssbingo.github.io/pond-aeration-flash/)。连接时，设备的版本和一个兼容性标志会作为 `info.deviceFirmware` 和 `info.firmwareCompatible` 发布，任何协议不匹配都会写入日志。
   - **授权（Licensing）** *(仅当你的固件包含可选的授权覆盖层时)* – 设备运行在某个级别：**free**（仅监测）、**community**（继电器控制）或 **pro**（+ 自主独立运行的计划）；无论哪个级别，安全功能（故障保护、应急阀、防憋压联锁、手动按钮）始终有效。新设备会在试用期内以完整功能（**pro**）运行，之后回退到 free，直到在设备的 `/license` 页面输入激活密钥为止。适配器会在 `info.licenseTier` / `info.licenseTrialDaysLeft` / `info.deviceCode` 下显示状态；如果设备**未获得控制授权**，监测仍会继续正常工作，控制则会被跳过（参见 `info.licenseControlBlocked`）。不带该覆盖层的公开固件不受影响。
 - **轮询间隔（s）** – 多久轮询一次后端状态（例如 `30`）。
 
@@ -256,7 +256,7 @@
 
 已完成：配置界面、阀门控制（时间计划/round-robin/分组）、防憋压安全联锁、监测、天文与地理位置、feeder 联动、**冬季 / 防结冰模式**、**氧闭环**、通知、运行时长统计以及**试运行**测试模式。**仍待完成：**
 
-* 完成用于 Waveshare ESP32-S3-POE-ETH-8DI-8RO 的**[参考固件](https://github.com/ssbingo/pond-aeration-esp32-firmware)**——适配器侧的 ESP32 后端已就位；固件基础（以太网、继电器、数字输入按钮、HTTP/WS API、设备本地故障保护、端口 80 上的移动端友好网页界面）已提交，下一步是参考传感器（溶解氧、气路压力、水温——参见 [dev/hardware/sensors.md](../../dev/hardware/sensors.md)）；
+* 用于 Waveshare ESP32-S3-POE-ETH-8DI-8RO 的**参考固件已可用**，可从[刷写页面](https://ssbingo.github.io/pond-aeration-flash/)在浏览器中直接刷写（Chrome/Edge，无需额外软件）——适配器侧的 ESP32 后端已就位；固件基础（以太网、继电器、数字输入按钮、HTTP/WS API、设备本地故障保护、端口 80 上的移动端友好网页界面）已完成，下一步是参考传感器（溶解氧、气路压力、水温——参见上文的[传感器](#传感器)一节）；
 * 后续用于操作和监测的 **vis-2 小部件适配器**。
 
 完整的、基于里程碑的计划参见 [PROJECT_PLAN.md](../../PROJECT_PLAN.md)。

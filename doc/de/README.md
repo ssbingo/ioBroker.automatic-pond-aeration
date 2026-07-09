@@ -38,8 +38,9 @@ der Fütterung pausieren, wenn
 > **Sauerstoff-Regelkreis**, **Benachrichtigungen über einen Messaging-Adapter**, die
 > **Laufzeitstatistik**, ein **Trockenlauf-Testmodus**, **Übersteuerungstaster** pro Punkt sowie das
 > direkte **ESP32**-Hardware-Backend (spricht über HTTP mit der separaten
-> [Referenz-Firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware); die Firmware wird noch
-> fertiggestellt). Das Standard-Backend steuert deine Ventile und Pumpe über vorhandene
+> [Referenz-Firmware](https://ssbingo.github.io/pond-aeration-flash/), die du im Browser von der
+> Flash-Seite – Chrome/Edge, keine Zusatzsoftware – auf den ESP32 flashst). Das Standard-Backend
+> steuert deine Ventile und Pumpe über vorhandene
 > ioBroker-States, sodass jede Relaisplatine funktioniert.
 
 > 📘 **Vollständige Schritt-für-Schritt-Anleitung (PDF, für Einsteiger – mit Schaltplänen, FAQ &
@@ -120,8 +121,9 @@ die Teile, die du tatsächlich nutzt.
   Konfiguration, bevor sie verdrahtet wird.
 - **Hardware-Backend** – `Vorhandene ioBroker-States` (Standard) steuert deine Ventile/Pumpe über
   States anderer Adapter. `ESP32 (direkt)` spricht über HTTP mit der
-  [Referenz-Firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware) auf einem Waveshare
-  ESP32-S3-POE-ETH-8DI-8RO — lege die **Host/IP** fest und ordne das **Notventil-Relais** und das
+  [Referenz-Firmware](https://ssbingo.github.io/pond-aeration-flash/) auf einem Waveshare
+  ESP32-S3-POE-ETH-8DI-8RO (die Firmware flashst du im Browser von der Flash-Seite – Chrome/Edge, keine
+  Zusatzsoftware) — lege die **Host/IP** fest und ordne das **Notventil-Relais** und das
   **Pumpen-Relais** (0–7) zu; die Belüftungspunkte nutzen den pro Punkt eingestellten Relaiskanal. Der
   Adapter überträgt eine Sicherheitskonfiguration und einen Heartbeat, damit die geräteinterne
   Ausfallsicherung der Firmware den Teich schützt, selbst wenn ioBroker ausfällt.
@@ -132,7 +134,7 @@ die Teile, die du tatsächlich nutzt.
   - **Firmware-Kompatibilität** – Adapter und Firmware werden über eine **Protokoll-Version** (der
     harte Vertrag) abgeglichen, nicht über exakte Release-Nummern. Diese Adapter-Version spricht
     **Protokoll 1** und **empfiehlt Firmware v1.1.0** (mindestens v1.0.0); der ESP32-Konfigurationstab
-    zeigt dies an und verlinkt auf die [Firmware-Releases](https://github.com/ssbingo/pond-aeration-esp32-firmware/releases). Beim Verbinden werden die Version
+    zeigt dies an und verlinkt auf die [Flash-Seite](https://ssbingo.github.io/pond-aeration-flash/), von der du die passende Firmware im Browser flashst. Beim Verbinden werden die Version
     des Geräts und ein Kompatibilitäts-Flag als `info.deviceFirmware` und `info.firmwareCompatible`
     veröffentlicht; jede Protokoll-Abweichung wird ins Log geschrieben.
   - **Lizenzierung** *(nur wenn deine Firmware das optionale Lizenz-Overlay mitbringt)* – das Gerät
@@ -362,12 +364,12 @@ Sicherheitsverriegelung gegen Nullförderung, Überwachung, Astro & Geoposition,
 der **Winter-/Eisfrei-Modus**, der **Sauerstoff-Regelkreis**, **Benachrichtigungen**, die
 **Laufzeitstatistik** sowie der **Trockenlauf-Testmodus**. **Noch ausstehend:**
 
-* die Fertigstellung der **[Referenz-Firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware)**
-  für den Waveshare ESP32-S3-POE-ETH-8DI-8RO — das adapterseitige ESP32-Backend ist vorhanden; die
-  Firmware-Grundlage (Ethernet, Relais, digitale Eingangs-Taster, HTTP/WS-API, geräteinterne
-  Ausfallsicherung, mobilfreundliche Web-UI auf Port 80) ist committet, als nächster Schritt folgen die
-  Referenzsensoren (gelöster Sauerstoff, Luftleitungsdruck, Wassertemperatur — siehe
-  [dev/hardware/sensors.md](../../dev/hardware/sensors.md));
+* die **Referenzsensoren** für die **[Referenz-Firmware](https://ssbingo.github.io/pond-aeration-flash/)**
+  auf dem Waveshare ESP32-S3-POE-ETH-8DI-8RO (gelöster Sauerstoff, Luftleitungsdruck, Wassertemperatur —
+  siehe den Abschnitt **Sensoren**). Die Referenz-Firmware selbst ist verfügbar und wird im Browser von
+  der Flash-Seite (Chrome/Edge, keine Zusatzsoftware) auf das Gerät geflasht; das adapterseitige
+  ESP32-Backend ist vorhanden, und die Firmware-Grundlage (Ethernet, Relais, digitale Eingangs-Taster,
+  HTTP/WS-API, geräteinterne Ausfallsicherung, mobilfreundliche Web-UI auf Port 80) läuft;
 * ein nachgelagerter **vis-2-Widget-Adapter** für Bedienung und Überwachung.
 
 Den vollständigen, meilensteinbasierten Plan findest du in [PROJECT_PLAN.md](../../PROJECT_PLAN.md).

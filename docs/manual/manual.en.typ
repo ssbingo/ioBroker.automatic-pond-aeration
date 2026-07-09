@@ -381,8 +381,7 @@ Wire the actuators so that *losing power leaves the pond safe*. A relay that los
     *Atlas EZO-DO* stack (≈ €450) #src(4), which needs an electrical isolation carrier #src(5).]),
 )
 
-Full part numbers, prices, wiring, the I²C address map and all caveats are kept in
-`dev/hardware/sensors.md` in the repository.
+Wiring and the I²C address map are covered in the *Wiring the sensors to the ESP32* section below.
 
 #safety("Oxygen sensing is maintenance-heavy")[
   Both oxygen options use a galvanic probe with a membrane/electrolyte that must be serviced
@@ -423,12 +422,12 @@ share one bus with the board's relay expander and clock/RTC; the temperature pro
 With the board flashed and wired, the adapter can drive it directly — no relay adapter in between.
 
 #steps(
-  [*Flash the firmware* from the separate repository
-    #link("https://github.com/ssbingo/pond-aeration-esp32-firmware")[pond-aeration-esp32-firmware]
-    (PlatformIO: `pio run -t upload`). Set the pressure sensor's range factor at build time
-    (`-DXGZP_K=64` for 0–100 kPa).],
+  [*Flash the firmware in your browser* — no PlatformIO, no command line: open the
+    #link("https://ssbingo.github.io/pond-aeration-flash/")[flash page] in *Chrome* or *Edge* on a
+    computer, connect the ESP over USB, click *Install firmware*, pick the serial port and confirm.
+    After about a minute the board reboots running the firmware.],
   [*Power & wire* per the failsafe diagram (valves 24 V DC on NC, emergency valve NO, the 230 V AC
-    pump via a relay + snubber or a contactor) — full detail in `dev/hardware/wiring.md`.],
+    pump via a relay + snubber or a contactor) — see the *Failsafe wiring* section below.],
   [In the adapter's *General* tab set *Backend* = `ESP32 (direct)`, enter the board's *host / IP*, and
     map the *emergency-valve relay* and *pump relay* (0–7). Each aeration point uses the relay channel
     set per point.],
@@ -498,8 +497,8 @@ With the board flashed and wired, the adapter can drive it directly — no relay
   and uptime). Time is kept by NTP and backed by the on-board *RTC*, so the clock survives a power
   loss and NTP outages. The status LED shows green = normal, orange = no link, blue = a button
   override is active, red-blinking = failsafe; the buzzer beeps once when the failsafe engages. A
-  step-by-step beginner install guide (English + German, with diagrams) ships in the firmware
-  repository under `docs/`.
+  step-by-step beginner install & activation guide (English + German) is the
+  #link("https://ssbingo.github.io/pond-aeration-flash/")[flash page] itself.
 ]
 
 = FAQ

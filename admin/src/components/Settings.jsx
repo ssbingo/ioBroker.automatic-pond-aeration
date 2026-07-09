@@ -181,6 +181,7 @@ function Settings(props) {
 				setEspTest({
 					ok: true,
 					msg: `${I18n.t('Connected')}: ${r.device || 'ESP32'} — Firmware v${r.fw || '?'} (${I18n.t('protocol')} ${r.protocol})${r.compatible ? '' : ' — ' + I18n.t('incompatible protocol!')}`,
+					license: r.license || null,
 				});
 			} else {
 				setEspTest({ ok: false, msg: `${I18n.t('Not reachable')}${r && r.error ? ` (${r.error})` : ''}` });
@@ -309,6 +310,22 @@ function Settings(props) {
 								{espTest.ok ? '✓ ' : '✗ '}
 								{espTest.msg}
 							</Typography>
+						) : null}
+						{espTest && espTest.ok && espTest.license ? (
+							<Box sx={{ mt: 1, p: 1.2, borderRadius: 1, border: '1px solid', borderColor: 'divider', bgcolor: 'action.hover' }}>
+								<Typography variant="caption" sx={{ display: 'block', fontWeight: 700 }}>
+									{I18n.t('Licence')}: {espTest.license.tier || 'free'}
+									{espTest.license.trial ? ` — ${I18n.t('Trial — %s days left', espTest.license.trialDaysLeft)}` : ''}
+								</Typography>
+								<Typography variant="caption" color="textSecondary" sx={{ display: 'block' }}>
+									{I18n.t('Device code (give this when unlocking)')}: <b>{espTest.license.deviceCode || '—'}</b>
+								</Typography>
+								{!espTest.license.controlAllowed ? (
+									<Typography variant="caption" color="warning.main" sx={{ display: 'block', mt: 0.3 }}>
+										{I18n.t('This device is not licensed for control — monitoring only. Enter an activation key on the device page /license.')}
+									</Typography>
+								) : null}
+							</Box>
 						) : null}
 						<Box sx={{ mt: 1, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
 							<Num label={I18n.t('Emergency-valve relay (0–7)')} value={native.esp32EmergencyRelay} onChange={v => set('esp32EmergencyRelay', v)} min={0} />

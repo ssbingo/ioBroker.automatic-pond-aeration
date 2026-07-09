@@ -416,8 +416,7 @@ entsprechend:
     benötigt #src(5).]),
 )
 
-Vollständige Teilenummern, Preise, Verdrahtung, die I²C-Adresstabelle und alle Vorbehalte finden Sie
-in `dev/hardware/sensors.md` im Repository.
+Verdrahtung und die I²C-Adresstabelle finden Sie im Abschnitt *Die Sensoren an den ESP32 anschließen* unten.
 
 #safety("Sauerstoffmessung ist wartungsintensiv")[
   Beide Sauerstoffoptionen verwenden eine galvanische Sonde mit einer Membran/einem Elektrolyten, die
@@ -462,12 +461,12 @@ Ist das Board geflasht und verdrahtet, kann der Adapter es direkt ansteuern — 
 dazwischen.
 
 #steps(
-  [*Firmware flashen* aus dem separaten Repository
-    #link("https://github.com/ssbingo/pond-aeration-esp32-firmware")[pond-aeration-esp32-firmware]
-    (PlatformIO: `pio run -t upload`). Den Bereichsfaktor des Drucksensors beim Bauen setzen
-    (`-DXGZP_K=64` für 0–100 kPa).],
+  [*Firmware im Browser flashen* — kein PlatformIO, keine Kommandozeile: die
+    #link("https://ssbingo.github.io/pond-aeration-flash/")[Flash-Seite] in *Chrome* oder *Edge* am
+    Computer öffnen, den ESP per USB anstecken, *Firmware installieren* klicken, den seriellen
+    Anschluss wählen und bestätigen. Nach etwa einer Minute startet das Board mit der Firmware neu.],
   [*Versorgen & verdrahten* gemäß Failsafe-Schaltplan (Ventile 24 V DC an NC, Notventil NO, die
-    230-V-AC-Pumpe über ein Relais + Snubber oder ein Schütz) — Details in `dev/hardware/wiring.md`.],
+    230-V-AC-Pumpe über ein Relais + Snubber oder ein Schütz) — siehe Abschnitt *Failsafe-Verdrahtung* unten.],
   [Im *Allgemein*-Reiter des Adapters *Backend* = `ESP32 (direct)` setzen, *Host / IP* des Boards
     eintragen und das *Notventil-Relais* sowie das *Pumpen-Relais* (0–7) zuordnen. Jede
     Belüftungsstelle nutzt den je Punkt gesetzten Relaiskanal.],
@@ -540,8 +539,8 @@ dazwischen.
   Hostname, Version, Speicher und Laufzeit). Die Zeit hält NTP, gepuffert von der eingebauten *RTC* —
   so übersteht die Uhr Stromausfall und NTP-Ausfälle. Die Status-LED zeigt grün = normal, orange =
   kein Link, blau = ein Taster-Override ist aktiv, rot-blinkend = Failsafe; der Buzzer piept einmal,
-  wenn die Ausfallsicherung auslöst. Eine anfängertaugliche Installationsanleitung (Deutsch +
-  Englisch, mit Grafiken) liegt im Firmware-Repository unter `docs/`.
+  wenn die Ausfallsicherung auslöst. Die anfängertaugliche Installations- & Freischaltungsanleitung
+  (Deutsch + Englisch) ist die #link("https://ssbingo.github.io/pond-aeration-flash/")[Flash-Seite] selbst.
 ]
 
 = FAQ

@@ -1,20 +1,20 @@
 {
 	"common": {
 		"name": "automatic-pond-aeration",
-		"version": "0.1.2",
+		"version": "0.1.3",
 		"news": {
-			"0.1.2": {
-				"en": "ESP32 licence awareness: the adapter now reads the device's licence tier (free = monitoring, community = relay control, pro = + standalone schedule), the trial days remaining and the device code, and publishes them as info.* states. A device that is not licensed for control is handled gracefully — monitoring keeps working and control is skipped with a clear hint instead of repeated errors. Public firmware without the optional licensing overlay is unaffected.",
-				"de": "ESP32-Lizenz-Awareness: Der Adapter liest jetzt die Lizenzstufe des Geräts (free = Überwachung, community = Relaissteuerung, pro = + autonomer Zeitplan), die verbleibenden Testtage und den Gerätecode und veröffentlicht sie als info.*-States. Ein Gerät, das nicht für die Steuerung lizenziert ist, wird sauber behandelt — die Überwachung läuft weiter und die Steuerung wird mit einem klaren Hinweis übersprungen statt mit wiederholten Fehlern. Öffentliche Firmware ohne das optionale Lizenz-Overlay ist nicht betroffen.",
-				"ru": "Учёт лицензии ESP32: адаптер теперь считывает уровень лицензии устройства (free = мониторинг, community = управление реле, pro = + автономное расписание), количество оставшихся дней пробного периода и код устройства и публикует их как состояния info.*. Устройство без лицензии на управление обрабатывается корректно — мониторинг продолжает работать, а управление пропускается с понятной подсказкой вместо повторяющихся ошибок. Публичная прошивка без необязательного слоя лицензирования не затрагивается.",
-				"pt": "Reconhecimento de licença do ESP32: o adaptador agora lê o nível de licença do dispositivo (free = monitoramento, community = controle de relés, pro = + agendamento autónomo), os dias de avaliação restantes e o código do dispositivo, e publica-os como estados info.*. Um dispositivo que não está licenciado para controle é tratado de forma elegante — o monitoramento continua a funcionar e o controle é ignorado com uma indicação clara em vez de erros repetidos. O firmware público sem a camada de licenciamento opcional não é afetado.",
-				"nl": "ESP32-licentiebewustzijn: de adapter leest nu de licentietier van het apparaat (free = bewaking, community = relaisbesturing, pro = + autonoom schema), de resterende proefdagen en de apparaatcode, en publiceert deze als info.*-states. Een apparaat dat niet gelicentieerd is voor besturing wordt netjes afgehandeld — de bewaking blijft werken en de besturing wordt overgeslagen met een duidelijke hint in plaats van herhaalde fouten. Publieke firmware zonder de optionele licentie-overlay wordt niet beïnvloed.",
-				"fr": "Prise en charge des licences ESP32 : l'adaptateur lit désormais le niveau de licence de l'appareil (free = surveillance, community = commande des relais, pro = + horaire autonome), les jours d'essai restants et le code de l'appareil, et les publie sous forme d'états info.*. Un appareil sans licence pour la commande est géré proprement — la surveillance continue de fonctionner et la commande est ignorée avec une indication claire au lieu d'erreurs répétées. Le firmware public sans la surcouche de licence facultative n'est pas concerné.",
-				"it": "Consapevolezza della licenza ESP32: l'adattatore ora legge il livello di licenza del dispositivo (free = monitoraggio, community = controllo dei relè, pro = + pianificazione autonoma), i giorni di prova rimanenti e il codice del dispositivo, e li pubblica come stati info.*. Un dispositivo che non dispone di licenza per il controllo viene gestito in modo elegante: il monitoraggio continua a funzionare e il controllo viene saltato con un'indicazione chiara invece di errori ripetuti. Il firmware pubblico senza l'overlay di licenza opzionale non è interessato.",
-				"es": "Reconocimiento de licencia del ESP32: el adaptador ahora lee el nivel de licencia del dispositivo (free = supervisión, community = control de relés, pro = + programación autónoma), los días de prueba restantes y el código del dispositivo, y los publica como estados info.*. Un dispositivo que no tiene licencia para el control se gestiona con elegancia: la supervisión sigue funcionando y el control se omite con una indicación clara en lugar de errores repetidos. El firmware público sin la capa de licencia opcional no se ve afectado.",
-				"pl": "Świadomość licencji ESP32: adapter odczytuje teraz poziom licencji urządzenia (free = monitorowanie, community = sterowanie przekaźnikami, pro = + samodzielny harmonogram), pozostałe dni okresu próbnego oraz kod urządzenia i publikuje je jako stany info.*. Urządzenie bez licencji na sterowanie jest obsługiwane łagodnie — monitorowanie nadal działa, a sterowanie jest pomijane z czytelną wskazówką zamiast powtarzających się błędów. Publiczne firmware bez opcjonalnej nakładki licencyjnej nie jest tym objęte.",
-				"uk": "Обізнаність про ліцензію ESP32: адаптер тепер зчитує рівень ліцензії пристрою (free = моніторинг, community = керування реле, pro = + автономний розклад), залишок пробних днів і код пристрою та публікує їх як стани info.*. Пристрій, який не має ліцензії на керування, обробляється коректно — моніторинг продовжує працювати, а керування пропускається з чіткою підказкою замість повторюваних помилок. Публічну прошивку без опційного оверлея ліцензування це не зачіпає.",
-				"zh-cn": "ESP32 授权感知：适配器现在会读取设备的授权级别（free = 监测，community = 继电器控制，pro = + 独立计划）、剩余试用天数和设备代码，并将它们作为 info.* 状态发布。对于未获得控制授权的设备，会进行优雅处理——监测继续正常工作，控制会被跳过并给出清晰提示，而不是反复报错。不带可选授权覆盖层的公开固件不受影响。"
+			"0.1.3": {
+				"en": "ESP32 firmware is now installed straight from the browser: a new flash page (ESP Web Tools) replaces the PlatformIO build. The admin’s Test connection now also shows the device’s licence status — active tier, trial days remaining, the device code (to give when unlocking) and a warning when the device is not licensed for control. All docs and the PDF manual were updated to the browser-flash install flow.",
+				"de": "Die ESP32-Firmware wird jetzt direkt über den Browser installiert: Eine neue Flash-Seite (ESP Web Tools) ersetzt den PlatformIO-Build. Die Testverbindung des Administrators zeigt jetzt auch den Lizenzstatus des Geräts an – aktive Stufe, verbleibende Testtage, den Gerätecode (der beim Entsperren anzugeben ist) und eine Warnung, wenn das Gerät nicht zur Steuerung lizenziert ist. Alle Dokumente und das PDF-Handbuch wurden auf den Browser-Flash-Installationsablauf aktualisiert.",
+				"ru": "Прошивка ESP32 теперь устанавливается прямо из браузера: новая флеш-страница (ESP Web Tools) заменяет сборку PlatformIO. Тестовое соединение администратора теперь также показывает статус лицензии устройства — активный уровень, оставшиеся пробные дни, код устройства (который нужно указать при разблокировке) и предупреждение, когда устройство не лицензировано для управления. Все документы и руководство в формате PDF были обновлены в соответствии с процессом установки с флэш-браузером.",
+				"pt": "O firmware ESP32 agora é instalado diretamente do navegador: uma nova página flash (ESP Web Tools) substitui a versão PlatformIO. A conexão de teste do administrador agora também mostra o status da licença do dispositivo – nível ativo, dias de teste restantes, o código do dispositivo (para fornecer ao desbloquear) e um aviso quando o dispositivo não está licenciado para controle. Todos os documentos e o manual em PDF foram atualizados para o fluxo de instalação do navegador flash.",
+				"nl": "ESP32-firmware wordt nu rechtstreeks vanuit de browser geïnstalleerd: een nieuwe flash-pagina (ESP Web Tools) vervangt de PlatformIO-build. De testverbinding van de beheerder toont nu ook de licentiestatus van het apparaat: actieve laag, resterende proefdagen, de apparaatcode (die moet worden opgegeven bij het ontgrendelen) en een waarschuwing wanneer het apparaat geen licentie heeft voor controle. Alle documenten en de PDF-handleiding zijn bijgewerkt naar de browser-flash-installatiestroom.",
+				"fr": "Le firmware ESP32 est désormais installé directement depuis le navigateur : une nouvelle page flash (ESP Web Tools) remplace la build PlatformIO. La connexion test de l'administrateur affiche désormais également l'état de la licence de l'appareil : niveau actif, jours d'essai restants, le code de l'appareil (à donner lors du déverrouillage) et un avertissement lorsque l'appareil n'a pas de licence pour le contrôle. Tous les documents et le manuel PDF ont été mis à jour selon le flux d'installation Flash du navigateur.",
+				"it": "Il firmware ESP32 è ora installato direttamente dal browser: una nuova pagina flash (ESP Web Tools) sostituisce la build PlatformIO. La connessione di prova dell'amministratore ora mostra anche lo stato della licenza del dispositivo: livello attivo, giorni di prova rimanenti, il codice del dispositivo (da fornire al momento dello sblocco) e un avviso quando il dispositivo non dispone della licenza per il controllo. Tutti i documenti e il manuale PDF sono stati aggiornati al flusso di installazione flash del browser.",
+				"es": "El firmware ESP32 ahora se instala directamente desde el navegador: una nueva página flash (ESP Web Tools) reemplaza la compilación PlatformIO. La conexión de prueba del administrador ahora también muestra el estado de la licencia del dispositivo: nivel activo, días de prueba restantes, el código del dispositivo (para proporcionar al desbloquear) y una advertencia cuando el dispositivo no tiene licencia para su control. Todos los documentos y el manual en PDF se actualizaron al flujo de instalación flash del navegador.",
+				"pl": "Oprogramowanie sprzętowe ESP32 jest teraz instalowane bezpośrednio z przeglądarki: nowa strona flash (ESP Web Tools) zastępuje wersję PlatformIO. Połączenie testowe administratora pokazuje teraz także stan licencji urządzenia — aktywny poziom, pozostałe dni próbne, kod urządzenia (do podania podczas odblokowywania) oraz ostrzeżenie, gdy urządzenie nie ma licencji na kontrolę. Wszystkie dokumenty i podręcznik w formacie PDF zostały zaktualizowane zgodnie z procesem instalacji przeglądarki flash.",
+				"uk": "Прошивка ESP32 тепер встановлюється просто з браузера: нова сторінка флеш-пам’яті (ESP Web Tools) замінює збірку PlatformIO. Тестове з’єднання адміністратора тепер також показує статус ліцензії пристрою — активний рівень, кількість пробних днів, що залишилися, код пристрою (який потрібно вказати під час розблокування) і попередження, коли пристрій не має ліцензії для керування. Усі документи та PDF-посібник було оновлено до процесу інсталяції у браузері.",
+				"zh-cn": "ESP32 固件现在可以直接从浏览器安装：新的 Flash 页面（ESP Web Tools）取代了 PlatformIO 构建。管理员的测试连接现在还显示设备的许可证状态 - 活动等级、剩余试用天数、设备代码（解锁时提供）以及设备未获得控制许可时的警告。所有文档和 PDF 手册均已更新为浏览器闪存安装流程。"
 			}
 		},
 		"titleLang": {
@@ -98,30 +98,24 @@
 		"esp32PumpRelay": 7,
 		"esp32AutonomousEnabled": false,
 		"pollIntervalSec": 30,
-
 		"locationMode": "system",
 		"latitude": "",
 		"longitude": "",
 		"address": "",
-
 		"pumpControllable": false,
 		"pumpObjectId": "",
 		"pumpMinOnSec": 0,
 		"pumpMinOffSec": 0,
-
 		"emergencyObjectId": "",
 		"emergencyNormallyOpen": true,
 		"emergencyValveType": "solenoid",
 		"emergencyMotorTravelSec": 5,
-
 		"minOpenValves": 1,
 		"watchdogIntervalSec": 5,
 		"overlapSec": 2,
-
 		"roundRobinEnabled": false,
 		"roundRobinDwellSec": 60,
 		"sequenceSteps": [],
-
 		"o2Enabled": false,
 		"o2ObjectId": "",
 		"o2LowThreshold": null,
@@ -129,24 +123,20 @@
 		"o2Hysteresis": 0.5,
 		"o2ControlEnabled": false,
 		"o2AffectedPoints": [],
-
 		"airTempEnabled": false,
 		"airTempObjectId": "",
 		"waterTempEnabled": false,
 		"waterTempObjectId": "",
-
 		"pressureEnabled": false,
 		"pressureObjectId": "",
 		"pressureMin": null,
 		"pressureMax": null,
-
 		"winterEnabled": false,
 		"winterStart": "11-01",
 		"winterEnd": "03-15",
 		"winterFrostProtect": false,
 		"winterAirTempThreshold": 2,
 		"winterAffectedPoints": [],
-
 		"feederEnabled": false,
 		"feederInstance": "",
 		"feederSwitches": [],
@@ -154,11 +144,13 @@
 		"feederFeedingDurationSec": 15,
 		"feederDurationMode": "measure",
 		"feederAffectedPoints": [],
-
 		"notifyEnabled": false,
 		"messagingInstance": "",
-		"notifyEvents": ["interlock", "oxygen", "pressure"],
-
+		"notifyEvents": [
+			"interlock",
+			"oxygen",
+			"pressure"
+		],
 		"points": [],
 		"groups": [],
 		"schedules": []

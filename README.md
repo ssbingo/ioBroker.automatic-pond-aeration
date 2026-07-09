@@ -46,10 +46,10 @@ compute **astronomical times** from your **geolocation**, drive the hardware **d
 > (oxygen, air/water temperature, pressure with alarms), **astronomical times & geolocation**, the
 > **feeder coupling**, the **winter / ice-free mode**, the **oxygen closed loop**, **notifications**
 > via a messaging adapter, **runtime statistics**, a **dry-run** test mode, per-point **override
-> buttons**, and the direct **ESP32** hardware backend (talks to the separate
-> [reference firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware) over HTTP; the firmware
-> is still being completed). The default backend drives your valves and pump through existing ioBroker
-> states, so any relay board works.
+> buttons**, and the direct **ESP32** hardware backend (talks to the reference firmware over HTTP —
+> flash it in your browser from the [firmware flash page](https://ssbingo.github.io/pond-aeration-flash/)).
+> The default backend drives your valves and pump through existing ioBroker states, so any relay board
+> works.
 
 > 🇩🇪 Deutsche Anleitung: [doc/de/README.md](doc/de/README.md) · other languages: see
 > [Documentation](#documentation) at the bottom.
@@ -122,11 +122,12 @@ you use.
   update, but valve/pump commands are only written to the log (`[DRY-RUN] would …`) instead of the
   real states. Ideal for commissioning and testing a configuration before wiring it up.
 - **Hardware backend** – `Existing ioBroker states` (default) drives your valves/pump through states
-  of other adapters. `ESP32 (direct)` talks to the [reference firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware)
-  on a Waveshare ESP32-S3-POE-ETH-8DI-8RO over HTTP — set the **host/IP**, and map the **emergency-valve
-  relay** and **pump relay** (0–7); the aeration points use the relay channel set per point. The
-  adapter pushes a safety config and a heartbeat so the firmware's on-device failsafe protects the pond
-  even if ioBroker is down.
+  of other adapters. `ESP32 (direct)` talks to the reference firmware on a Waveshare
+  ESP32-S3-POE-ETH-8DI-8RO over HTTP. Flash the firmware in your browser from the
+  [firmware flash page](https://ssbingo.github.io/pond-aeration-flash/) (Chrome/Edge, no extra
+  software), then set the **host/IP** and map the **emergency-valve relay** and **pump relay** (0–7);
+  the aeration points use the relay channel set per point. The adapter pushes a safety config and a
+  heartbeat so the firmware's on-device failsafe protects the pond even if ioBroker is down.
   - **Autonomous schedule (run without ioBroker)** *(ESP32 only, optional)* – when enabled, the adapter
     also pushes your time schedules to the device; if the connection drops, the ESP32 keeps running
     them on its own using its NTP clock (the dead-head safety interlock still applies). The cyclic
@@ -350,14 +351,11 @@ automatically.
 
 Done: configuration UI, valve control (schedule/round-robin/groups), the dead-head safety
 interlock, monitoring, astro & geolocation, the feeder coupling, the **winter / ice-free mode**, the
-**oxygen closed loop**, **notifications**, **runtime statistics** and the **dry-run** test mode.
+**oxygen closed loop**, **notifications**, **runtime statistics**, the **dry-run** test mode and the
+direct **ESP32** hardware backend with its reference firmware (flash it in your browser from the
+[firmware flash page](https://ssbingo.github.io/pond-aeration-flash/)).
 **Still to come:**
 
-* completing the **[reference firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware)** for
-  the Waveshare ESP32-S3-POE-ETH-8DI-8RO — the adapter-side ESP32 backend is in place; the firmware
-  foundation (Ethernet, relays, digital-input buttons, HTTP/WS API, on-device failsafe, mobile web UI
-  on port 80) is committed, with the reference sensors (dissolved oxygen, air-line pressure, water
-  temperature — see [dev/hardware/sensors.md](dev/hardware/sensors.md)) as the next step;
 * a follow-up **vis-2 widget adapter** for operation and monitoring.
 
 See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
@@ -367,6 +365,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.1.3 (2026-07-09)
+* (ssbingo) **ESP32 firmware install & licence UX.** The reference firmware is now flashed **in the browser** from a new [flash page](https://ssbingo.github.io/pond-aeration-flash/) (ESP Web Tools) — no PlatformIO, no command line. The admin's **Test connection** now also shows the device's **licence status**: the active tier, trial days remaining, the **device code** (to give when unlocking) and a clear warning when the device is **not licensed for control** (monitoring keeps working). README, all 10 translated docs and the PDF manual (EN/DE) were rewritten to the browser-flash flow; 5 admin strings localized in 11 languages
+
 ### 0.1.2 (2026-07-09)
 * (ssbingo) **ESP32 licence awareness.** The adapter now reads the device's licence status from `GET /api/info` — the active tier (`free` = monitoring, `community` = relay control, `pro` = + standalone schedule), the trial days remaining and the device code — and publishes them as `info.licenseTier`, `info.licenseTrialDaysLeft`, `info.deviceCode` and `info.licenseControlBlocked`. A device that is **not licensed for control** is handled gracefully: **monitoring keeps working**, control commands are skipped with a single clear hint (device code + how to unlock) instead of repeated errors. Public firmware without the optional licensing overlay is unaffected (control stays open). New unit-tested `parseLicense` helper; localized news in 11 languages
 
@@ -383,19 +384,16 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 * (ssbingo) **Autonomous schedule on the ESP32.** A new *Autonomous schedule (run without ioBroker)* option (ESP32 backend) makes the adapter flatten your time schedules into per-relay-channel windows and push them to the device; if the adapter connection drops, the firmware **keeps running the schedule on its own** against its NTP clock instead of only failing safe — the pond stays aerated when ioBroker or the network is down. The on-device dead-head interlock still overrides everything and the pump only runs while at least `minOpen` valves are open; the cyclic round-robin sequence stays adapter-side. New `esp32AutonomousEnabled` config, extended `POST /api/config` (`autonomous`/`schedule`), pure/unit-tested `buildSchedulePayload`, admin toggle + 2 strings in 11 languages
 
 ### 0.0.18 (2026-07-08)
-* (ssbingo) Override-button safety + ESP32 device web UI. The per-point manual override **push-button is now only allowed on an aeration-valve channel** — if a point sits on the ESP32 pump or emergency-valve relay channel the button is force-disabled and greyed out in the admin (those channels are safety-critical and must never be hand-toggled). A button wired to the ESP32 is now **reflected back into ioBroker**: pressing it at the device updates `aeration.point.<n>.buttonOn` and gets the same force-on priority in the arbiter. The companion [reference firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware) gained an on-device **web UI** (Settings: DHCP/static IP/DNS/hostname, NTP time, WS2812/buzzer; **OTA** firmware update with a GitHub version check; a device-info page), **SNTP** timekeeping (default `de.pool.ntp.org`) and **status LED/buzzer** signalling, plus a beginner install guide (EN/DE)
+* (ssbingo) Override-button safety + ESP32 device web UI. The per-point manual override **push-button is now only allowed on an aeration-valve channel** — if a point sits on the ESP32 pump or emergency-valve relay channel the button is force-disabled and greyed out in the admin (those channels are safety-critical and must never be hand-toggled). A button wired to the ESP32 is now **reflected back into ioBroker**: pressing it at the device updates `aeration.point.<n>.buttonOn` and gets the same force-on priority in the arbiter. The companion reference firmware gained an on-device **web UI** (Settings: DHCP/static IP/DNS/hostname, NTP time, WS2812/buzzer; **OTA** firmware update with a GitHub version check; a device-info page), **SNTP** timekeeping (default `de.pool.ntp.org`) and **status LED/buzzer** signalling, plus a beginner install guide (EN/DE)
 
 ### 0.0.17 (2026-07-08)
-* (ssbingo) Direct **ESP32 hardware backend** (M7): selecting `ESP32 (direct)` now drives a Waveshare ESP32-S3-POE-ETH-8DI-8RO through the separate [reference firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware) over HTTP (JSON, port 80) — `GET /api/info` protocol check, `POST /api/config` pushing the safety roles, relay commands, and a heartbeat that keeps the firmware's on-device failsafe disarmed while the adapter is healthy; the polled status is mirrored into the data points. New config `esp32EmergencyRelay`/`esp32PumpRelay`, pure/unit-tested `lib/hal/esp32-protocol.js` and `lib/hal/esp32-backend.js`, admin fields + 3 strings in 11 languages. The ioBroker-state backend remains the default
+* (ssbingo) Direct **ESP32 hardware backend** (M7): selecting `ESP32 (direct)` now drives a Waveshare ESP32-S3-POE-ETH-8DI-8RO through the separate reference firmware over HTTP (JSON, port 80) — `GET /api/info` protocol check, `POST /api/config` pushing the safety roles, relay commands, and a heartbeat that keeps the firmware's on-device failsafe disarmed while the adapter is healthy; the polled status is mirrored into the data points. New config `esp32EmergencyRelay`/`esp32PumpRelay`, pure/unit-tested `lib/hal/esp32-protocol.js` and `lib/hal/esp32-backend.js`, admin fields + 3 strings in 11 languages. The ioBroker-state backend remains the default
 
 ### 0.0.16 (2026-07-08)
 * (ssbingo) Per-point manual override push-button (M7 groundwork): each aeration point can have a physical button (an ESP32 digital input or any boolean state). It toggles — one press forces the point on with **priority over the automatic control** (schedule/sequence/winter/oxygen) and even over a feeder pause; only the master switch or a safety trip overrides it. New per-point config (`buttonEnabled`/`buttonMode`/`buttonObjectId`), state `aeration.point.<n>.buttonOn`, pure/unit-tested `lib/control/button.js`, admin column and localized messages/strings in 11 languages. The button mode is an enum, so more behaviours can be added later
 
 ### 0.0.15 (2026-07-08)
 * (ssbingo) Admin usability: winter start/end are now picked from a **calendar** (day + month only, recurring); schedule From/To use a **clock (hour/minute) picker**; the Control page scrolls fully to the bottom; every **Safety** parameter now shows an inline explanation of what it does and its effect. **Notifications** let you choose **which events** are sent (safety interlock / oxygen alarm / pressure alarm) via a new `notifyEvents` option — before, only the messaging instance was selectable. New docs: the manual gained wiring diagrams (failsafe relay wiring, ESP32 sensor wiring), a quick-start and a glossary, and is linked (EN/DE PDF) from all READMEs
-
-### 0.0.14 (2026-07-08)
-* (ssbingo) Cyclic sequence over points AND groups (M11): the round-robin can now follow an ordered list of steps where each step targets a single point or a whole group, with an optional per-step dwell time and free mixing (e.g. group 1 → group 3 → point 1). Reorder in the admin; an empty sequence keeps the plain round-robin over all points. New `sequenceSteps` config, pure/unit-tested `lib/control/sequence.js`, admin builder and 5 new admin strings in 11 languages
 
 ---
 

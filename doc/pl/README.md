@@ -37,8 +37,9 @@ napowietrzania podczas karmienia, gdy zainstalowany jest
 > feederem**, **tryb zimowy / bez lodu**, **zamknięta pętla tlenowa**, **powiadomienia przez adapter
 > messaging**, **statystyki czasu pracy**, **testowy tryb dry-run**, **przyciski wymuszenia** na każdy
 > punkt oraz bezpośredni sprzętowy backend **ESP32** (komunikuje się przez HTTP z osobnym
-> [oprogramowaniem referencyjnym](https://github.com/ssbingo/pond-aeration-esp32-firmware); firmware
-> jest wciąż finalizowane). Domyślny backend steruje Twoimi zaworami i pompą przez istniejące stany
+> [oprogramowaniem referencyjnym](https://ssbingo.github.io/pond-aeration-flash/); firmware jest
+> dostępne i wgrywane w przeglądarce ze strony flashowania — Chrome/Edge, bez dodatkowego
+> oprogramowania). Domyślny backend steruje Twoimi zaworami i pompą przez istniejące stany
 > ioBroker, więc działa dowolna płytka przekaźników.
 
 > 📘 **Kompletny przewodnik krok po kroku (PDF, dla początkujących — ze schematami połączeń, FAQ i
@@ -114,9 +115,10 @@ części, których używasz.
   (`[DRY-RUN] would …`) zamiast do rzeczywistych stanów. Idealne do uruchamiania i testowania
   konfiguracji przed jej podłączeniem.
 - **Backend sprzętowy** – `Istniejące stany ioBroker` (domyślnie) steruje Twoimi zaworami/pompą przez
-  stany innych adapterów. `ESP32 (bezpośrednio)` komunikuje się przez HTTP z
-  [oprogramowaniem referencyjnym](https://github.com/ssbingo/pond-aeration-esp32-firmware) na
-  Waveshare ESP32-S3-POE-ETH-8DI-8RO — ustaw **host/IP** oraz przypisz **przekaźnik zaworu awaryjnego**
+  stany innych adapterów. `ESP32 (bezpośrednio)` komunikuje się przez HTTP z oprogramowaniem
+  referencyjnym na Waveshare ESP32-S3-POE-ETH-8DI-8RO, które [wgrywasz w przeglądarce ze strony
+  flashowania](https://ssbingo.github.io/pond-aeration-flash/) (Chrome/Edge, bez dodatkowego
+  oprogramowania) — ustaw **host/IP** oraz przypisz **przekaźnik zaworu awaryjnego**
   i **przekaźnik pompy** (0–7); punkty napowietrzania używają kanału przekaźnika ustawionego dla
   każdego punktu. Adapter wysyła konfigurację bezpieczeństwa oraz sygnał kontrolny (heartbeat), aby
   wbudowane w urządzenie zabezpieczenie firmware chroniło staw, nawet gdy ioBroker jest niedostępny.
@@ -127,7 +129,7 @@ części, których używasz.
   - **Zgodność firmware** – adapter i firmware są dopasowywane za pomocą **wersji protokołu** (twardy
     kontrakt), a nie dokładnych numerów wydań. Ta wersja adaptera mówi **protokołem 1** i **zaleca
     firmware v1.1.0** (minimum v1.0.0); zakładka konfiguracji ESP32 pokazuje to i odsyła do
-    [wydań firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware/releases). Po połączeniu wersja urządzenia i flaga zgodności są publikowane jako
+    [strony flashowania](https://ssbingo.github.io/pond-aeration-flash/), z której wgrywasz w przeglądarce właściwe firmware. Po połączeniu wersja urządzenia i flaga zgodności są publikowane jako
     `info.deviceFirmware` i `info.firmwareCompatible`, a każda niezgodność protokołu jest zapisywana
     w dzienniku.
   - **Licencjonowanie** *(tylko jeśli Twoje firmware zawiera opcjonalną nakładkę licencyjną)* –
@@ -354,12 +356,13 @@ bezpieczeństwa przeciw pracy przy zamkniętych zaworach, monitorowanie, astro i
 sprzężenie z feederem, tryb zimowy / bez lodu, zamknięta pętla tlenowa, powiadomienia, statystyki
 czasu pracy oraz testowy tryb dry-run. **Wciąż przed nami:**
 
-* ukończenie **[oprogramowania referencyjnego](https://github.com/ssbingo/pond-aeration-esp32-firmware)**
-  dla Waveshare ESP32-S3-POE-ETH-8DI-8RO — backend ESP32 po stronie adaptera jest już gotowy; podstawa
-  firmware (Ethernet, przekaźniki, przyciski na wejściach cyfrowych, API HTTP/WS, wbudowane w
-  urządzenie zabezpieczenie, przyjazny dla urządzeń mobilnych interfejs webowy na porcie 80) jest
-  zatwierdzona, a kolejnym krokiem są czujniki referencyjne (rozpuszczony tlen, ciśnienie w linii
-  powietrza, temperatura wody — zobacz [dev/hardware/sensors.md](../../dev/hardware/sensors.md));
+* **czujniki referencyjne** dla **[oprogramowania referencyjnego](https://ssbingo.github.io/pond-aeration-flash/)**
+  na Waveshare ESP32-S3-POE-ETH-8DI-8RO (rozpuszczony tlen, ciśnienie w linii powietrza, temperatura
+  wody — zobacz sekcję **Czujniki** powyżej). Samo oprogramowanie referencyjne jest dostępne i wgrywane
+  w przeglądarce ze strony flashowania (Chrome/Edge, bez dodatkowego oprogramowania); backend ESP32 po
+  stronie adaptera jest gotowy, a podstawa firmware (Ethernet, przekaźniki, przyciski na wejściach
+  cyfrowych, API HTTP/WS, wbudowane w urządzenie zabezpieczenie, przyjazny dla urządzeń mobilnych
+  interfejs webowy na porcie 80) działa;
 * kolejny **adapter widżetów vis-2** do obsługi i monitorowania.
 
 Pełny, oparty na kamieniach milowych plan znajdziesz w [PROJECT_PLAN.md](../../PROJECT_PLAN.md).

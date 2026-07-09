@@ -1178,7 +1178,7 @@ class AutomaticPondAeration extends utils.Adapter {
 			respond({ ok: false, error: 'no host/IP configured' });
 			return;
 		}
-		const { buildUrl, authHeaders } = require('./lib/hal/esp32-protocol');
+		const { buildUrl, authHeaders, parseLicense } = require('./lib/hal/esp32-protocol');
 		const { evaluateFirmware } = require('./lib/firmware-compat');
 		const controller = new AbortController();
 		const timer = this.setTimeout(() => controller.abort(), 5000);
@@ -1198,6 +1198,7 @@ class AutomaticPondAeration extends utils.Adapter {
 			this.log.debug(
 				`ESP32 test to ${host}:${port} → ${info && info.device} v${info && info.fw} (protocol ${info && info.protocol}).`,
 			);
+			const lic = parseLicense(info);
 			respond({
 				ok: true,
 				device: info && info.device,
@@ -1205,6 +1206,17 @@ class AutomaticPondAeration extends utils.Adapter {
 				protocol: info && info.protocol,
 				compatible: verdict.compatible,
 				level: verdict.level,
+				// Licence status — null when the firmware has no licensing overlay (control always open).
+				license: lic.present
+					? {
+							tier: lic.tier,
+							licensedTier: lic.licensedTier,
+							trial: lic.trial,
+							trialDaysLeft: lic.trialDaysLeft,
+							deviceCode: lic.deviceCode,
+							controlAllowed: lic.controlAllowed,
+						}
+					: null,
 			});
 		} catch (e) {
 			respond({ ok: false, error: e && e.name === 'AbortError' ? 'timeout (no answer within 5 s)' : e.message });

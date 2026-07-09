@@ -39,8 +39,8 @@ determinati punti di aerazione durante l'alimentazione quando è installato
 > inverno / anti-ghiaccio**, il **circuito chiuso dell'ossigeno**, le **notifiche tramite un
 > adattatore di messaging**, le **statistiche di funzionamento**, una **modalità di test dry-run**, i
 > **pulsanti di override** per punto e il backend hardware **ESP32** diretto (comunica via HTTP con il
-> [firmware di riferimento](https://github.com/ssbingo/pond-aeration-esp32-firmware) separato; il
-> firmware è ancora in fase di completamento). Il backend predefinito pilota le tue valvole e la pompa
+> [firmware di riferimento](https://ssbingo.github.io/pond-aeration-flash/) separato, disponibile e
+> installabile nel browser dalla pagina di flash — Chrome/Edge, senza software aggiuntivo). Il backend predefinito pilota le tue valvole e la pompa
 > tramite stati ioBroker esistenti, così funziona qualsiasi scheda a relè.
 
 > 📘 **Manuale completo passo passo (PDF, per principianti — con schemi di cablaggio, FAQ e
@@ -120,7 +120,8 @@ usi.
   una configurazione prima di cablarla.
 - **Backend hardware** – `Stati ioBroker esistenti` (predefinito) pilota le tue valvole/la tua pompa
   tramite gli stati di altri adattatori. `ESP32 (diretto)` comunica via HTTP con il
-  [firmware di riferimento](https://github.com/ssbingo/pond-aeration-esp32-firmware) su un Waveshare
+  [firmware di riferimento](https://ssbingo.github.io/pond-aeration-flash/) — che si installa nel
+  browser dalla pagina di flash (Chrome/Edge, senza software aggiuntivo) — su un Waveshare
   ESP32-S3-POE-ETH-8DI-8RO — imposta l'**host/IP** e associa il **relè della valvola di emergenza** e
   il **relè della pompa** (0–7); i punti di aerazione usano il canale relè impostato per ciascun punto.
   L'adattatore invia una configurazione di sicurezza e un heartbeat affinché il failsafe integrato nel
@@ -132,8 +133,8 @@ usi.
   - **Compatibilità del firmware** – l'adattatore e il firmware vengono abbinati tramite una
     **versione del protocollo** (il contratto vincolante), non in base ai numeri di release esatti.
     Questa versione dell'adattatore parla il **protocollo 1** e **consiglia il firmware v1.1.0**
-    (minimo v1.0.0); la scheda di configurazione ESP32 lo mostra e rimanda alle [release del
-    firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware/releases). Alla connessione, la versione del dispositivo e un flag di compatibilità
+    (minimo v1.0.0); la scheda di configurazione ESP32 lo mostra e rimanda alla [pagina di flash del
+    firmware](https://ssbingo.github.io/pond-aeration-flash/), da cui installarlo nel browser. Alla connessione, la versione del dispositivo e un flag di compatibilità
     vengono pubblicati come `info.deviceFirmware` e `info.firmwareCompatible`, e qualsiasi
     discrepanza di protocollo viene scritta nel log.
   - **Licenza** *(solo se il tuo firmware include l'overlay di licenza opzionale)* – il dispositivo
@@ -363,14 +364,14 @@ ripuliti automaticamente.
 Fatto: interfaccia di configurazione, controllo delle valvole (programma/round-robin/gruppi), il
 blocco di sicurezza contro il dead-heading, il monitoraggio, astro & geolocalizzazione,
 l'accoppiamento con il feeder, la modalità inverno / anti-ghiaccio, il circuito chiuso dell'ossigeno,
-le notifiche, le statistiche di funzionamento e la modalità di test dry-run. **Ancora da fare:**
+le notifiche, le statistiche di funzionamento, la modalità di test dry-run e il
+**[firmware di riferimento](https://ssbingo.github.io/pond-aeration-flash/)** per il Waveshare
+ESP32-S3-POE-ETH-8DI-8RO (Ethernet, relè, pulsanti su ingressi digitali, API HTTP/WS, failsafe
+integrato nel dispositivo, interfaccia web ottimizzata per i dispositivi mobili sulla porta 80, con i
+sensori di riferimento per ossigeno disciolto, pressione della linea dell'aria e temperatura
+dell'acqua): è disponibile e si installa nel browser dalla pagina di flash (Chrome/Edge, senza
+software aggiuntivo). **Ancora da fare:**
 
-* il completamento del **[firmware di riferimento](https://github.com/ssbingo/pond-aeration-esp32-firmware)**
-  per il Waveshare ESP32-S3-POE-ETH-8DI-8RO — il backend ESP32 lato adattatore è già presente; la base
-  del firmware (Ethernet, relè, pulsanti su ingressi digitali, API HTTP/WS, failsafe integrato nel
-  dispositivo, interfaccia web ottimizzata per i dispositivi mobili sulla porta 80) è stata committata,
-  con i sensori di riferimento (ossigeno disciolto, pressione della linea dell'aria, temperatura
-  dell'acqua — vedi [dev/hardware/sensors.md](../../dev/hardware/sensors.md)) come passo successivo;
 * un successivo **adattatore di widget vis-2** per il funzionamento e il monitoraggio.
 
 Per il piano completo, basato su milestone, vedi [PROJECT_PLAN.md](../../PROJECT_PLAN.md).

@@ -38,9 +38,10 @@ geïnstalleerd.
 > **zuurstofregelkring**, **meldingen via een messaging-adapter**, **looptijdstatistieken**, een
 > **dry-run-testmodus**, **overrideknoppen** per punt en de directe **ESP32**-hardware-backend
 > (communiceert via HTTP met de aparte
-> [referentiefirmware](https://github.com/ssbingo/pond-aeration-esp32-firmware); de firmware wordt nog
-> afgerond). De standaard-backend stuurt je kleppen en pomp aan via bestaande ioBroker-states, dus
-> elke relaisprint werkt.
+> [referentiefirmware](https://ssbingo.github.io/pond-aeration-flash/); de firmware is beschikbaar en
+> wordt vanaf de flash-pagina in de browser geflasht — Chrome/Edge, geen extra software). De
+> standaard-backend stuurt je kleppen en pomp aan via bestaande ioBroker-states, dus elke relaisprint
+> werkt.
 
 > 📘 **Volledige stapsgewijze handleiding (PDF, voor beginners — met bedradingsschema's, FAQ en
 > probleemoplossing):** English → [../../docs/manual/pond-aeration-manual.en.pdf](../../docs/manual/pond-aeration-manual.en.pdf) ·
@@ -116,8 +117,9 @@ onderdelen die je gebruikt.
   testen van een configuratie voordat je alles bedraadt.
 - **Hardware-backend** – `Bestaande ioBroker-states` (standaard) stuurt je kleppen/pomp aan via
   states van andere adapters. `ESP32 (direct)` communiceert via HTTP met de
-  [referentiefirmware](https://github.com/ssbingo/pond-aeration-esp32-firmware) op een Waveshare
-  ESP32-S3-POE-ETH-8DI-8RO — stel de **host/IP** in en wijs het **noodklep-relais** en het
+  [referentiefirmware](https://ssbingo.github.io/pond-aeration-flash/) op een Waveshare
+  ESP32-S3-POE-ETH-8DI-8RO — die je vanaf de flash-pagina in de browser flasht (Chrome/Edge, geen extra
+  software). Stel de **host/IP** in en wijs het **noodklep-relais** en het
   **pomp-relais** (0–7) toe; de beluchtingspunten gebruiken het per punt ingestelde relaiskanaal. De
   adapter stuurt een veiligheidsconfiguratie en een heartbeat, zodat de failsafe op het apparaat zelf
   van de firmware de vijver beschermt, zelfs als ioBroker uitvalt.
@@ -128,7 +130,7 @@ onderdelen die je gebruikt.
   - **Firmwarecompatibiliteit** – de adapter en de firmware worden op elkaar afgestemd via een
     **protocolversie** (het harde contract), niet op exacte versienummers. Deze adapterversie spreekt
     **protocol 1** en **beveelt firmware v1.1.0 aan** (minimaal v1.0.0); het
-    ESP32-configuratietabblad toont dit en verwijst naar de [firmware-releases](https://github.com/ssbingo/pond-aeration-esp32-firmware/releases). Bij het
+    ESP32-configuratietabblad toont dit en verwijst naar de [flash-pagina](https://ssbingo.github.io/pond-aeration-flash/), waar je de firmware in de browser flasht (Chrome/Edge, geen extra software). Bij het
     verbinden worden de versie van het apparaat en een compatibiliteitsvlag gepubliceerd als
     `info.deviceFirmware` en `info.firmwareCompatible`, en elke protocolafwijking wordt naar het
     logboek geschreven.
@@ -353,12 +355,13 @@ Klaar: configuratie-UI, klepbesturing (tijdschema/roundrobin/groepen), de veilig
 tegen dead-heading, bewaking, astro & geolocatie, de feeder-koppeling, de winter-/ijsvrijmodus, de
 zuurstofregelkring, meldingen, looptijdstatistieken en de dry-run-testmodus. **Nog te komen:**
 
-* het afronden van de **[referentiefirmware](https://github.com/ssbingo/pond-aeration-esp32-firmware)**
-  voor de Waveshare ESP32-S3-POE-ETH-8DI-8RO — de ESP32-backend aan de adapterzijde is aanwezig; de
+* de **[referentiefirmware](https://ssbingo.github.io/pond-aeration-flash/)** voor de Waveshare
+  ESP32-S3-POE-ETH-8DI-8RO is beschikbaar en wordt vanaf de flash-pagina in de browser geflasht
+  (Chrome/Edge, geen extra software) — de ESP32-backend aan de adapterzijde is aanwezig; de
   firmwarebasis (Ethernet, relais, knoppen op digitale ingangen, HTTP/WS-API, failsafe op het apparaat
-  zelf, mobielvriendelijke web-UI op poort 80) is vastgelegd, met de referentiesensoren (opgeloste
-  zuurstof, luchtleidingdruk, watertemperatuur — zie
-  [dev/hardware/sensors.md](../../dev/hardware/sensors.md)) als volgende stap;
+  zelf, mobielvriendelijke web-UI op poort 80) staat vast, met de referentiesensoren (opgeloste
+  zuurstof, luchtleidingdruk, watertemperatuur — zie de sectie [Sensoren](#sensoren)) als volgende
+  stap;
 * een daaropvolgende **vis-2-widget-adapter** voor bediening en bewaking.
 
 Zie [PROJECT_PLAN.md](../../PROJECT_PLAN.md) voor het volledige, op mijlpalen gebaseerde plan.
