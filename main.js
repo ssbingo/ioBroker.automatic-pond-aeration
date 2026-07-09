@@ -1162,6 +1162,58 @@ class AutomaticPondAeration extends utils.Adapter {
 	}
 
 	/**
+	 * Live "test connection" to the ESP32 for the admin: probe `GET /api/info` at the given host/port
+	 * and report whether the device is reachable plus its firmware/protocol and compatibility. The
+	 * admin cannot reach the device directly (CORS), so it asks the running instance to do it.
+	 *
+	 * @param {ioBroker.Message} obj - the sendTo message with { host, port, token }
+	 * @returns {Promise<void>}
+	 */
+	async handleTestEsp32(obj) {
+		const respond = payload => obj.callback && this.sendTo(obj.from, obj.command, payload, obj.callback);
+		const msg = obj.message && typeof obj.message === 'object' ? obj.message : {};
+		const host = typeof msg.host === 'string' ? msg.host.trim() : '';
+		const port = Number(msg.port) || 80;
+		if (!host) {
+			respond({ ok: false, error: 'no host/IP configured' });
+			return;
+		}
+		const { buildUrl, authHeaders } = require('./lib/hal/esp32-protocol');
+		const { evaluateFirmware } = require('./lib/firmware-compat');
+		const controller = new AbortController();
+		const timer = this.setTimeout(() => controller.abort(), 5000);
+		try {
+			const res = await fetch(buildUrl(host, port, '/api/info'), {
+				headers: { ...authHeaders(msg.token || '') },
+				signal: controller.signal,
+			});
+			if (!res.ok) {
+				respond({ ok: false, error: `HTTP ${res.status}` });
+				return;
+			}
+			// JSON.parse (not res.json()) so `info` is typed `any` — the /api/info shape is dynamic and
+			// a non-JSON body simply throws into the catch below (= "not our firmware").
+			const info = JSON.parse(await res.text());
+			const verdict = evaluateFirmware(info && info.fw, info && info.protocol);
+			this.log.debug(
+				`ESP32 test to ${host}:${port} → ${info && info.device} v${info && info.fw} (protocol ${info && info.protocol}).`,
+			);
+			respond({
+				ok: true,
+				device: info && info.device,
+				fw: info && info.fw,
+				protocol: info && info.protocol,
+				compatible: verdict.compatible,
+				level: verdict.level,
+			});
+		} catch (e) {
+			respond({ ok: false, error: e && e.name === 'AbortError' ? 'timeout (no answer within 5 s)' : e.message });
+		} finally {
+			this.clearTimeout(timer);
+		}
+	}
+
+	/**
 	 * Handle messages sent from the admin UI (sendTo). Placeholder for the discovery,
 	 * geocoding and valve-test handlers added in later milestones.
 	 *
@@ -1183,6 +1235,9 @@ class AutomaticPondAeration extends utils.Adapter {
 				break;
 			case 'discoverFeederSwitches':
 				this.handleDiscoverFeeder(obj).catch(e => this.log.warn(`Feeder discovery failed: ${e.message}`));
+				break;
+			case 'testEsp32':
+				this.handleTestEsp32(obj).catch(e => this.log.warn(`ESP32 connection test failed: ${e.message}`));
 				break;
 			default:
 				this.log.debug(`Unknown admin message command: ${obj.command}`);

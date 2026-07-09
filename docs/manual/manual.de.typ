@@ -472,6 +472,16 @@ dazwischen.
     pollen.],
 )
 
+#tipbox("Host, Port und „Verbindung testen“")[
+  Tragen Sie *Host / IP* des ESP32 ein (im Router oder am Gerätedisplay ablesbar). Lassen Sie den
+  *Port* bei *80* — die Referenz-Firmware lauscht immer auf Port 80; ein anderer Wert funktioniert nur
+  mit einem Reverse-Proxy davor. Mit *Verbindung testen* lässt die laufende Instanz das Gerät
+  kontaktieren: Sie bestätigt Host und Port und zeigt die Firmware-Version. Hinweis: Die Zuordnung je
+  Punkt folgt dem gewählten Backend — *ESP32-Relaiskanäle erscheinen nur, wenn das Backend
+  `ESP32 (direct)` ist*; beim ioBroker-Datenpunkt-Backend wird jeder Punkt einem ioBroker-Datenpunkt
+  zugeordnet.
+]
+
 #safety("Die Ausfallsicherung liegt auf dem Gerät")[
   Der Adapter sendet einen *Heartbeat*; bleibt er aus (Netz oder ioBroker weg), schützt die Firmware
   den Teich von selbst — sie öffnet das Notventil und schaltet die Pumpe ab und erzwingt den

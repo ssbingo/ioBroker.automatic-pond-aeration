@@ -68,10 +68,8 @@ declare global {
 			controlBackend: 'iobroker' | 'esp32';
 			/** ESP32 host/IP (used when controlBackend is "esp32"). */
 			esp32Host: string;
-			/** ESP32 HTTP port. */
+			/** ESP32 HTTP port (the reference firmware always serves on 80; configurable only for a reverse proxy). */
 			esp32Port: number;
-			/** Use the ESP32 WebSocket status stream in addition to HTTP polling. */
-			esp32UseWebsocket: boolean;
 			/** Optional ESP32 auth token (encrypted). */
 			esp32AuthToken: string;
 			/** ESP32 relay channel (0–7) wired to the emergency valve. */

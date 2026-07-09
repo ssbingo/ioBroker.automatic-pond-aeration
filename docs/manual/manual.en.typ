@@ -432,6 +432,15 @@ With the board flashed and wired, the adapter can drive it directly — no relay
   [Save. The adapter checks the firmware, pushes the safety configuration, and starts polling.],
 )
 
+#tipbox("Host, port and “Test connection”")[
+  Enter the ESP32's *host / IP* (find it in your router or on the device's own screen). Leave the
+  *port* at *80* — the reference firmware always serves on port 80; a different value only works with a
+  reverse proxy in front. Click *Test connection* to have the running instance contact the device: it
+  confirms host and port are right and shows the firmware version. Note: the per-point mapping follows
+  the chosen backend — *ESP32 relay channels appear only when the backend is `ESP32 (direct)`*; with
+  the ioBroker-state backend every point maps to an ioBroker state.
+]
+
 #safety("The failsafe lives on the device")[
   The adapter sends a *heartbeat*; if it stops (network or ioBroker down) the firmware protects the
   pond on its own — it opens the emergency valve and switches the pump off, and it enforces the

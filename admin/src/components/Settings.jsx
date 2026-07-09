@@ -164,6 +164,33 @@ function Settings(props) {
 	const native = props.native || {};
 	const set = (attr, value) => props.onChange(attr, value);
 	const [tab, setTab] = useState(0);
+	// Live "test connection" to the ESP32 (via the running instance; browsers cannot reach the
+	// device directly due to CORS). Confirms host + port are right and shows the firmware version.
+	const [espTest, setEspTest] = useState(null);
+	const [espTesting, setEspTesting] = useState(false);
+	const testEsp32 = async () => {
+		setEspTesting(true);
+		setEspTest(null);
+		try {
+			const r = await props.socket.sendTo(props.instanceId, 'testEsp32', {
+				host: native.esp32Host,
+				port: native.esp32Port || 80,
+				token: native.esp32AuthToken || '',
+			});
+			if (r && r.ok) {
+				setEspTest({
+					ok: true,
+					msg: `${I18n.t('Connected')}: ${r.device || 'ESP32'} — Firmware v${r.fw || '?'} (${I18n.t('protocol')} ${r.protocol})${r.compatible ? '' : ' — ' + I18n.t('incompatible protocol!')}`,
+				});
+			} else {
+				setEspTest({ ok: false, msg: `${I18n.t('Not reachable')}${r && r.error ? ` (${r.error})` : ''}` });
+			}
+		} catch {
+			setEspTest({ ok: false, msg: I18n.t('Not reachable — is the adapter instance running?') });
+		} finally {
+			setEspTesting(false);
+		}
+	};
 
 	const points = Array.isArray(native.points) ? native.points : [];
 	const groups = Array.isArray(native.groups) ? native.groups : [];
@@ -265,8 +292,24 @@ function Settings(props) {
 						<Box sx={{ mt: 2, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
 							<TextField variant="standard" label={I18n.t('ESP32 host / IP')} value={native.esp32Host || ''} onChange={e => set('esp32Host', e.target.value)} />
 							<Num label={I18n.t('ESP32 port')} value={native.esp32Port} onChange={v => set('esp32Port', v)} min={1} />
-							<Sw label={I18n.t('Use WebSocket')} checked={native.esp32UseWebsocket} onChange={v => set('esp32UseWebsocket', v)} />
+							<Button variant="outlined" size="small" onClick={testEsp32} disabled={!native.esp32Host || espTesting}>
+								{espTesting ? I18n.t('Testing…') : I18n.t('Test connection')}
+							</Button>
 						</Box>
+						<Typography variant="caption" color="textSecondary" sx={{ display: 'block', mt: 0.5 }}>
+							{I18n.t('Host / IP is the ESP32 address on your network (find it in your router or on the device screen). The reference firmware always serves on port 80 — leave the port at 80 unless you run a reverse proxy in front of the device. Use “Test connection” to confirm the device is reachable and see its firmware version.')}
+						</Typography>
+						{native.esp32Port && Number(native.esp32Port) !== 80 ? (
+							<Typography variant="caption" color="warning.main" sx={{ display: 'block' }}>
+								{I18n.t('Warning: the firmware only listens on port 80. A different port will not connect unless a reverse proxy forwards it.')}
+							</Typography>
+						) : null}
+						{espTest ? (
+							<Typography variant="caption" sx={{ display: 'block', mt: 0.5, fontWeight: 600 }} color={espTest.ok ? 'success.main' : 'error.main'}>
+								{espTest.ok ? '✓ ' : '✗ '}
+								{espTest.msg}
+							</Typography>
+						) : null}
 						<Box sx={{ mt: 1, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
 							<Num label={I18n.t('Emergency-valve relay (0–7)')} value={native.esp32EmergencyRelay} onChange={v => set('esp32EmergencyRelay', v)} min={0} />
 							<Num label={I18n.t('Pump relay (0–7)')} value={native.esp32PumpRelay} onChange={v => set('esp32PumpRelay', v)} min={0} />
@@ -306,10 +349,13 @@ function Settings(props) {
 							// A manual override button is only allowed on an aeration-valve channel. On the
 							// ESP32 pump / emergency-valve relay channels it is force-disabled in lib/config.js;
 							// mirror that here by greying the control out (defaults must match the backend: 7/6).
+							// ESP32 relay channels may only be picked when the ESP32 backend is selected; with the
+							// ioBroker-state backend a point always maps to an ioBroker state (see lib/config.js).
+							const espBackend = native.controlBackend === 'esp32';
 							const pumpCh = native.esp32PumpRelay ?? 7;
 							const emergencyCh = native.esp32EmergencyRelay ?? 6;
 							const buttonReserved =
-								p.backendType === 'esp32' && (p.espChannel === pumpCh || p.espChannel === emergencyCh);
+								espBackend && p.backendType === 'esp32' && (p.espChannel === pumpCh || p.espChannel === emergencyCh);
 							return (
 							<TableRow key={p.id || i}>
 								<TableCell>
@@ -319,19 +365,25 @@ function Settings(props) {
 									<Switch checked={p.enabled !== false} onChange={e => updatePoint(i, 'enabled', e.target.checked)} />
 								</TableCell>
 								<TableCell>
-									<Sel
-										label=""
-										value={p.backendType || 'iobroker'}
-										onChange={v => updatePoint(i, 'backendType', v)}
-										sx={{ minWidth: 110 }}
-										options={[
-											{ value: 'iobroker', label: 'ioBroker' },
-											{ value: 'esp32', label: 'ESP32' },
-										]}
-									/>
+									{espBackend ? (
+										<Sel
+											label=""
+											value={p.backendType || 'iobroker'}
+											onChange={v => updatePoint(i, 'backendType', v)}
+											sx={{ minWidth: 110 }}
+											options={[
+												{ value: 'iobroker', label: 'ioBroker' },
+												{ value: 'esp32', label: 'ESP32' },
+											]}
+										/>
+									) : (
+										<Typography variant="body2" color="text.secondary">
+											{I18n.t('ioBroker state')}
+										</Typography>
+									)}
 								</TableCell>
 								<TableCell sx={{ minWidth: 240 }}>
-									{p.backendType === 'esp32' ? (
+									{espBackend && p.backendType === 'esp32' ? (
 										<Num label={I18n.t('Channel')} value={p.espChannel} onChange={v => updatePoint(i, 'espChannel', v)} min={0} />
 									) : (
 										<ObjectSelect label="" value={p.objectId} onChange={v => updatePoint(i, 'objectId', v)} {...objProps} />

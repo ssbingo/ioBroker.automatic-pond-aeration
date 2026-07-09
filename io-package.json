@@ -1,20 +1,20 @@
 {
 	"common": {
 		"name": "automatic-pond-aeration",
-		"version": "0.1.0",
+		"version": "0.1.1",
 		"news": {
-			"0.1.0": {
-				"en": "Milestone 0.1.0 toward the first release: the ESP32 direct-control features (device web UI, autonomous schedule, OTA, RTC) and the adapter↔firmware compatibility handling are feature-complete; plus an internal type-check fix. Still in active development.",
-				"de": "Meilenstein 0.1.0 auf dem Weg zur ersten Veröffentlichung: Die ESP32-Direktsteuerung (Geräte-Weboberfläche, autonome Zeitpläne, OTA, RTC) und die Handhabung der Adapter↔Firmware-Kompatibilität sind funktionsvollständig; dazu eine interne Typprüfungs-Korrektur. Weiterhin in aktiver Entwicklung.",
-				"ru": "Веха 0.1.0 на пути к первому выпуску: прямое управление ESP32 (веб-интерфейс устройства, автономное расписание, OTA, RTC) и обработка совместимости адаптера↔прошивки функционально завершены; плюс внутреннее исправление проверки типов. По-прежнему в активной разработке.",
-				"pt": "Marco 0.1.0 rumo ao primeiro lançamento: o controlo direto do ESP32 (interface web do dispositivo, agendamento autónomo, OTA, RTC) e o tratamento da compatibilidade adaptador↔firmware estão completos; além de uma correção interna de verificação de tipos. Ainda em desenvolvimento ativo.",
-				"nl": "Mijlpaal 0.1.0 op weg naar de eerste release: de directe ESP32-aansturing (apparaat-webinterface, autonoom schema, OTA, RTC) en de afhandeling van adapter↔firmware-compatibiliteit zijn functioneel compleet; plus een interne typecontrole-fix. Nog steeds in actieve ontwikkeling.",
-				"fr": "Jalon 0.1.0 vers la première publication : le contrôle direct de l'ESP32 (interface web de l'appareil, planification autonome, OTA, RTC) et la gestion de la compatibilité adaptateur↔firmware sont complets ; plus une correction interne de vérification de types. Toujours en développement actif.",
-				"it": "Traguardo 0.1.0 verso il primo rilascio: il controllo diretto dell'ESP32 (interfaccia web del dispositivo, pianificazione autonoma, OTA, RTC) e la gestione della compatibilità adattatore↔firmware sono completi; più una correzione interna del controllo dei tipi. Ancora in sviluppo attivo.",
-				"es": "Hito 0.1.0 camino de la primera publicación: el control directo del ESP32 (interfaz web del dispositivo, programación autónoma, OTA, RTC) y la gestión de la compatibilidad adaptador↔firmware están completos; además de una corrección interna de comprobación de tipos. Todavía en desarrollo activo.",
-				"pl": "Kamień milowy 0.1.0 w drodze do pierwszego wydania: bezpośrednie sterowanie ESP32 (interfejs webowy urządzenia, autonomiczny harmonogram, OTA, RTC) oraz obsługa zgodności adapter↔firmware są kompletne; plus wewnętrzna poprawka sprawdzania typów. Wciąż w aktywnym rozwoju.",
-				"uk": "Віха 0.1.0 на шляху до першого випуску: пряме керування ESP32 (вебінтерфейс пристрою, автономний розклад, OTA, RTC) та обробка сумісності адаптер↔прошивка функціонально завершені; плюс внутрішнє виправлення перевірки типів. Досі в активній розробці.",
-				"zh-cn": "迈向首个正式发布的里程碑 0.1.0：ESP32 直连控制（设备网页界面、自主计划、OTA、RTC）以及适配器↔固件兼容性处理已功能完备；另含一处内部类型检查修复。仍在积极开发中。"
+			"0.1.1": {
+				"en": "ESP32 configuration UX: aeration points offer ESP32 relay channels only when the ESP32 backend is selected; a new “Test connection” button verifies the device and shows its firmware version; the port field is explained (the firmware always uses port 80); the non-functional “Use WebSocket” toggle was removed.",
+				"de": "ESP32-Konfiguration verständlicher: Belüftungsstellen bieten ESP32-Relaiskanäle nur, wenn das ESP32-Backend gewählt ist; ein neuer „Verbindung testen“-Knopf prüft das Gerät und zeigt die Firmware-Version; das Port-Feld wird erklärt (die Firmware nutzt immer Port 80); der funktionslose „Use WebSocket“-Schalter wurde entfernt.",
+				"ru": "Улучшена настройка ESP32: точки аэрации предлагают релейные каналы ESP32 только при выбранном бэкенде ESP32; новая кнопка «Проверить соединение» проверяет устройство и показывает версию прошивки; поле порта пояснено (прошивка всегда использует порт 80); нефункциональный переключатель «Use WebSocket» удалён.",
+				"pt": "UX de configuração ESP32: os pontos de arejamento oferecem canais de relé ESP32 apenas quando o backend ESP32 está selecionado; um novo botão “Testar ligação” verifica o dispositivo e mostra a versão do firmware; o campo da porta é explicado (o firmware usa sempre a porta 80); o interruptor não funcional “Use WebSocket” foi removido.",
+				"nl": "ESP32-configuratie duidelijker: beluchtingspunten bieden ESP32-relaiskanalen alleen als de ESP32-backend is gekozen; een nieuwe knop “Verbinding testen” controleert het apparaat en toont de firmwareversie; het poortveld wordt uitgelegd (de firmware gebruikt altijd poort 80); de niet-functionele schakelaar “Use WebSocket” is verwijderd.",
+				"fr": "UX de configuration ESP32 : les points d'aération proposent des canaux de relais ESP32 uniquement quand le backend ESP32 est sélectionné ; un nouveau bouton « Tester la connexion » vérifie l'appareil et affiche la version du firmware ; le champ du port est expliqué (le firmware utilise toujours le port 80) ; l'interrupteur non fonctionnel « Use WebSocket » a été supprimé.",
+				"it": "UX di configurazione ESP32: i punti di aerazione offrono canali relè ESP32 solo quando è selezionato il backend ESP32; un nuovo pulsante “Prova connessione” verifica il dispositivo e mostra la versione del firmware; il campo della porta è spiegato (il firmware usa sempre la porta 80); l'interruttore non funzionante “Use WebSocket” è stato rimosso.",
+				"es": "UX de configuración ESP32: los puntos de aireación ofrecen canales de relé ESP32 solo cuando el backend ESP32 está seleccionado; un nuevo botón «Probar conexión» verifica el dispositivo y muestra la versión del firmware; el campo del puerto se explica (el firmware siempre usa el puerto 80); el interruptor no funcional «Use WebSocket» se eliminó.",
+				"pl": "Lepsza konfiguracja ESP32: punkty napowietrzania oferują kanały przekaźników ESP32 tylko przy wybranym backendzie ESP32; nowy przycisk „Testuj połączenie” sprawdza urządzenie i pokazuje wersję firmware; pole portu jest objaśnione (firmware zawsze używa portu 80); niedziałający przełącznik „Use WebSocket” został usunięty.",
+				"uk": "Зручніша конфігурація ESP32: точки аерації пропонують релейні канали ESP32 лише коли обрано бекенд ESP32; нова кнопка «Перевірити з'єднання» перевіряє пристрій і показує версію прошивки; поле порту пояснено (прошивка завжди використовує порт 80); нефункціональний перемикач «Use WebSocket» видалено.",
+				"zh-cn": "ESP32 配置更清晰：仅当选择 ESP32 后端时，增氧点才提供 ESP32 继电器通道；新增“测试连接”按钮可检测设备并显示固件版本；端口字段已加说明（固件始终使用 80 端口）；无实际作用的“Use WebSocket”开关已移除。"
 			}
 		},
 		"titleLang": {
@@ -93,7 +93,6 @@
 		"controlBackend": "iobroker",
 		"esp32Host": "",
 		"esp32Port": 80,
-		"esp32UseWebsocket": true,
 		"esp32AuthToken": "",
 		"esp32EmergencyRelay": 6,
 		"esp32PumpRelay": 7,
