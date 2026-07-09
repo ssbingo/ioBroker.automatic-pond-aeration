@@ -489,6 +489,22 @@ dazwischen.
   ausgeführt; sie bleibt beim Adapter.
 ]
 
+#tipbox("Welche Firmware zu welchem Adapter gehört")[
+  Adapter und Firmware passen über eine *Protokoll-Version* zusammen — das ist der harte Vertrag, nicht
+  die exakte Release-Nummer; ein Firmware-Bugfix erzwingt also keinen neuen Adapter. Jede
+  Adapter-Version nennt zusätzlich eine *empfohlene* und *minimale* Firmware:
+
+  #dtable(
+    [Adapter-Version], [Firmware],
+    [0.0.20 +], [Protokoll 1 · empfohlen v1.1.0 · Minimum v1.0.0],
+  )
+
+  Beim Verbinden liest der Adapter die Version des Geräts und veröffentlicht sie als
+  `info.deviceFirmware` mit einem `info.firmwareCompatible`-Flag; eine Protokoll-Abweichung wird als
+  Fehler protokolliert, veraltete Firmware als Warnung. Der ESP32-Reiter zeigt die empfohlene Version
+  und verlinkt die Firmware-Releases.
+]
+
 #tipbox("Geräte-Weboberfläche (Port 80)")[
   Öffnen Sie die IP des Boards im Browser — die Firmware liefert fünf eigenständige Seiten (ohne
   Cloud, ohne App): *Home* (Relais/Sensoren ansehen und Kanäle vor Ort schalten), *Schedule*

@@ -131,6 +131,13 @@ parties que tu utilises.
     activé, l'adaptateur envoie aussi tes horaires à l'appareil ; si la connexion est perdue,
     l'ESP32 continue de les exécuter lui-même à l'aide de son horloge NTP (le verrouillage de
     sécurité dead-head reste actif). La séquence cyclique reste gérée par l'adaptateur.
+  - **Compatibilité du firmware** – l'adaptateur et le firmware sont appariés par une **version du
+    protocole** (le contrat strict), et non par des numéros de version exacts. Cette version de
+    l'adaptateur parle le **protocole 1** et **recommande le firmware v1.1.0** (minimum v1.0.0) ;
+    l'onglet de configuration ESP32 l'affiche et renvoie aux [versions du firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware/releases). À la
+    connexion, la version de l'appareil et un indicateur de compatibilité sont publiés sous
+    `info.deviceFirmware` et `info.firmwareCompatible`, et toute incompatibilité de protocole est
+    consignée dans le journal.
 - **Intervalle d'interrogation (s)** – à quelle fréquence l'état du backend est interrogé (p. ex.
   `30`).
 

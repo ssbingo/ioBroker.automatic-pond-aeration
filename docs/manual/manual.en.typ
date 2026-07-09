@@ -448,6 +448,22 @@ With the board flashed and wired, the adapter can drive it directly — no relay
   The cyclic round-robin *sequence* is not run autonomously; it stays with the adapter.
 ]
 
+#tipbox("Which firmware belongs to which adapter")[
+  The adapter and the firmware are matched by a *protocol version* — the hard contract — not by exact
+  release numbers, so a firmware bug-fix does not force a new adapter. Each adapter version also names a
+  *recommended* and *minimum* firmware for convenience:
+
+  #dtable(
+    [Adapter version], [Firmware],
+    [0.0.20 +], [protocol 1 · recommended v1.1.0 · minimum v1.0.0],
+  )
+
+  On connect the adapter reads the device's version and publishes it as `info.deviceFirmware` with a
+  `info.firmwareCompatible` flag; a protocol mismatch is logged as an error and an outdated firmware as
+  a warning. The ESP32 configuration tab shows the recommended version and links to the firmware
+  releases.
+]
+
 #tipbox("On-device web UI (port 80)")[
   Open the board's IP in a browser — the firmware serves five self-contained pages (no cloud, no app):
   *Home* (watch the relays / sensors and toggle channels on site), *Schedule* (view / edit the

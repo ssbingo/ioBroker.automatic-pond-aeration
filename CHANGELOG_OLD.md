@@ -6,6 +6,9 @@
 	@alcalzone/release-script.
 -->
 
+### 0.0.10 (2026-07-07)
+* (ssbingo) Admin UI fixes and polish: the OpenStreetMap location map now renders correctly (the Leaflet stylesheet was missing) and is capped to one third of the page width; the Feeder and Notifications tabs now discover the available `automatic-feeder` / messaging instances via dropdowns (client-side, no running adapter required); clearer card-based layout with per-tab headings
+
 ### 0.0.9 (2026-07-07)
 * (ssbingo) Full configuration UI (React admin): a tabbed settings page covering general/backend, aeration points, groups, control (round-robin + schedules), sensors, location (OpenStreetMap map + on-demand geocoding), feeder coupling (with switch discovery) and safety (pump + emergency valve). Everything built so far can now be configured and tested from the admin
 

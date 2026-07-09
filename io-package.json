@@ -1,20 +1,20 @@
 {
 	"common": {
 		"name": "automatic-pond-aeration",
-		"version": "0.0.19",
+		"version": "0.0.20",
 		"news": {
-			"0.0.19": {
-				"en": "Autonomous schedule on the ESP32: enable it and the device keeps running your time schedules on its own (against its NTP clock) if the adapter connection drops — the pond stays aerated while ioBroker is down. The on-device dead-head safety interlock still applies.",
-				"de": "Autonome Zeitpläne auf dem ESP32: aktivieren Sie sie, und das Gerät führt Ihre Zeitpläne selbstständig weiter aus (anhand seiner NTP-Uhr), falls die Adapter-Verbindung ausfällt — der Teich bleibt belüftet, während ioBroker nicht läuft. Die geräteinterne Dead-Head-Sicherheitsverriegelung gilt weiterhin.",
-				"ru": "Автономное расписание на ESP32: включите его, и устройство самостоятельно продолжает выполнять ваши расписания (по своим часам NTP), если прерывается соединение с адаптером — пруд остаётся аэрируемым, пока ioBroker не работает. Встроенная в устройство защитная блокировка dead-head по-прежнему действует.",
-				"pt": "Agendamento autónomo no ESP32: ative-o e o dispositivo continua a executar sozinho os seus agendamentos horários (segundo o seu relógio NTP) se a ligação do adaptador falhar — o lago permanece arejado enquanto o ioBroker está fora do ar. O encravamento de segurança dead-head no próprio dispositivo continua a aplicar-se.",
-				"nl": "Autonoom schema op de ESP32: schakel het in en het apparaat blijft uw schema's zelf uitvoeren (aan de hand van zijn NTP-klok) als de adapterverbinding wegvalt — de vijver blijft belucht terwijl ioBroker uit is. De dead-head-veiligheidsvergrendeling op het apparaat zelf blijft van kracht.",
-				"fr": "Horaire autonome sur l'ESP32 : activez-le et l'appareil continue d'exécuter vos horaires par lui-même (d'après son horloge NTP) si la connexion de l'adaptateur est perdue — le bassin reste aéré pendant que ioBroker est hors service. Le verrouillage de sécurité dead-head intégré à l'appareil reste actif.",
-				"it": "Pianificazione autonoma sull'ESP32: abilitala e il dispositivo continua a eseguire da solo le tue pianificazioni (in base al suo orologio NTP) se la connessione dell'adattatore cade — il laghetto resta aerato mentre ioBroker è offline. L'interblocco di sicurezza dead-head integrato nel dispositivo resta valido.",
-				"es": "Programación autónoma en el ESP32: actívala y el dispositivo sigue ejecutando por sí solo tus programaciones horarias (según su reloj NTP) si se pierde la conexión del adaptador — el estanque permanece aireado mientras ioBroker está caído. El enclavamiento de seguridad dead-head en el propio dispositivo sigue aplicándose.",
-				"pl": "Autonomiczny harmonogram na ESP32: włącz go, a urządzenie samodzielnie kontynuuje realizację Twoich harmonogramów (według własnego zegara NTP), jeśli połączenie z adapterem zostanie przerwane — staw pozostaje napowietrzany, gdy ioBroker nie działa. Wbudowana w urządzenie blokada bezpieczeństwa dead-head nadal obowiązuje.",
-				"uk": "Автономний розклад на ESP32: увімкніть його, і пристрій самостійно продовжує виконувати ваші розклади (за власним годинником NTP), якщо з'єднання з адаптером переривається — ставок залишається аерованим, поки ioBroker не працює. Вбудоване у пристрій захисне блокування dead-head продовжує діяти.",
-				"zh-cn": "ESP32 上的自主计划：启用后，如果适配器连接中断，设备会（依据其 NTP 时钟）自行继续运行你的时间计划 — 在 ioBroker 停机期间池塘仍保持增氧。设备本地的防憋压安全联锁仍然有效。"
+			"0.0.20": {
+				"en": "Firmware compatibility made visible: the adapter declares the ESP32 firmware it expects (the protocol version is the hard contract, plus a recommended and minimum firmware), shows it in the ESP32 tab with a link to the releases, and publishes the connected device's version and a compatibility flag as info.deviceFirmware / info.firmwareCompatible.",
+				"de": "Firmware-Kompatibilität sichtbar gemacht: Der Adapter deklariert die erwartete ESP32-Firmware (die Protokoll-Version ist der harte Vertrag, dazu eine empfohlene und eine minimale Firmware), zeigt sie im ESP32-Tab mit einem Link zu den Releases an und veröffentlicht die Version des verbundenen Geräts und ein Kompatibilitäts-Flag als info.deviceFirmware / info.firmwareCompatible.",
+				"ru": "Совместимость прошивки стала наглядной: адаптер объявляет ожидаемую прошивку ESP32 (версия протокола — это жёсткий контракт, плюс рекомендуемая и минимальная прошивка), показывает её на вкладке ESP32 со ссылкой на релизы и публикует версию подключённого устройства и флаг совместимости как info.deviceFirmware / info.firmwareCompatible.",
+				"pt": "Compatibilidade de firmware tornada visível: o adaptador declara o firmware ESP32 que espera (a versão do protocolo é o contrato rígido, além de um firmware recomendado e mínimo), mostra-o na aba ESP32 com um link para as versões e publica a versão do dispositivo conectado e um sinalizador de compatibilidade como info.deviceFirmware / info.firmwareCompatible.",
+				"nl": "Firmwarecompatibiliteit zichtbaar gemaakt: de adapter geeft aan welke ESP32-firmware hij verwacht (de protocolversie is het harde contract, plus een aanbevolen en een minimale firmware), toont dit op het ESP32-tabblad met een link naar de releases en publiceert de versie van het verbonden apparaat en een compatibiliteitsvlag als info.deviceFirmware / info.firmwareCompatible.",
+				"fr": "Compatibilité du firmware rendue visible : l'adaptateur déclare le firmware ESP32 qu'il attend (la version du protocole est le contrat strict, plus un firmware recommandé et minimal), l'affiche dans l'onglet ESP32 avec un lien vers les versions et publie la version de l'appareil connecté et un indicateur de compatibilité sous info.deviceFirmware / info.firmwareCompatible.",
+				"it": "Compatibilità del firmware resa visibile: l'adattatore dichiara il firmware ESP32 che si aspetta (la versione del protocollo è il contratto vincolante, più un firmware consigliato e uno minimo), lo mostra nella scheda ESP32 con un link alle release e pubblica la versione del dispositivo collegato e un flag di compatibilità come info.deviceFirmware / info.firmwareCompatible.",
+				"es": "Compatibilidad del firmware hecha visible: el adaptador declara el firmware ESP32 que espera (la versión del protocolo es el contrato estricto, además de un firmware recomendado y uno mínimo), lo muestra en la pestaña ESP32 con un enlace a las versiones y publica la versión del dispositivo conectado y una marca de compatibilidad como info.deviceFirmware / info.firmwareCompatible.",
+				"pl": "Zgodność firmware uczyniona widoczną: adapter deklaruje oczekiwane firmware ESP32 (wersja protokołu to twardy kontrakt, plus zalecane i minimalne firmware), pokazuje je w zakładce ESP32 z linkiem do wydań oraz publikuje wersję podłączonego urządzenia i flagę zgodności jako info.deviceFirmware / info.firmwareCompatible.",
+				"uk": "Сумісність прошивки стала наочною: адаптер оголошує очікувану прошивку ESP32 (версія протоколу — це жорсткий контракт, плюс рекомендована та мінімальна прошивка), показує її на вкладці ESP32 з посиланням на релізи та публікує версію підключеного пристрою і прапорець сумісності як info.deviceFirmware / info.firmwareCompatible.",
+				"zh-cn": "固件兼容性变得可见：适配器声明它所期望的 ESP32 固件（协议版本是硬性约定，另加推荐固件和最低固件），在 ESP32 选项卡中显示并附带指向发布页的链接，并将已连接设备的版本和一个兼容性标志发布为 info.deviceFirmware / info.firmwareCompatible。"
 			}
 		},
 		"titleLang": {
@@ -186,6 +186,32 @@
 			"common": {
 				"role": "indicator.connected",
 				"name": "Adapter running / configuration valid",
+				"type": "boolean",
+				"read": true,
+				"write": false,
+				"def": false
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.deviceFirmware",
+			"type": "state",
+			"common": {
+				"role": "text",
+				"name": "ESP32 firmware version reported by the connected device",
+				"type": "string",
+				"read": true,
+				"write": false,
+				"def": ""
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.firmwareCompatible",
+			"type": "state",
+			"common": {
+				"role": "indicator",
+				"name": "ESP32 firmware protocol is compatible with this adapter",
 				"type": "boolean",
 				"read": true,
 				"write": false,

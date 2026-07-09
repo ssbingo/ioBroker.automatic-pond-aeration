@@ -124,6 +124,12 @@ części, których używasz.
     adapter wysyła też Twoje harmonogramy do urządzenia; jeśli połączenie zostanie przerwane, ESP32
     samodzielnie kontynuuje ich realizację, korzystając z własnego zegara NTP (blokada
     bezpieczeństwa dead-head nadal obowiązuje). Sekwencja cykliczna pozostaje po stronie adaptera.
+  - **Zgodność firmware** – adapter i firmware są dopasowywane za pomocą **wersji protokołu** (twardy
+    kontrakt), a nie dokładnych numerów wydań. Ta wersja adaptera mówi **protokołem 1** i **zaleca
+    firmware v1.1.0** (minimum v1.0.0); zakładka konfiguracji ESP32 pokazuje to i odsyła do
+    [wydań firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware/releases). Po połączeniu wersja urządzenia i flaga zgodności są publikowane jako
+    `info.deviceFirmware` i `info.firmwareCompatible`, a każda niezgodność protokołu jest zapisywana
+    w dzienniku.
 - **Interwał odpytywania (s)** – jak często odpytywany jest status backendu (np. `30`).
 
 ### Punkty napowietrzania

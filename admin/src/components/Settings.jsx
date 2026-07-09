@@ -31,6 +31,7 @@ import { LocalizationProvider, DatePicker, TimePicker } from '@mui/x-date-picker
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { I18n } from '@iobroker/adapter-react-v5';
+import { FIRMWARE_RECOMMENDED, FIRMWARE_RELEASES, SUPPORTED_PROTOCOL } from '../../../lib/firmware-compat';
 import ObjectSelect from './ObjectSelect';
 import LocationPicker from './LocationPicker';
 import FeederTab from './FeederTab';
@@ -248,6 +249,19 @@ function Settings(props) {
 				</Box>
 				{native.controlBackend === 'esp32' ? (
 					<>
+						<Box sx={{ mt: 2, p: 1.5, borderRadius: 1, border: '1px solid', borderColor: 'divider', bgcolor: 'action.hover' }}>
+							<Typography variant="body2">
+								🔌 {I18n.t('This backend requires the ESP32 reference firmware.')}{' '}
+								{I18n.t('Recommended firmware for this adapter version:')} <b>v{FIRMWARE_RECOMMENDED}</b>{' '}
+								({I18n.t('protocol')} {SUPPORTED_PROTOCOL}).{' '}
+								<a href={FIRMWARE_RELEASES} target="_blank" rel="noopener noreferrer">
+									{I18n.t('Firmware & releases ↗')}
+								</a>
+							</Typography>
+							<Typography variant="caption" color="textSecondary" sx={{ display: 'block', mt: 0.5 }}>
+								{I18n.t('The device must speak the same protocol version. The connected firmware version and a compatibility flag are published under info.deviceFirmware / info.firmwareCompatible, and any mismatch is written to the log.')}
+							</Typography>
+						</Box>
 						<Box sx={{ mt: 2, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
 							<TextField variant="standard" label={I18n.t('ESP32 host / IP')} value={native.esp32Host || ''} onChange={e => set('esp32Host', e.target.value)} />
 							<Num label={I18n.t('ESP32 port')} value={native.esp32Port} onChange={v => set('esp32Port', v)} min={1} />

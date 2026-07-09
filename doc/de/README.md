@@ -129,6 +129,12 @@ die Teile, die du tatsächlich nutzt.
     überträgt der Adapter auch deine Zeitpläne an das Gerät; fällt die Verbindung aus, führt der
     ESP32 sie anhand seiner NTP-Uhr selbst weiter aus (die Dead-Head-Sicherheitsverriegelung gilt
     weiterhin). Die zyklische Sequenz bleibt beim Adapter.
+  - **Firmware-Kompatibilität** – Adapter und Firmware werden über eine **Protokoll-Version** (der
+    harte Vertrag) abgeglichen, nicht über exakte Release-Nummern. Diese Adapter-Version spricht
+    **Protokoll 1** und **empfiehlt Firmware v1.1.0** (mindestens v1.0.0); der ESP32-Konfigurationstab
+    zeigt dies an und verlinkt auf die [Firmware-Releases](https://github.com/ssbingo/pond-aeration-esp32-firmware/releases). Beim Verbinden werden die Version
+    des Geräts und ein Kompatibilitäts-Flag als `info.deviceFirmware` und `info.firmwareCompatible`
+    veröffentlicht; jede Protokoll-Abweichung wird ins Log geschrieben.
 - **Abfrageintervall (s)** – wie oft der Backend-Status abgefragt wird (z. B. `30`).
 
 ### Belüftungspunkte

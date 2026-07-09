@@ -127,6 +127,12 @@ que usa.
     o adaptador também envia os seus agendamentos ao dispositivo; se a ligação cair, o ESP32
     continua a executá-los sozinho usando o seu relógio NTP (o encravamento de segurança dead-head
     continua a aplicar-se). A sequência cíclica permanece no adaptador.
+  - **Compatibilidade de firmware** – o adaptador e o firmware são correspondidos por uma **versão
+    do protocolo** (o contrato rígido), não por números de versão exatos. Esta versão do adaptador
+    fala o **protocolo 1** e **recomenda o firmware v1.1.0** (mínimo v1.0.0); a aba de configuração
+    ESP32 mostra isso e liga para as [versões do firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware/releases). Ao conectar, a versão do
+    dispositivo e um sinalizador de compatibilidade são publicados como `info.deviceFirmware` e
+    `info.firmwareCompatible`, e qualquer incompatibilidade de protocolo é escrita no log.
 - **Intervalo de sondagem (s)** – com que frequência o status do backend é consultado (por ex. `30`).
 
 ### Pontos de aeração

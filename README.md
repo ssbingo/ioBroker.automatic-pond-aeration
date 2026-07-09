@@ -131,6 +131,12 @@ you use.
     also pushes your time schedules to the device; if the connection drops, the ESP32 keeps running
     them on its own using its NTP clock (the dead-head safety interlock still applies). The cyclic
     sequence stays with the adapter.
+  - **Firmware compatibility** – the adapter and the firmware are matched by a **protocol version**
+    (the hard contract), not by exact release numbers. This adapter version speaks **protocol 1** and
+    **recommends firmware v1.1.0** (minimum v1.0.0); the admin shows this and links to the releases.
+    On connect, the device's version and a compatibility flag are published as `info.deviceFirmware`
+    and `info.firmwareCompatible`, and any protocol mismatch is written to the log. See the
+    compatibility table in the [manual](docs/manual/pond-aeration-manual.en.pdf) / firmware repo.
 - **Poll interval (s)** – how often the backend status is polled (e.g. `30`).
 
 ### Aeration points
@@ -342,6 +348,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.0.20 (2026-07-09)
+* (ssbingo) **Firmware compatibility, made visible.** The adapter now declares, in one place (`lib/firmware-compat.js`), the ESP32 firmware it expects — the **protocol version** is the hard contract, plus a **recommended** (v1.1.0) and **minimum** (v1.0.0) firmware version. The ESP32 config tab shows a note with the recommended version and a link to the firmware releases. On connect the adapter reads the device's `GET /api/info`, publishes the reported version and a compatibility flag as **`info.deviceFirmware`** / **`info.firmwareCompatible`**, and logs an error on a protocol mismatch or a warning on outdated firmware. Pure/unit-tested `evaluateFirmware`; the manual and firmware repo gained a compatibility table. 5 new admin strings in 11 languages
+
 ### 0.0.19 (2026-07-08)
 * (ssbingo) **Autonomous schedule on the ESP32.** A new *Autonomous schedule (run without ioBroker)* option (ESP32 backend) makes the adapter flatten your time schedules into per-relay-channel windows and push them to the device; if the adapter connection drops, the firmware **keeps running the schedule on its own** against its NTP clock instead of only failing safe — the pond stays aerated when ioBroker or the network is down. The on-device dead-head interlock still overrides everything and the pump only runs while at least `minOpen` valves are open; the cyclic round-robin sequence stays adapter-side. New `esp32AutonomousEnabled` config, extended `POST /api/config` (`autonomous`/`schedule`), pure/unit-tested `buildSchedulePayload`, admin toggle + 2 strings in 11 languages
 
@@ -368,9 +377,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.0.11 (2026-07-07)
 * (ssbingo) Address search diagnostics: the location search now distinguishes "no answer from the running instance" from "no result for the address", logs the raw response to the browser console and the geocode request to the adapter log — so a failing search (e.g. the instance is stopped, or an old adapter version is running) is easy to pinpoint
-
-### 0.0.10 (2026-07-07)
-* (ssbingo) Admin UI fixes and polish: the OpenStreetMap location map now renders correctly (the Leaflet stylesheet was missing) and is capped to one third of the page width; the Feeder and Notifications tabs now discover the available `automatic-feeder` / messaging instances via dropdowns (client-side, no running adapter required); clearer card-based layout with per-tab headings
 
 ---
 

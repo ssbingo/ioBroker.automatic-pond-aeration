@@ -125,6 +125,13 @@ onderdelen die je gebruikt.
     stuurt de adapter ook je schema's naar het apparaat; valt de verbinding weg, dan blijft de ESP32
     ze zelf uitvoeren met zijn NTP-klok (de dead-head-veiligheidsvergrendeling blijft van kracht).
     De cyclische sequentie blijft bij de adapter.
+  - **Firmwarecompatibiliteit** – de adapter en de firmware worden op elkaar afgestemd via een
+    **protocolversie** (het harde contract), niet op exacte versienummers. Deze adapterversie spreekt
+    **protocol 1** en **beveelt firmware v1.1.0 aan** (minimaal v1.0.0); het
+    ESP32-configuratietabblad toont dit en verwijst naar de [firmware-releases](https://github.com/ssbingo/pond-aeration-esp32-firmware/releases). Bij het
+    verbinden worden de versie van het apparaat en een compatibiliteitsvlag gepubliceerd als
+    `info.deviceFirmware` en `info.firmwareCompatible`, en elke protocolafwijking wordt naar het
+    logboek geschreven.
 - **Pollinterval (s)** – hoe vaak de backendstatus wordt opgevraagd (bijv. `30`).
 
 ### Beluchtingspunten
