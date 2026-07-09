@@ -135,6 +135,16 @@ die Teile, die du tatsächlich nutzt.
     zeigt dies an und verlinkt auf die [Firmware-Releases](https://github.com/ssbingo/pond-aeration-esp32-firmware/releases). Beim Verbinden werden die Version
     des Geräts und ein Kompatibilitäts-Flag als `info.deviceFirmware` und `info.firmwareCompatible`
     veröffentlicht; jede Protokoll-Abweichung wird ins Log geschrieben.
+  - **Lizenzierung** *(nur wenn deine Firmware das optionale Lizenz-Overlay mitbringt)* – das Gerät
+    läuft in einer Stufe: **free** (nur Überwachung), **community** (Relaissteuerung) oder **pro**
+    (+ der autonome Standalone-Zeitplan); die Sicherheit (Ausfallsicherung, Notventil,
+    Dead-Head-Verriegelung, Handtaster) ist unabhängig davon immer aktiv. Ein neues Gerät läuft für
+    einen Testzeitraum voll (**pro**) und fällt danach auf free zurück, bis auf der
+    `/license`-Seite des Geräts ein Aktivierungsschlüssel eingegeben wird. Der Adapter zeigt den
+    Status unter `info.licenseTier` / `info.licenseTrialDaysLeft` / `info.deviceCode`; ist das Gerät
+    **nicht für die Steuerung lizenziert**, läuft die Überwachung weiter und die Steuerung wird
+    übersprungen (siehe `info.licenseControlBlocked`). Öffentliche Firmware ohne das Overlay ist
+    nicht betroffen.
 - **Abfrageintervall (s)** – wie oft der Backend-Status abgefragt wird (z. B. `30`).
 
 ### Belüftungspunkte
@@ -245,6 +255,17 @@ Befehle; alle anderen sind schreibgeschützte Statuswerte, die der Adapter aktua
 | `info.backend` | string | `text` | Aktives Hardware-Backend (`iobroker` oder `esp32`) |
 | `info.activeMode` | string | `text` | Aktueller Betriebsmodus |
 | `info.dryRun` | boolean | `indicator` | Trockenlauf aktiv (es wird keine Hardware geschaltet) |
+
+**ESP32-Backend (info)** (nur mit dem ESP32-Hardware-Backend)
+
+| Objekt | Typ | Rolle | Beschreibung |
+|--------|-----|-------|--------------|
+| `info.deviceFirmware` | string | `text` | Vom ESP32 gemeldete Firmware-Version |
+| `info.firmwareCompatible` | boolean | `indicator` | Firmware-Protokoll ist mit diesem Adapter kompatibel |
+| `info.licenseTier` | string | `text` | Aktive Lizenzstufe: `free` (Überwachung), `community` (Relaissteuerung) oder `pro` (+ autonomer Zeitplan); leer, wenn die Firmware keine Lizenzsteuerung hat |
+| `info.licenseTrialDaysLeft` | number | `value` | Verbleibende Testtage der Lizenz (0 = kein Test aktiv) |
+| `info.deviceCode` | string | `text` | Gerätecode — beim Freischalten angeben, um einen Aktivierungsschlüssel zu erhalten |
+| `info.licenseControlBlocked` | boolean | `indicator` | Das Gerät hat einen Steuerbefehl abgelehnt (nicht für die Steuerung lizenziert) |
 
 **Steuerung (beschreibbare Befehle)**
 

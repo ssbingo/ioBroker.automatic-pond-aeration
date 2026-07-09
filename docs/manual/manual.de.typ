@@ -335,6 +335,9 @@ Statuswerte.
   [`info.connection`], [Adapter läuft / Konfiguration gültig],
   [`info.activeMode`], [Aktueller Betriebsmodus],
   [`info.dryRun`], [Trockenlauf aktiv (keine Hardware geschaltet)],
+  [`info.deviceFirmware` / `.firmwareCompatible`], [ESP32-Firmware-Version / Protokoll-Kompatibilitäts-Flag (ESP32-Backend)],
+  [`info.licenseTier` / `.licenseTrialDaysLeft`], [ESP32-Lizenzstufe (free/community/pro) / verbleibende Testtage],
+  [`info.deviceCode` / `.licenseControlBlocked`], [ESP32-Gerätecode zum Freischalten / Steuerung abgelehnt (nicht lizenziert)],
   [`control.enabled` *(w)*], [Hauptfreigabe],
   [`control.mode` *(w)*], [`auto` / `manual` / `off`],
   [`aeration.point.<n>.valveState`], [Ventil ist offen],
@@ -513,6 +516,19 @@ dazwischen.
   `info.deviceFirmware` mit einem `info.firmwareCompatible`-Flag; eine Protokoll-Abweichung wird als
   Fehler protokolliert, veraltete Firmware als Warnung. Der ESP32-Reiter zeigt die empfohlene Version
   und verlinkt die Firmware-Releases.
+]
+
+#tipbox("Lizenzierung & Freischaltung (optional)")[
+  Wenn Ihre Firmware das optionale *Lizenz-Overlay* enthält, läuft das Gerät in einer von drei Stufen:
+  *free* (nur Überwachung), *community* (Relaissteuerung) oder *pro* (+ autonomer Standalone-Zeitplan).
+  Die Sicherheit läuft stufenunabhängig immer — Ausfallsicherung, Notventil, Dead-Head-Verriegelung und
+  die Hand-Taster werden nie gesperrt. Ein neues Gerät läuft *30 Tage* voll (*pro*) und fällt danach auf
+  free zurück, bis Sie auf der `/license`-Seite des Geräts einen Freischaltcode eingeben (die Seite zeigt
+  den *Gerätecode*, den Sie beim Freischalten angeben). Der Adapter spiegelt den Status nach
+  `info.licenseTier`, `info.licenseTrialDaysLeft` und `info.deviceCode`; ist das Gerät *nicht für die
+  Steuerung lizenziert*, läuft die Überwachung weiter und Steuerbefehle werden mit einem klaren Hinweis
+  übersprungen (siehe `info.licenseControlBlocked`) statt mit wiederholten Fehlern. Öffentliche Firmware
+  ohne das Overlay ist nicht betroffen — die Steuerung bleibt offen.
 ]
 
 #tipbox("Geräte-Weboberfläche (Port 80)")[

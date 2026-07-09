@@ -138,6 +138,16 @@ parties que tu utilises.
     connexion, la version de l'appareil et un indicateur de compatibilité sont publiés sous
     `info.deviceFirmware` et `info.firmwareCompatible`, et toute incompatibilité de protocole est
     consignée dans le journal.
+  - **Licence** *(uniquement si ton firmware embarque la surcouche de licence facultative)* –
+    l'appareil fonctionne à un niveau de licence : **free** (surveillance uniquement),
+    **community** (commande des relais) ou **pro** (+ l'horaire autonome) ; la sécurité
+    (fail-safe, vanne de secours, verrouillage dead-head, boutons de forçage) reste toujours
+    active quoi qu'il en soit. Un appareil neuf fonctionne pleinement (**pro**) pendant une
+    période d'essai, puis revient à free jusqu'à ce qu'une clé d'activation soit saisie sur la
+    page `/license` de l'appareil. L'adaptateur affiche l'état sous `info.licenseTier` /
+    `info.licenseTrialDaysLeft` / `info.deviceCode` ; si l'appareil est **sans licence pour la
+    commande**, la surveillance continue de fonctionner et la commande est ignorée (voir
+    `info.licenseControlBlocked`). Le firmware public sans la surcouche n'est pas concerné.
 - **Intervalle d'interrogation (s)** – à quelle fréquence l'état du backend est interrogé (p. ex.
   `30`).
 
@@ -252,6 +262,17 @@ jour par l'adaptateur.
 | `info.backend` | string | `text` | Backend matériel actif (`iobroker` ou `esp32`) |
 | `info.activeMode` | string | `text` | Mode de fonctionnement actuel |
 | `info.dryRun` | boolean | `indicator` | Test à blanc actif (aucun matériel n'est commuté) |
+
+**Backend ESP32 (info)** (uniquement avec le backend matériel ESP32)
+
+| Objet | Type | Rôle | Description |
+|-------|------|------|-------------|
+| `info.deviceFirmware` | string | `text` | Version du firmware signalée par l'ESP32 |
+| `info.firmwareCompatible` | boolean | `indicator` | Le protocole du firmware est compatible avec cet adaptateur |
+| `info.licenseTier` | string | `text` | Niveau de licence actif : `free` (surveillance), `community` (commande des relais) ou `pro` (+ horaire autonome) ; vide si le firmware n'applique pas de licence |
+| `info.licenseTrialDaysLeft` | number | `value` | Jours d'essai de licence restants (0 = aucun essai en cours) |
+| `info.deviceCode` | string | `text` | Code de l'appareil — à fournir lors du déverrouillage pour recevoir une clé d'activation |
+| `info.licenseControlBlocked` | boolean | `indicator` | L'appareil a rejeté une commande de pilotage (sans licence pour la commande) |
 
 **Commande (commandes accessibles en écriture)**
 

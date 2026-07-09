@@ -136,6 +136,16 @@ usi.
     firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware/releases). Alla connessione, la versione del dispositivo e un flag di compatibilità
     vengono pubblicati come `info.deviceFirmware` e `info.firmwareCompatible`, e qualsiasi
     discrepanza di protocollo viene scritta nel log.
+  - **Licenza** *(solo se il tuo firmware include l'overlay di licenza opzionale)* – il dispositivo
+    opera su un livello: **free** (solo monitoraggio), **community** (controllo dei relè) o **pro**
+    (+ la pianificazione autonoma indipendente); la sicurezza (failsafe, valvola di emergenza,
+    interblocco dead-head, pulsanti manuali) è sempre attiva a prescindere. Un nuovo dispositivo
+    funziona pienamente (**pro**) per un periodo di prova, poi ripiega su free finché non viene
+    inserita una chiave di attivazione nella pagina `/license` del dispositivo. L'adattatore mostra
+    lo stato sotto `info.licenseTier` / `info.licenseTrialDaysLeft` / `info.deviceCode`; se il
+    dispositivo **non dispone di licenza per il controllo**, il monitoraggio continua a funzionare e
+    il controllo viene saltato (vedi `info.licenseControlBlocked`). Il firmware pubblico senza
+    l'overlay non è interessato.
 - **Intervallo di polling (s)** – ogni quanto viene interrogato lo stato del backend (ad es. `30`).
 
 ### Punti di aerazione
@@ -248,6 +258,17 @@ comandi scrivibili; tutti gli altri sono valori di stato in sola lettura aggiorn
 | `info.backend` | string | `text` | Backend hardware attivo (`iobroker` o `esp32`) |
 | `info.activeMode` | string | `text` | Modalità operativa corrente |
 | `info.dryRun` | boolean | `indicator` | Dry-run attivo (nessun hardware viene commutato) |
+
+**Backend ESP32 (info)** (solo con il backend hardware ESP32)
+
+| Oggetto | Tipo | Ruolo | Descrizione |
+|---------|------|-------|-------------|
+| `info.deviceFirmware` | string | `text` | Versione del firmware riportata dall'ESP32 |
+| `info.firmwareCompatible` | boolean | `indicator` | Il protocollo del firmware è compatibile con questo adattatore |
+| `info.licenseTier` | string | `text` | Livello di licenza attivo: `free` (monitoraggio), `community` (controllo dei relè) o `pro` (+ pianificazione autonoma); vuoto se il firmware non è soggetto a licenza |
+| `info.licenseTrialDaysLeft` | number | `value` | Giorni di prova della licenza rimanenti (0 = nessuna prova in corso) |
+| `info.deviceCode` | string | `text` | Codice del dispositivo — comunicalo per lo sblocco per ricevere una chiave di attivazione |
+| `info.licenseControlBlocked` | boolean | `indicator` | Il dispositivo ha rifiutato un comando di controllo (non dotato di licenza per il controllo) |
 
 **Controllo (comandi scrivibili)**
 

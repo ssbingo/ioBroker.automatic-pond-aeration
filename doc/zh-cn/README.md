@@ -88,6 +88,7 @@
 - **硬件后端** – `现有 ioBroker 状态`（默认）通过其他适配器的状态驱动你的阀门/气泵。`ESP32（直接）`通过 HTTP 与 Waveshare ESP32-S3-POE-ETH-8DI-8RO 上的 [参考固件](https://github.com/ssbingo/pond-aeration-esp32-firmware) 通信——设置**主机/IP**，并映射**应急阀继电器**和**气泵继电器**（0–7）；各增氧点使用为每个点设置的继电器通道。适配器会推送一份安全配置和一个心跳（heartbeat），使固件在设备本地的故障保护即使在 ioBroker 宕机时也能保护池塘。
   - **自主计划（无需 ioBroker 运行）** *(仅 ESP32，可选)* – 启用后，适配器也会把你的时间计划推送到设备；如果连接中断，ESP32 会使用其 NTP 时钟自行继续运行它们（防憋压安全联锁仍然有效）。循环序列仍由适配器负责。
   - **固件兼容性** – 适配器与固件通过**协议版本**（硬性约定）进行匹配，而不是按精确的发布编号。此适配器版本使用**协议 1**并**推荐固件 v1.1.0**（最低 v1.0.0）；ESP32 配置选项卡会显示这一点，并链接到[固件发布页](https://github.com/ssbingo/pond-aeration-esp32-firmware/releases)。连接时，设备的版本和一个兼容性标志会作为 `info.deviceFirmware` 和 `info.firmwareCompatible` 发布，任何协议不匹配都会写入日志。
+  - **授权（Licensing）** *(仅当你的固件包含可选的授权覆盖层时)* – 设备运行在某个级别：**free**（仅监测）、**community**（继电器控制）或 **pro**（+ 自主独立运行的计划）；无论哪个级别，安全功能（故障保护、应急阀、防憋压联锁、手动按钮）始终有效。新设备会在试用期内以完整功能（**pro**）运行，之后回退到 free，直到在设备的 `/license` 页面输入激活密钥为止。适配器会在 `info.licenseTier` / `info.licenseTrialDaysLeft` / `info.deviceCode` 下显示状态；如果设备**未获得控制授权**，监测仍会继续正常工作，控制则会被跳过（参见 `info.licenseControlBlocked`）。不带该覆盖层的公开固件不受影响。
 - **轮询间隔（s）** – 多久轮询一次后端状态（例如 `30`）。
 
 ### 增氧点
@@ -152,6 +153,17 @@
 | `info.backend` | string | `text` | 当前硬件后端（`iobroker` 或 `esp32`） |
 | `info.activeMode` | string | `text` | 当前运行模式 |
 | `info.dryRun` | boolean | `indicator` | 试运行已激活（不切换任何硬件） |
+
+**ESP32 后端（info）**（仅在使用 ESP32 硬件后端时）
+
+| 对象 | 类型 | 角色 | 说明 |
+|------|------|------|------|
+| `info.deviceFirmware` | string | `text` | ESP32 上报的固件版本 |
+| `info.firmwareCompatible` | boolean | `indicator` | 固件协议与本适配器兼容 |
+| `info.licenseTier` | string | `text` | 当前授权级别：`free`（监测）、`community`（继电器控制）或 `pro`（+ 独立计划）；如果固件未设授权限制则为空 |
+| `info.licenseTrialDaysLeft` | number | `value` | 授权试用剩余天数（0 = 没有正在进行的试用） |
+| `info.deviceCode` | string | `text` | 设备代码 —— 解锁时提供此代码以获取激活密钥 |
+| `info.licenseControlBlocked` | boolean | `indicator` | 设备拒绝了一条控制命令（未获得控制授权） |
 
 **控制（可写命令）**
 

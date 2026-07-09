@@ -305,6 +305,9 @@ index. Items marked *(w)* are writable commands; the rest are read-only status v
   [`info.connection`], [Adapter running / configuration valid],
   [`info.activeMode`], [Current operating mode],
   [`info.dryRun`], [Dry-run active (no hardware switched)],
+  [`info.deviceFirmware` / `.firmwareCompatible`], [ESP32 firmware version / protocol-compatible flag (ESP32 backend)],
+  [`info.licenseTier` / `.licenseTrialDaysLeft`], [ESP32 licence tier (free/community/pro) / trial days left],
+  [`info.deviceCode` / `.licenseControlBlocked`], [ESP32 device code for unlocking / control rejected (not licensed)],
   [`control.enabled` *(w)*], [Master enable],
   [`control.mode` *(w)*], [`auto` / `manual` / `off`],
   [`aeration.point.<n>.valveState`], [Valve is open],
@@ -471,6 +474,19 @@ With the board flashed and wired, the adapter can drive it directly — no relay
   `info.firmwareCompatible` flag; a protocol mismatch is logged as an error and an outdated firmware as
   a warning. The ESP32 configuration tab shows the recommended version and links to the firmware
   releases.
+]
+
+#tipbox("Licensing & activation (optional)")[
+  If your firmware ships the optional *licensing overlay*, the device runs one of three tiers: *free*
+  (monitoring only), *community* (relay control) or *pro* (+ the autonomous standalone schedule).
+  Safety always runs regardless of tier — failsafe, emergency valve, dead-head interlock and the hand
+  buttons are never locked. A brand-new device runs fully (*pro*) for a *30-day trial*, then falls back
+  to free until you enter an activation key on the device's `/license` page (which shows the *device
+  code* you give when unlocking). The adapter mirrors the status into `info.licenseTier`,
+  `info.licenseTrialDaysLeft` and `info.deviceCode`; if the device is *not licensed for control*,
+  monitoring keeps working and control commands are skipped with one clear hint (see
+  `info.licenseControlBlocked`) instead of repeated errors. Public firmware built without the overlay
+  is unaffected — control stays open.
 ]
 
 #tipbox("On-device web UI (port 80)")[

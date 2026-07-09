@@ -130,6 +130,16 @@ części, których używasz.
     [wydań firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware/releases). Po połączeniu wersja urządzenia i flaga zgodności są publikowane jako
     `info.deviceFirmware` i `info.firmwareCompatible`, a każda niezgodność protokołu jest zapisywana
     w dzienniku.
+  - **Licencjonowanie** *(tylko jeśli Twoje firmware zawiera opcjonalną nakładkę licencyjną)* –
+    urządzenie działa na jednym z poziomów: **free** (tylko monitorowanie), **community** (sterowanie
+    przekaźnikami) lub **pro** (+ autonomiczny, samodzielny harmonogram); bezpieczeństwo
+    (zabezpieczenie awaryjne, zawór awaryjny, blokada dead-head, przyciski ręczne) jest zawsze
+    aktywne, niezależnie od tego. Nowe urządzenie działa w pełni (**pro**) przez okres próbny, a
+    następnie wraca do poziomu free, dopóki na stronie `/license` urządzenia nie zostanie
+    wprowadzony klucz aktywacyjny. Adapter pokazuje status w `info.licenseTier` /
+    `info.licenseTrialDaysLeft` / `info.deviceCode`; jeśli urządzenie **nie ma licencji na
+    sterowanie**, monitorowanie nadal działa, a sterowanie jest pomijane (zobacz
+    `info.licenseControlBlocked`). Publiczne firmware bez tej nakładki nie jest tym objęte.
 - **Interwał odpytywania (s)** – jak często odpytywany jest status backendu (np. `30`).
 
 ### Punkty napowietrzania
@@ -237,6 +247,17 @@ zapisywalne; wszystkie pozostałe to wartości stanu tylko do odczytu aktualizow
 | `info.backend` | string | `text` | Aktywny backend sprzętowy (`iobroker` lub `esp32`) |
 | `info.activeMode` | string | `text` | Bieżący tryb pracy |
 | `info.dryRun` | boolean | `indicator` | Tryb dry-run aktywny (żaden sprzęt nie jest przełączany) |
+
+**Backend ESP32 (info)** (tylko przy sprzętowym backendzie ESP32)
+
+| Obiekt | Typ | Rola | Opis |
+|--------|-----|------|------|
+| `info.deviceFirmware` | string | `text` | Wersja firmware zgłoszona przez ESP32 |
+| `info.firmwareCompatible` | boolean | `indicator` | Protokół firmware jest zgodny z tym adapterem |
+| `info.licenseTier` | string | `text` | Aktywny poziom licencji: `free` (monitorowanie), `community` (sterowanie przekaźnikami) lub `pro` (+ autonomiczny harmonogram); puste, jeśli firmware nie jest objęte licencjonowaniem |
+| `info.licenseTrialDaysLeft` | number | `value` | Pozostałe dni okresu próbnego licencji (0 = brak trwającego okresu próbnego) |
+| `info.deviceCode` | string | `text` | Kod urządzenia — podaj go przy odblokowywaniu, aby otrzymać klucz aktywacyjny |
+| `info.licenseControlBlocked` | boolean | `indicator` | Urządzenie odrzuciło polecenie sterujące (brak licencji na sterowanie) |
 
 **Sterowanie (polecenia zapisywalne)**
 

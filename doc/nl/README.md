@@ -132,6 +132,15 @@ onderdelen die je gebruikt.
     verbinden worden de versie van het apparaat en een compatibiliteitsvlag gepubliceerd als
     `info.deviceFirmware` en `info.firmwareCompatible`, en elke protocolafwijking wordt naar het
     logboek geschreven.
+  - **Licentiëring** *(alleen als je firmware de optionele licentie-overlay bevat)* – het apparaat
+    draait een tier: **free** (alleen bewaking), **community** (relaisbesturing) of **pro** (+ het
+    autonome standalone-schema); de veiligheid (failsafe, noodklep, dead-head-vergrendeling,
+    handknoppen) blijft hoe dan ook altijd actief. Een nieuw apparaat draait volledig (**pro**)
+    gedurende een proefperiode en valt daarna terug op free totdat er een activeringssleutel wordt
+    ingevoerd op de `/license`-pagina van het apparaat. De adapter toont de status onder
+    `info.licenseTier` / `info.licenseTrialDaysLeft` / `info.deviceCode`; als het apparaat **niet
+    gelicentieerd is voor besturing**, blijft de bewaking werken en wordt de besturing overgeslagen
+    (zie `info.licenseControlBlocked`). Publieke firmware zonder de overlay wordt niet beïnvloed.
 - **Pollinterval (s)** – hoe vaak de backendstatus wordt opgevraagd (bijv. `30`).
 
 ### Beluchtingspunten
@@ -238,6 +247,17 @@ commando's; alle andere zijn alleen-lezen statuswaarden die door de adapter word
 | `info.backend` | string | `text` | Actieve hardware-backend (`iobroker` of `esp32`) |
 | `info.activeMode` | string | `text` | Huidige bedrijfsmodus |
 | `info.dryRun` | boolean | `indicator` | Dry-run actief (er wordt geen hardware geschakeld) |
+
+**ESP32-backend (info)** (alleen met de ESP32-hardware-backend)
+
+| Object | Type | Rol | Beschrijving |
+|--------|------|-----|--------------|
+| `info.deviceFirmware` | string | `text` | Firmwareversie gerapporteerd door de ESP32 |
+| `info.firmwareCompatible` | boolean | `indicator` | Firmwareprotocol is compatibel met deze adapter |
+| `info.licenseTier` | string | `text` | Actieve licentietier: `free` (bewaking), `community` (relaisbesturing) of `pro` (+ autonoom schema); leeg als de firmware geen licentiebeperking heeft |
+| `info.licenseTrialDaysLeft` | number | `value` | Resterende proefdagen van de licentie (0 = geen proefperiode actief) |
+| `info.deviceCode` | string | `text` | Apparaatcode — geef deze op bij het ontgrendelen om een activeringssleutel te ontvangen |
+| `info.licenseControlBlocked` | boolean | `indicator` | Het apparaat heeft een besturingscommando geweigerd (niet gelicentieerd voor besturing) |
 
 **Besturing (beschrijfbare commando's)**
 

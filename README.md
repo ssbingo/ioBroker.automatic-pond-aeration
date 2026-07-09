@@ -137,6 +137,14 @@ you use.
     On connect, the device's version and a compatibility flag are published as `info.deviceFirmware`
     and `info.firmwareCompatible`, and any protocol mismatch is written to the log. See the
     compatibility table in the [manual](docs/manual/pond-aeration-manual.en.pdf) / firmware repo.
+  - **Licensing** *(only if your firmware ships the optional licensing overlay)* – the device runs a
+    tier: **free** (monitoring only), **community** (relay control) or **pro** (+ the autonomous
+    standalone schedule); safety (failsafe, emergency valve, dead-head interlock, hand buttons) is
+    always active regardless. A new device runs fully (**pro**) for a trial period, then falls back to
+    free until an activation key is entered on the device's `/license` page. The adapter shows the
+    status under `info.licenseTier` / `info.licenseTrialDaysLeft` / `info.deviceCode`; if the device is
+    **not licensed for control**, monitoring keeps working and control is skipped (see
+    `info.licenseControlBlocked`). Public firmware without the overlay is unaffected.
 - **Poll interval (s)** – how often the backend status is polled (e.g. `30`).
 
 ### Aeration points
@@ -238,6 +246,17 @@ read-only status values updated by the adapter.
 | `info.backend` | string | `text` | Active hardware backend (`iobroker` or `esp32`) |
 | `info.activeMode` | string | `text` | Current operating mode |
 | `info.dryRun` | boolean | `indicator` | Dry-run active (no hardware is switched) |
+
+**ESP32 backend (info)** (only with the ESP32 hardware backend)
+
+| Object | Type | Role | Description |
+|--------|------|------|-------------|
+| `info.deviceFirmware` | string | `text` | Firmware version reported by the ESP32 |
+| `info.firmwareCompatible` | boolean | `indicator` | Firmware protocol is compatible with this adapter |
+| `info.licenseTier` | string | `text` | Active licence tier: `free` (monitoring), `community` (relay control) or `pro` (+ standalone schedule); empty if the firmware is ungated |
+| `info.licenseTrialDaysLeft` | number | `value` | Licence trial days remaining (0 = no trial running) |
+| `info.deviceCode` | string | `text` | Device code — give this when unlocking to receive an activation key |
+| `info.licenseControlBlocked` | boolean | `indicator` | The device rejected a control command (not licensed for control) |
 
 **Control (writable commands)**
 
@@ -348,6 +367,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.1.2 (2026-07-09)
+* (ssbingo) **ESP32 licence awareness.** The adapter now reads the device's licence status from `GET /api/info` — the active tier (`free` = monitoring, `community` = relay control, `pro` = + standalone schedule), the trial days remaining and the device code — and publishes them as `info.licenseTier`, `info.licenseTrialDaysLeft`, `info.deviceCode` and `info.licenseControlBlocked`. A device that is **not licensed for control** is handled gracefully: **monitoring keeps working**, control commands are skipped with a single clear hint (device code + how to unlock) instead of repeated errors. Public firmware without the optional licensing overlay is unaffected (control stays open). New unit-tested `parseLicense` helper; localized news in 11 languages
+
 ### 0.1.1 (2026-07-09)
 * (ssbingo) **ESP32 configuration UX.** Aeration points now offer **ESP32 relay channels only when the ESP32 backend is selected** — with the ioBroker-state backend a point always maps to an ioBroker state (no more confusing/incorrect ESP options). A new **“Test connection”** button probes the device (via the running instance) and shows its firmware version, so you can immediately see whether **host and port** are right. The **port** field is now explained — the reference firmware **always serves on port 80** — and warns on any other value. The non-functional **“Use WebSocket”** toggle was removed (the adapter polls status over HTTP). New `testEsp32` admin message + explanations; 9 admin strings in 11 languages
 
@@ -374,9 +396,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.0.14 (2026-07-08)
 * (ssbingo) Cyclic sequence over points AND groups (M11): the round-robin can now follow an ordered list of steps where each step targets a single point or a whole group, with an optional per-step dwell time and free mixing (e.g. group 1 → group 3 → point 1). Reorder in the admin; an empty sequence keeps the plain round-robin over all points. New `sequenceSteps` config, pure/unit-tested `lib/control/sequence.js`, admin builder and 5 new admin strings in 11 languages
-
-### 0.0.13 (2026-07-07)
-* (ssbingo) Winter/ice-free mode, oxygen closed loop, notifications, statistics and a dry-run test mode (M10). Winter mode forces the selected points on during a recurring season (`MM-DD` window, optional air-temperature frost gating). The oxygen closed loop boosts aeration while dissolved oxygen is low until it recovers to the target. Notifications go to any `messaging` adapter (Telegram/Pushover) on interlock, oxygen and pressure edges. Runtime statistics (per-point runtime, compressor hours, switch cycles) are accumulated with a daily reset. Dry-run runs the whole control engine but only logs the intended valve/pump actions. New states `winter.*`, `sensors.oxygenBoostActive`, `info.dryRun`; localized messages and admin strings in 11 languages
 
 ---
 

@@ -1,20 +1,20 @@
 {
 	"common": {
 		"name": "automatic-pond-aeration",
-		"version": "0.1.1",
+		"version": "0.1.2",
 		"news": {
-			"0.1.1": {
-				"en": "ESP32 configuration UX: aeration points offer ESP32 relay channels only when the ESP32 backend is selected; a new “Test connection” button verifies the device and shows its firmware version; the port field is explained (the firmware always uses port 80); the non-functional “Use WebSocket” toggle was removed.",
-				"de": "ESP32-Konfiguration verständlicher: Belüftungsstellen bieten ESP32-Relaiskanäle nur, wenn das ESP32-Backend gewählt ist; ein neuer „Verbindung testen“-Knopf prüft das Gerät und zeigt die Firmware-Version; das Port-Feld wird erklärt (die Firmware nutzt immer Port 80); der funktionslose „Use WebSocket“-Schalter wurde entfernt.",
-				"ru": "Улучшена настройка ESP32: точки аэрации предлагают релейные каналы ESP32 только при выбранном бэкенде ESP32; новая кнопка «Проверить соединение» проверяет устройство и показывает версию прошивки; поле порта пояснено (прошивка всегда использует порт 80); нефункциональный переключатель «Use WebSocket» удалён.",
-				"pt": "UX de configuração ESP32: os pontos de arejamento oferecem canais de relé ESP32 apenas quando o backend ESP32 está selecionado; um novo botão “Testar ligação” verifica o dispositivo e mostra a versão do firmware; o campo da porta é explicado (o firmware usa sempre a porta 80); o interruptor não funcional “Use WebSocket” foi removido.",
-				"nl": "ESP32-configuratie duidelijker: beluchtingspunten bieden ESP32-relaiskanalen alleen als de ESP32-backend is gekozen; een nieuwe knop “Verbinding testen” controleert het apparaat en toont de firmwareversie; het poortveld wordt uitgelegd (de firmware gebruikt altijd poort 80); de niet-functionele schakelaar “Use WebSocket” is verwijderd.",
-				"fr": "UX de configuration ESP32 : les points d'aération proposent des canaux de relais ESP32 uniquement quand le backend ESP32 est sélectionné ; un nouveau bouton « Tester la connexion » vérifie l'appareil et affiche la version du firmware ; le champ du port est expliqué (le firmware utilise toujours le port 80) ; l'interrupteur non fonctionnel « Use WebSocket » a été supprimé.",
-				"it": "UX di configurazione ESP32: i punti di aerazione offrono canali relè ESP32 solo quando è selezionato il backend ESP32; un nuovo pulsante “Prova connessione” verifica il dispositivo e mostra la versione del firmware; il campo della porta è spiegato (il firmware usa sempre la porta 80); l'interruttore non funzionante “Use WebSocket” è stato rimosso.",
-				"es": "UX de configuración ESP32: los puntos de aireación ofrecen canales de relé ESP32 solo cuando el backend ESP32 está seleccionado; un nuevo botón «Probar conexión» verifica el dispositivo y muestra la versión del firmware; el campo del puerto se explica (el firmware siempre usa el puerto 80); el interruptor no funcional «Use WebSocket» se eliminó.",
-				"pl": "Lepsza konfiguracja ESP32: punkty napowietrzania oferują kanały przekaźników ESP32 tylko przy wybranym backendzie ESP32; nowy przycisk „Testuj połączenie” sprawdza urządzenie i pokazuje wersję firmware; pole portu jest objaśnione (firmware zawsze używa portu 80); niedziałający przełącznik „Use WebSocket” został usunięty.",
-				"uk": "Зручніша конфігурація ESP32: точки аерації пропонують релейні канали ESP32 лише коли обрано бекенд ESP32; нова кнопка «Перевірити з'єднання» перевіряє пристрій і показує версію прошивки; поле порту пояснено (прошивка завжди використовує порт 80); нефункціональний перемикач «Use WebSocket» видалено.",
-				"zh-cn": "ESP32 配置更清晰：仅当选择 ESP32 后端时，增氧点才提供 ESP32 继电器通道；新增“测试连接”按钮可检测设备并显示固件版本；端口字段已加说明（固件始终使用 80 端口）；无实际作用的“Use WebSocket”开关已移除。"
+			"0.1.2": {
+				"en": "ESP32 licence awareness: the adapter now reads the device's licence tier (free = monitoring, community = relay control, pro = + standalone schedule), the trial days remaining and the device code, and publishes them as info.* states. A device that is not licensed for control is handled gracefully — monitoring keeps working and control is skipped with a clear hint instead of repeated errors. Public firmware without the optional licensing overlay is unaffected.",
+				"de": "ESP32-Lizenz-Awareness: Der Adapter liest jetzt die Lizenzstufe des Geräts (free = Überwachung, community = Relaissteuerung, pro = + autonomer Zeitplan), die verbleibenden Testtage und den Gerätecode und veröffentlicht sie als info.*-States. Ein Gerät, das nicht für die Steuerung lizenziert ist, wird sauber behandelt — die Überwachung läuft weiter und die Steuerung wird mit einem klaren Hinweis übersprungen statt mit wiederholten Fehlern. Öffentliche Firmware ohne das optionale Lizenz-Overlay ist nicht betroffen.",
+				"ru": "Учёт лицензии ESP32: адаптер теперь считывает уровень лицензии устройства (free = мониторинг, community = управление реле, pro = + автономное расписание), количество оставшихся дней пробного периода и код устройства и публикует их как состояния info.*. Устройство без лицензии на управление обрабатывается корректно — мониторинг продолжает работать, а управление пропускается с понятной подсказкой вместо повторяющихся ошибок. Публичная прошивка без необязательного слоя лицензирования не затрагивается.",
+				"pt": "Reconhecimento de licença do ESP32: o adaptador agora lê o nível de licença do dispositivo (free = monitoramento, community = controle de relés, pro = + agendamento autónomo), os dias de avaliação restantes e o código do dispositivo, e publica-os como estados info.*. Um dispositivo que não está licenciado para controle é tratado de forma elegante — o monitoramento continua a funcionar e o controle é ignorado com uma indicação clara em vez de erros repetidos. O firmware público sem a camada de licenciamento opcional não é afetado.",
+				"nl": "ESP32-licentiebewustzijn: de adapter leest nu de licentietier van het apparaat (free = bewaking, community = relaisbesturing, pro = + autonoom schema), de resterende proefdagen en de apparaatcode, en publiceert deze als info.*-states. Een apparaat dat niet gelicentieerd is voor besturing wordt netjes afgehandeld — de bewaking blijft werken en de besturing wordt overgeslagen met een duidelijke hint in plaats van herhaalde fouten. Publieke firmware zonder de optionele licentie-overlay wordt niet beïnvloed.",
+				"fr": "Prise en charge des licences ESP32 : l'adaptateur lit désormais le niveau de licence de l'appareil (free = surveillance, community = commande des relais, pro = + horaire autonome), les jours d'essai restants et le code de l'appareil, et les publie sous forme d'états info.*. Un appareil sans licence pour la commande est géré proprement — la surveillance continue de fonctionner et la commande est ignorée avec une indication claire au lieu d'erreurs répétées. Le firmware public sans la surcouche de licence facultative n'est pas concerné.",
+				"it": "Consapevolezza della licenza ESP32: l'adattatore ora legge il livello di licenza del dispositivo (free = monitoraggio, community = controllo dei relè, pro = + pianificazione autonoma), i giorni di prova rimanenti e il codice del dispositivo, e li pubblica come stati info.*. Un dispositivo che non dispone di licenza per il controllo viene gestito in modo elegante: il monitoraggio continua a funzionare e il controllo viene saltato con un'indicazione chiara invece di errori ripetuti. Il firmware pubblico senza l'overlay di licenza opzionale non è interessato.",
+				"es": "Reconocimiento de licencia del ESP32: el adaptador ahora lee el nivel de licencia del dispositivo (free = supervisión, community = control de relés, pro = + programación autónoma), los días de prueba restantes y el código del dispositivo, y los publica como estados info.*. Un dispositivo que no tiene licencia para el control se gestiona con elegancia: la supervisión sigue funcionando y el control se omite con una indicación clara en lugar de errores repetidos. El firmware público sin la capa de licencia opcional no se ve afectado.",
+				"pl": "Świadomość licencji ESP32: adapter odczytuje teraz poziom licencji urządzenia (free = monitorowanie, community = sterowanie przekaźnikami, pro = + samodzielny harmonogram), pozostałe dni okresu próbnego oraz kod urządzenia i publikuje je jako stany info.*. Urządzenie bez licencji na sterowanie jest obsługiwane łagodnie — monitorowanie nadal działa, a sterowanie jest pomijane z czytelną wskazówką zamiast powtarzających się błędów. Publiczne firmware bez opcjonalnej nakładki licencyjnej nie jest tym objęte.",
+				"uk": "Обізнаність про ліцензію ESP32: адаптер тепер зчитує рівень ліцензії пристрою (free = моніторинг, community = керування реле, pro = + автономний розклад), залишок пробних днів і код пристрою та публікує їх як стани info.*. Пристрій, який не має ліцензії на керування, обробляється коректно — моніторинг продовжує працювати, а керування пропускається з чіткою підказкою замість повторюваних помилок. Публічну прошивку без опційного оверлея ліцензування це не зачіпає.",
+				"zh-cn": "ESP32 授权感知：适配器现在会读取设备的授权级别（free = 监测，community = 继电器控制，pro = + 独立计划）、剩余试用天数和设备代码，并将它们作为 info.* 状态发布。对于未获得控制授权的设备，会进行优雅处理——监测继续正常工作，控制会被跳过并给出清晰提示，而不是反复报错。不带可选授权覆盖层的公开固件不受影响。"
 			}
 		},
 		"titleLang": {
@@ -211,6 +211,59 @@
 			"common": {
 				"role": "indicator",
 				"name": "ESP32 firmware protocol is compatible with this adapter",
+				"type": "boolean",
+				"read": true,
+				"write": false,
+				"def": false
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.licenseTier",
+			"type": "state",
+			"common": {
+				"role": "text",
+				"name": "ESP32 active licence tier (free/community/pro; empty if firmware is ungated)",
+				"type": "string",
+				"read": true,
+				"write": false,
+				"def": ""
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.licenseTrialDaysLeft",
+			"type": "state",
+			"common": {
+				"role": "value",
+				"name": "ESP32 licence trial days remaining (0 = no trial running)",
+				"type": "number",
+				"unit": "d",
+				"read": true,
+				"write": false,
+				"def": 0
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.deviceCode",
+			"type": "state",
+			"common": {
+				"role": "text",
+				"name": "ESP32 device code (give this when unlocking to receive an activation key)",
+				"type": "string",
+				"read": true,
+				"write": false,
+				"def": ""
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.licenseControlBlocked",
+			"type": "state",
+			"common": {
+				"role": "indicator",
+				"name": "ESP32 rejected a control command — device not licensed for control",
 				"type": "boolean",
 				"read": true,
 				"write": false,

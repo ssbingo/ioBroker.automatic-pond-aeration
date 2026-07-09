@@ -137,6 +137,16 @@ uses.
     configuración de ESP32 lo muestra y enlaza a las [versiones del firmware](https://github.com/ssbingo/pond-aeration-esp32-firmware/releases). Al conectar, la
     versión del dispositivo y una marca de compatibilidad se publican como `info.deviceFirmware` e
     `info.firmwareCompatible`, y cualquier discrepancia de protocolo se escribe en el registro.
+  - **Licencia** *(solo si tu firmware incluye la capa de licencia opcional)* – el dispositivo
+    ejecuta un nivel: **free** (solo supervisión), **community** (control de relés) o **pro** (+ la
+    programación autónoma independiente); la seguridad (a prueba de fallos, válvula de emergencia,
+    enclavamiento dead-head, botones manuales) está siempre activa con independencia de ello. Un
+    dispositivo nuevo funciona por completo (**pro**) durante un periodo de prueba y luego vuelve a
+    free hasta que se introduce una clave de activación en la página `/license` del dispositivo. El
+    adaptador muestra el estado en `info.licenseTier` / `info.licenseTrialDaysLeft` /
+    `info.deviceCode`; si el dispositivo **no tiene licencia para el control**, la supervisión sigue
+    funcionando y el control se omite (consulta `info.licenseControlBlocked`). El firmware público
+    sin la capa no se ve afectado.
 - **Intervalo de sondeo (s)** – con qué frecuencia se consulta el estado del backend (p. ej. `30`).
 
 ### Puntos de aireación
@@ -248,6 +258,17 @@ actualiza.
 | `info.backend` | string | `text` | Backend de hardware activo (`iobroker` o `esp32`) |
 | `info.activeMode` | string | `text` | Modo de funcionamiento actual |
 | `info.dryRun` | boolean | `indicator` | Dry-run activo (no se conmuta ningún hardware) |
+
+**Backend ESP32 (info)** (solo con el backend de hardware ESP32)
+
+| Objeto | Tipo | Rol | Descripción |
+|--------|------|-----|-------------|
+| `info.deviceFirmware` | string | `text` | Versión de firmware reportada por el ESP32 |
+| `info.firmwareCompatible` | boolean | `indicator` | El protocolo del firmware es compatible con este adaptador |
+| `info.licenseTier` | string | `text` | Nivel de licencia activo: `free` (supervisión), `community` (control de relés) o `pro` (+ programación autónoma); vacío si el firmware no tiene restricción de licencia |
+| `info.licenseTrialDaysLeft` | number | `value` | Días de prueba de la licencia restantes (0 = no hay periodo de prueba en curso) |
+| `info.deviceCode` | string | `text` | Código del dispositivo — proporciónalo al desbloquear para recibir una clave de activación |
+| `info.licenseControlBlocked` | boolean | `indicator` | El dispositivo rechazó un comando de control (sin licencia para el control) |
 
 **Control (comandos escribibles)**
 
