@@ -75,12 +75,25 @@ jobs:
       contents: write
 
     steps:
-      - uses: ioBroker/testing-action-deploy@v1
+      # NOTE: we intentionally do NOT use ioBroker/testing-action-deploy@v1 here. That action runs
+      # `npm install -g npm@latest`, and npm@latest currently ships a broken global install that is
+      # missing the bundled 'sigstore' module, so `npm publish` fails while generating provenance
+      # ("Cannot find module 'sigstore'"). We publish explicitly with a pinned npm >= 11.5.1 that
+      # supports OIDC trusted publishing (no NPM_TOKEN needed) and has an intact provenance path.
+      - uses: actions/checkout@v4
+      - name: Use Node.js 24.x
+        uses: actions/setup-node@v4
         with:
           node-version: '24.x'
-          # Uncomment the following line if your adapter cannot be installed using 'npm ci'
-          # install-command: 'npm install'
-          build: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          # No npm-token: publishing uses npm trusted publishing (OIDC).
-          # Sentry is not used.
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
+      - run: npm run build
+      - name: Pin npm (OIDC + working provenance)
+        run: npm install -g npm@11.5.1
+      - run: npm --version
+      - name: Publish to npm (trusted publishing / OIDC)
+        run: npm publish --provenance --access public
+      - name: Create GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes
