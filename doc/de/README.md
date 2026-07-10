@@ -126,7 +126,12 @@ die Teile, die du tatsächlich nutzt.
   Zusatzsoftware), lege dann die **Host/IP** fest und ordne das **Notventil-Relais** und das
   **Pumpen-Relais** (0–7) zu; die Belüftungspunkte nutzen den pro Punkt eingestellten Relaiskanal. Der
   Adapter überträgt eine Sicherheitskonfiguration und einen Heartbeat, damit die geräteinterne
-  Ausfallsicherung der Firmware den Teich schützt, selbst wenn ioBroker ausfällt.
+  Ausfallsicherung der Firmware den Teich schützt, selbst wenn ioBroker ausfällt. Das Gerät wird
+  über seine **IP** erreicht — per **Ethernet/PoE** oder **optionalem WLAN** (auf der eigenen
+  Einstellungsseite des Geräts aktivierbar; WLAN benötigt die externe Antenne des Geräts — siehe
+  Handbuch). Ist **am Teich kein LAN** vorhanden, lässt sich das Gerät vollständig über WLAN
+  einrichten – über den eingebauten **Einrichtungs-Hotspot** (`pond-aeration-setup`, Captive Portal
+  unter `http://192.168.4.1/`) — siehe Handbuch.
   - **Autonome Zeitpläne (ohne ioBroker laufen)** *(nur ESP32, optional)* – wenn aktiviert,
     überträgt der Adapter auch deine Zeitpläne an das Gerät; fällt die Verbindung aus, führt der
     ESP32 sie anhand seiner NTP-Uhr selbst weiter aus (die Dead-Head-Sicherheitsverriegelung gilt

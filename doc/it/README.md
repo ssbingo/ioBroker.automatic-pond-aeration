@@ -127,7 +127,12 @@ usi.
   software aggiuntivo), poi imposta l'**host/IP** e associa il **relè della valvola di emergenza** e
   il **relè della pompa** (0–7); i punti di aerazione usano il canale relè impostato per ciascun punto.
   L'adattatore invia una configurazione di sicurezza e un heartbeat affinché il failsafe integrato nel
-  dispositivo del firmware protegga il laghetto anche se ioBroker è offline.
+  dispositivo del firmware protegga il laghetto anche se ioBroker è offline. Il dispositivo è
+  raggiungibile tramite il suo **IP** — via **Ethernet/PoE** o **WiFi opzionale** (abilitato nella
+  pagina Impostazioni del dispositivo stesso; il WiFi richiede l'antenna esterna del dispositivo — vedi
+  il manuale). **Senza LAN al laghetto**, il dispositivo può essere configurato interamente via WiFi
+  tramite il suo **hotspot di configurazione** integrato (`pond-aeration-setup`, portale captive su
+  `http://192.168.4.1/`) — vedi il manuale.
   - **Pianificazione autonoma (funziona senza ioBroker)** *(solo ESP32, facoltativo)* – se
     abilitata, l'adattatore invia anche le tue pianificazioni al dispositivo; se la connessione
     cade, l'ESP32 continua a eseguirle da solo usando il suo orologio NTP (l'interblocco di

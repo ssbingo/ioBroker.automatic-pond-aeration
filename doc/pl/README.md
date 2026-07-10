@@ -122,6 +122,11 @@ części, których używasz.
   i **przekaźnik pompy** (0–7); punkty napowietrzania używają kanału przekaźnika ustawionego dla
   każdego punktu. Adapter wysyła konfigurację bezpieczeństwa oraz sygnał kontrolny (heartbeat), aby
   wbudowane w urządzenie zabezpieczenie firmware chroniło staw, nawet gdy ioBroker jest niedostępny.
+  Urządzenie jest dostępne przez swój **adres IP** — przez **Ethernet/PoE** lub **opcjonalne WiFi**
+  (włączane na własnej stronie ustawień urządzenia; WiFi wymaga zewnętrznej anteny urządzenia — zobacz
+  podręcznik). Gdy **przy stawie nie ma sieci LAN**, urządzenie można skonfigurować w całości przez WiFi
+  za pomocą wbudowanego **hotspotu konfiguracyjnego** (`pond-aeration-setup`, portal przechwytujący pod
+  adresem `http://192.168.4.1/`) — zobacz podręcznik.
   - **Autonomiczny harmonogram (działa bez ioBroker)** *(tylko ESP32, opcjonalnie)* – gdy włączone,
     adapter wysyła też Twoje harmonogramy do urządzenia; jeśli połączenie zostanie przerwane, ESP32
     samodzielnie kontynuuje ich realizację, korzystając z własnego zegara NTP (blokada

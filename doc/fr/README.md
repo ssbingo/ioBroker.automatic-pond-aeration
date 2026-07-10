@@ -129,7 +129,12 @@ parties que tu utilises.
   supplémentaire), puis définis le **host/IP** et associe le **relais de la vanne de secours** et le
   **relais de la pompe** (0–7) ; les points d'aération utilisent le canal de relais défini par point.
   L'adaptateur envoie une configuration de sécurité et un battement (heartbeat) pour que la sécurité
-  intégrée à l'appareil du firmware protège le bassin même si ioBroker est hors service.
+  intégrée à l'appareil du firmware protège le bassin même si ioBroker est hors service. L'appareil est
+  accessible via son **IP** — par **Ethernet/PoE** ou par **WiFi facultatif** (activé sur la propre page
+  de paramètres de l'appareil ; le WiFi nécessite l'antenne externe de l'appareil — voir le manuel). En
+  **l'absence de LAN au bassin**, l'appareil peut être entièrement configuré par WiFi via son **hotspot
+  de configuration** intégré (`pond-aeration-setup`, portail captif sur `http://192.168.4.1/`) — voir le
+  manuel.
   - **Horaire autonome (fonctionne sans ioBroker)** *(ESP32 uniquement, facultatif)* – lorsqu'il est
     activé, l'adaptateur envoie aussi tes plannings horaires à l'appareil ; si la connexion est
     perdue, l'ESP32 continue de les exécuter lui-même à l'aide de son horloge NTP (le verrouillage de

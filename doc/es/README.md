@@ -131,7 +131,11 @@ uses.
   de emergencia** y el **relé de la bomba** (0–7); los puntos de aireación usan el canal de relé
   configurado por punto. El adaptador envía una configuración de seguridad y un latido (heartbeat)
   para que el sistema de seguridad en el propio dispositivo del firmware proteja el estanque incluso
-  si ioBroker está caído.
+  si ioBroker está caído. Al dispositivo se accede por su **IP** — mediante **Ethernet/PoE** o
+  **WiFi opcional** (que se habilita en la propia página de ajustes del dispositivo; el WiFi
+  requiere la antena externa del dispositivo — consulta el manual). **Sin LAN en el estanque**, el
+  dispositivo puede configurarse por completo por WiFi mediante su **punto de acceso de configuración**
+  integrado (`pond-aeration-setup`, portal cautivo en `http://192.168.4.1/`) — consulta el manual.
   - **Programación autónoma (funciona sin ioBroker)** *(solo ESP32, opcional)* – cuando está
     activada, el adaptador también envía tus programaciones al dispositivo; si se pierde la
     conexión, el ESP32 sigue ejecutándolas por sí solo usando su reloj NTP (el enclavamiento de

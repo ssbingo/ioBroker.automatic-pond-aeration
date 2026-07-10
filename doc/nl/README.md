@@ -121,7 +121,11 @@ onderdelen die je gebruikt.
   software), stel vervolgens de **host/IP** in en wijs het **noodklep-relais** en het
   **pomp-relais** (0–7) toe; de beluchtingspunten gebruiken het per punt ingestelde relaiskanaal. De
   adapter stuurt een veiligheidsconfiguratie en een heartbeat, zodat de failsafe op het apparaat zelf
-  van de firmware de vijver beschermt, zelfs als ioBroker uitvalt.
+  van de firmware de vijver beschermt, zelfs als ioBroker uitvalt. Het apparaat is bereikbaar via zijn
+  **IP** — via **Ethernet/PoE** of **optionele WiFi** (in te schakelen op de eigen Instellingen-pagina
+  van het apparaat; WiFi vereist de externe antenne van het apparaat — zie de handleiding). Als er **geen
+  LAN bij de vijver** is, kan het apparaat volledig via WiFi worden ingesteld met zijn ingebouwde
+  **setup-hotspot** (`pond-aeration-setup`, captive portal op `http://192.168.4.1/`) — zie de handleiding.
   - **Autonoom schema (draait zonder ioBroker)** *(alleen ESP32, optioneel)* – wanneer ingeschakeld,
     stuurt de adapter ook je tijdschema's naar het apparaat; valt de verbinding weg, dan blijft de
     ESP32 ze zelf uitvoeren met zijn NTP-klok (de dead-head-veiligheidsvergrendeling blijft van

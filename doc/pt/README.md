@@ -125,7 +125,12 @@ que usa.
   software adicional), depois defina o **host/IP** e mapeie o **relé da válvula de emergência** e o
   **relé da bomba** (0–7); os pontos de aeração usam o canal de relé definido por ponto. O adaptador
   envia uma configuração de segurança e um heartbeat para que a proteção contra falhas no próprio
-  dispositivo do firmware proteja o lago mesmo se o ioBroker estiver fora do ar.
+  dispositivo do firmware proteja o lago mesmo se o ioBroker estiver fora do ar. O dispositivo é
+  acessado pelo seu **IP** — via **Ethernet/PoE** ou **WiFi opcional** (habilitado na própria página
+  de Configurações do dispositivo; o WiFi requer a antena externa do dispositivo — consulte o
+  manual). Sem **LAN junto ao lago**, o dispositivo pode ser configurado inteiramente por WiFi
+  através do seu **hotspot de configuração** integrado (`pond-aeration-setup`, portal cativo em
+  `http://192.168.4.1/`) — consulte o manual.
   - **Agendamento autônomo (funciona sem o ioBroker)** *(apenas ESP32, opcional)* – quando ativado,
     o adaptador também envia os seus horários programados ao dispositivo; se a conexão cair, o ESP32
     continua a executá-los sozinho usando o seu relógio NTP (o bloqueio de segurança dead-head
