@@ -36,12 +36,13 @@ determinati punti di aerazione durante l'alimentazione quando è installato
 > valvole (programma orario, ciclo a rotazione round-robin, gruppi), il **blocco di sicurezza** contro
 > il dead-heading, il **monitoraggio** (ossigeno, temperatura aria/acqua, pressione con allarmi), gli
 > **orari astronomici & la geolocalizzazione**, l'**accoppiamento con il feeder**, la **modalità
-> inverno / anti-ghiaccio**, il **circuito chiuso dell'ossigeno**, le **notifiche tramite un
-> adattatore di messaging**, le **statistiche di funzionamento**, una **modalità di test dry-run**, i
+> inverno / anti-ghiaccio**, il **circuito chiuso dell'ossigeno**, le **notifiche** tramite un
+> adattatore di messaging, le **statistiche di funzionamento**, una **modalità di test dry-run**, i
 > **pulsanti di override** per punto e il backend hardware **ESP32** diretto (comunica via HTTP con il
-> [firmware di riferimento](https://ssbingo.github.io/pond-aeration-flash/) separato, disponibile e
-> installabile nel browser dalla pagina di flash — Chrome/Edge, senza software aggiuntivo). Il backend predefinito pilota le tue valvole e la pompa
-> tramite stati ioBroker esistenti, così funziona qualsiasi scheda a relè.
+> firmware di riferimento — flashalo nel browser dalla
+> [pagina di flash del firmware](https://ssbingo.github.io/pond-aeration-flash/)). Il backend
+> predefinito pilota le tue valvole e la pompa tramite stati ioBroker esistenti, così funziona
+> qualsiasi scheda a relè.
 
 > 📘 **Manuale completo passo passo (PDF, per principianti — con schemi di cablaggio, FAQ e
 > risoluzione dei problemi):** English → [../../docs/manual/pond-aeration-manual.en.pdf](../../docs/manual/pond-aeration-manual.en.pdf) ·
@@ -74,9 +75,10 @@ valvola si apre:
   permanenza configurabile.
 * **Gruppi** – controllare più punti insieme; non ci possono **mai essere più gruppi che punti**.
 
-Le valvole e la pompa vengono pilotate tramite **stati ioBroker esistenti** (da qualsiasi adattatore
-che esponga gli interruttori). Un backend hardware **ESP32** diretto (senza un'ulteriore istanza
-ioBroker) è pianificato.
+Le valvole e la pompa vengono pilotate **o** tramite **stati ioBroker esistenti** (da qualsiasi
+adattatore che esponga gli interruttori) **oppure direttamente su un controller ESP32 dedicato** su
+cui gira il firmware di riferimento — senza un'ulteriore istanza ioBroker. Scegli questa opzione in
+**Backend hardware** (scheda Generale); vedi [Configurazione → Generale](#generale).
 
 ## 2. Concetto di sicurezza
 
@@ -119,10 +121,10 @@ usi.
   (`[DRY-RUN] would …`) invece che negli stati reali. Ideale per la messa in servizio e per testare
   una configurazione prima di cablarla.
 - **Backend hardware** – `Stati ioBroker esistenti` (predefinito) pilota le tue valvole/la tua pompa
-  tramite gli stati di altri adattatori. `ESP32 (diretto)` comunica via HTTP con il
-  [firmware di riferimento](https://ssbingo.github.io/pond-aeration-flash/) — che si installa nel
-  browser dalla pagina di flash (Chrome/Edge, senza software aggiuntivo) — su un Waveshare
-  ESP32-S3-POE-ETH-8DI-8RO — imposta l'**host/IP** e associa il **relè della valvola di emergenza** e
+  tramite gli stati di altri adattatori. `ESP32 (diretto)` comunica via HTTP con il firmware di
+  riferimento su un Waveshare ESP32-S3-POE-ETH-8DI-8RO. Flasha il firmware nel browser dalla
+  [pagina di flash del firmware](https://ssbingo.github.io/pond-aeration-flash/) (Chrome/Edge, senza
+  software aggiuntivo), poi imposta l'**host/IP** e associa il **relè della valvola di emergenza** e
   il **relè della pompa** (0–7); i punti di aerazione usano il canale relè impostato per ciascun punto.
   L'adattatore invia una configurazione di sicurezza e un heartbeat affinché il failsafe integrato nel
   dispositivo del firmware protegga il laghetto anche se ioBroker è offline.
@@ -132,11 +134,12 @@ usi.
     sicurezza dead-head resta valido). La sequenza ciclica resta gestita dall'adattatore.
   - **Compatibilità del firmware** – l'adattatore e il firmware vengono abbinati tramite una
     **versione del protocollo** (il contratto vincolante), non in base ai numeri di release esatti.
-    Questa versione dell'adattatore parla il **protocollo 1** e **consiglia il firmware v1.1.0**
-    (minimo v1.0.0); la scheda di configurazione ESP32 lo mostra e rimanda alla [pagina di flash del
-    firmware](https://ssbingo.github.io/pond-aeration-flash/), da cui installarlo nel browser. Alla connessione, la versione del dispositivo e un flag di compatibilità
-    vengono pubblicati come `info.deviceFirmware` e `info.firmwareCompatible`, e qualsiasi
-    discrepanza di protocollo viene scritta nel log.
+    Questa versione dell'adattatore parla il **protocollo 1** e **consiglia il firmware v1.2.2**
+    (minimo v1.0.0); l'admin lo mostra e rimanda alle release. Alla connessione, la versione del
+    dispositivo e un flag di compatibilità vengono pubblicati come `info.deviceFirmware` e
+    `info.firmwareCompatible`, e qualsiasi discrepanza di protocollo viene scritta nel log. Vedi la
+    tabella di compatibilità nel [manuale](../../docs/manual/pond-aeration-manual.en.pdf) / repo del
+    firmware.
   - **Licenza** *(solo se il tuo firmware include l'overlay di licenza opzionale)* – il dispositivo
     opera su un livello: **free** (solo monitoraggio), **community** (controllo dei relè) o **pro**
     (+ la pianificazione autonoma indipendente); la sicurezza (failsafe, valvola di emergenza,
@@ -147,6 +150,18 @@ usi.
     dispositivo **non dispone di licenza per il controllo**, il monitoraggio continua a funzionare e
     il controllo viene saltato (vedi `info.licenseControlBlocked`). Il firmware pubblico senza
     l'overlay non è interessato.
+    *Nota sul re-flashing:* la chiave di attivazione è memorizzata sull'ESP e viene **cancellata
+    quando esegui nuovamente il flash tramite l'installer del browser** (inizia un nuovo periodo di
+    prova). Il **codice del dispositivo deriva dall'hardware e non cambia mai**, quindi è sufficiente
+    **reinserire la stessa chiave di attivazione** — non serve una nuova chiave. Un **aggiornamento
+    del firmware tramite la pagina Update del dispositivo** (aggiornamento online con un clic o
+    caricamento di un file) mantiene l'attivazione e tutte le impostazioni; solo l'installer la
+    azzera.
+  - **Mirroring dei sensori** – a ogni interrogazione l'adattatore invia anche i tuoi punti dati dei
+    sensori configurati (ossigeno, temperatura acqua/aria, pressione) al dispositivo, così compaiono
+    sulla **web UI dell'ESP** (contrassegnati con *(ioBroker)*) anche per i sensori che sono solo
+    stati ioBroker e non cablati all'ESP. Un sensore ESP fisicamente cablato mantiene la priorità; i
+    valori inviati scadono dopo alcuni minuti. Richiede firmware ≥ 1.1.7.
 - **Intervallo di polling (s)** – ogni quanto viene interrogato lo stato del backend (ad es. `30`).
 
 ### Punti di aerazione
@@ -154,15 +169,24 @@ Il cuore della configurazione. Aggiungi **fino a 8** punti; ciascun punto è una
 punto:
 - **Nome** – ad es. `Pier`, `Deep zone`.
 - **Abilitato** – includere questo punto nel controllo.
-- **Backend** – `ioBroker` (uno stato esterno) o `ESP32` (un canale relè, pianificato).
+- **Backend** – `ioBroker` (uno stato esterno) o `ESP32` (un canale relè sul dispositivo). L'opzione
+  `ESP32` compare solo quando il **Backend hardware** (scheda Generale) è `ESP32 (diretto)`.
 - **Stato valvola / canale** – per il backend ioBroker, scegli lo stato interruttore che apre la
-  valvola (tramite il browser degli oggetti); per ESP32, il numero del canale.
+  valvola (tramite il browser degli oggetti). Per il backend ESP32, scegli il **canale relè** da un
+  menu a tendina: i canali che pilotano la **pompa** e la **valvola di emergenza** sono mostrati come
+  *riservati* e i canali già occupati da un altro punto come *in uso*, così puoi selezionare solo un
+  canale libero. Quando non resta alcun canale, aggiungi altri punti come **stati ioBroker** tramite
+  la colonna Backend.
 - **Pulsante di override** *(opzionale)* – un pulsante fisico per punto (ad es. un ingresso digitale
   di un ESP32, o un qualsiasi stato booleano). Funziona come un **interruttore a commutazione
   (toggle)**: una pressione forza il punto **acceso con priorità sul controllo automatico**
   (programma/sequenza/inverno/ossigeno) e persino su una pausa del feeder — *solo l'interruttore
   principale o un intervento di sicurezza lo annullano*. Premi di nuovo per rilasciarlo. (Sono
-  previste altre modalità del pulsante; il campo è predisposto per esse.) Un pulsante è disponibile solo per una **valvola di aerazione** — un punto che si trova sul canale relè ESP32 della **pompa** o della **valvola di emergenza** non può averne uno (l'opzione è disattivata). Con il backend ESP32, un pulsante premuto **sul dispositivo** viene riflesso in ioBroker (`aeration.point.<n>.buttonOn`) e ottiene la stessa priorità.
+  previste altre modalità del pulsante; il campo è predisposto per esse.) Un pulsante è disponibile
+  solo per una **valvola di aerazione** — un punto che si trova sul canale relè ESP32 della **pompa**
+  o della **valvola di emergenza** non può averne uno (l'opzione è disattivata). Con il backend ESP32,
+  un pulsante premuto **sul dispositivo** viene riflesso in ioBroker (`aeration.point.<n>.buttonOn`) e
+  ottiene la stessa priorità.
 
 ### Gruppi
 Raggruppa i punti per commutarli insieme (ad es. un pulsante apre più diffusori). Assegna un nome al
@@ -229,11 +253,15 @@ leggile, perché questa è la scheda in cui un valore sbagliato conta di più.
 - **Valvole aperte min. mentre la pompa è in funzione** – la protezione contro il dead-heading
   (predefinito `1`).
 - **Intervallo del watchdog (s)** e **sovrapposizione make-before-break (s)**.
-- **Pompa** – se è controllabile (allora il blocco può spegnerla), il suo stato e i tempi minimi di
-  accensione/spegnimento contro i cicli troppo brevi.
-- **Valvola di emergenza** – il suo stato, se è **normalmente aperta** (fail-safe), il **tipo** di
-  valvola (elettrovalvola o valvola a sfera motorizzata) e, per una valvola motorizzata, il suo
-  **tempo di corsa**.
+- **Pompa** – se è controllabile (allora il blocco può spegnerla), il **segnale** della pompa e i
+  tempi minimi di accensione/spegnimento contro i cicli troppo brevi. *Con il backend **ESP32** il
+  segnale della pompa è il **canale relè ESP32** — esattamente lo stesso impostato in Generale →
+  Backend hardware, qui mostrato affinché le due schede non possano mai contraddirsi; con il backend
+  **ioBroker** è uno stato ioBroker.*
+- **Valvola di emergenza** – il suo **segnale**, se è **normalmente aperta** (fail-safe), il **tipo**
+  di valvola (elettrovalvola o valvola a sfera motorizzata) e, per una valvola motorizzata, il suo
+  **tempo di corsa**. *Con il backend ESP32 il segnale è analogamente il canale relè ESP32 della
+  valvola di emergenza (come in Generale).*
 
 ### Notifiche
 Abilita le notifiche e scegli un'**istanza di messaging** (un qualsiasi adattatore di tipo
@@ -363,14 +391,11 @@ ripuliti automaticamente.
 
 Fatto: interfaccia di configurazione, controllo delle valvole (programma/round-robin/gruppi), il
 blocco di sicurezza contro il dead-heading, il monitoraggio, astro & geolocalizzazione,
-l'accoppiamento con il feeder, la modalità inverno / anti-ghiaccio, il circuito chiuso dell'ossigeno,
-le notifiche, le statistiche di funzionamento, la modalità di test dry-run e il
-**[firmware di riferimento](https://ssbingo.github.io/pond-aeration-flash/)** per il Waveshare
-ESP32-S3-POE-ETH-8DI-8RO (Ethernet, relè, pulsanti su ingressi digitali, API HTTP/WS, failsafe
-integrato nel dispositivo, interfaccia web ottimizzata per i dispositivi mobili sulla porta 80, con i
-sensori di riferimento per ossigeno disciolto, pressione della linea dell'aria e temperatura
-dell'acqua): è disponibile e si installa nel browser dalla pagina di flash (Chrome/Edge, senza
-software aggiuntivo). **Ancora da fare:**
+l'accoppiamento con il feeder, la **modalità inverno / anti-ghiaccio**, il **circuito chiuso
+dell'ossigeno**, le **notifiche**, le **statistiche di funzionamento**, la **modalità di test
+dry-run** e il backend hardware **ESP32** diretto con il suo firmware di riferimento (che flashi nel
+browser dalla [pagina di flash del firmware](https://ssbingo.github.io/pond-aeration-flash/)).
+**Ancora da fare:**
 
 * un successivo **adattatore di widget vis-2** per il funzionamento e il monitoraggio.
 

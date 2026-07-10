@@ -52,7 +52,7 @@ ein Ventil pro _Belüftungspunkt_ (bis zu 8). Er kann:
   image("assets/system-overview.de.svg", width: 100%),
   caption: [Wie die Teile zusammenpassen: Der Adapter (das „Gehirn“) entscheidet, welche Ventile
   öffnen; die Pumpe speist Luft durch den Verteiler; jedes offene Ventil sendet Luft zu einem
-  Diffusor im Teich. Der direkte ESP32-Pfad ist geplant #src(3).],
+  Diffusor im Teich. Alternativ steuert der Adapter die Hardware direkt über einen ESP32 an #src(3).],
 )
 
 == Wer welchen Teil lesen sollte
@@ -357,9 +357,9 @@ Statuswerte.
 
 = Hardware & Verdrahtung (Referenzaufbau)
 
-Heute steuert der Adapter Ihre Ventile und die Pumpe über *vorhandene ioBroker-States*, sodass jede
-Relaisplatine oder smarte Steckdose funktioniert. Ein *direkter ESP32-Aufbau* ist geplant, damit Sie
-keinen zusätzlichen PC brauchen — dieser Abschnitt ist die Referenz für diesen Aufbau.
+Der Adapter steuert Ihre Ventile und die Pumpe wahlweise über *vorhandene ioBroker-States* (jede
+Relaisplatine oder smarte Steckdose funktioniert) **oder** *direkt über einen ESP32*, sodass Sie
+keinen zusätzlichen PC brauchen — dieser Abschnitt ist die Referenz für den ESP32-Aufbau.
 
 == Controller-Board
 
@@ -508,7 +508,7 @@ dazwischen.
 
   #dtable(
     [Adapter-Version], [Firmware],
-    [0.0.20 +], [Protokoll 1 · empfohlen v1.1.0 · Minimum v1.0.0],
+    [0.0.20 +], [Protokoll 1 · empfohlen v1.2.2 · Minimum v1.0.0],
   )
 
   Beim Verbinden liest der Adapter die Version des Geräts und veröffentlicht sie als
@@ -638,7 +638,7 @@ Instanz auf `debug`).
   Ventilschalter).
 / ioBroker: Die Open-Source-Smart-Home-Plattform, in der dieser Adapter läuft #src(1).
 / ESP32: Ein kleiner vernetzter Mikrocontroller, der die Relais ansteuern und die Sensoren direkt
-  auslesen kann (geplanter Aufbau).
+  auslesen kann (der direkte ESP32-Aufbau).
 / I²C / 1-Wire: Zwei einfache Verdrahtungs-„Busse“ für Sensoren — I²C für die Sauerstoff- und
   Drucksensoren, 1-Wire für den DS18B20-Temperaturfühler.
 

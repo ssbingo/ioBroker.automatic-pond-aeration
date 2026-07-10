@@ -37,10 +37,11 @@ aeração selecionados durante a alimentação quando
 > **horários astronômicos e a geolocalização**, o **acoplamento com o feeder**, o **modo inverno /
 > livre de gelo**, a **malha fechada de oxigênio**, as **notificações via um adaptador de messaging**,
 > as **estatísticas de funcionamento**, um **modo de teste dry-run**, os **botões de substituição** por
-> ponto e o backend de hardware **ESP32** direto (comunica-se por HTTP com o
-> [firmware de referência](https://ssbingo.github.io/pond-aeration-flash/), que você grava no
-> navegador a partir da página de flash — Chrome/Edge, sem software adicional). O backend padrão controla suas válvulas e a bomba por meio de
-> estados existentes do ioBroker, então qualquer placa de relés funciona.
+> ponto e o backend de hardware **ESP32** direto (comunica-se por HTTP com o firmware de referência —
+> grave-o no navegador a partir da
+> [página de flash do firmware](https://ssbingo.github.io/pond-aeration-flash/)). O backend padrão
+> controla suas válvulas e a bomba por meio de estados existentes do ioBroker, então qualquer placa de
+> relés funciona.
 
 > 📘 **Manual completo passo a passo (PDF, para iniciantes — com diagramas de ligação, perguntas
 > frequentes e resolução de problemas):** English → [../../docs/manual/pond-aeration-manual.en.pdf](../../docs/manual/pond-aeration-manual.en.pdf) ·
@@ -73,9 +74,10 @@ válvula abre:
   permanência configurável.
 * **Grupos** – controlar vários pontos em conjunto; **nunca pode haver mais grupos do que pontos**.
 
-As válvulas e a bomba são controladas através de **estados existentes do ioBroker** (de qualquer
-adaptador que exponha os interruptores). Um backend de hardware **ESP32** direto (sem uma instância
-adicional do ioBroker) está planejado.
+As válvulas e a bomba são controladas **ou** através de **estados existentes do ioBroker** (de
+qualquer adaptador que exponha os interruptores) **ou diretamente em um controlador ESP32 dedicado**
+que executa o firmware de referência — sem uma instância adicional do ioBroker. Você escolhe isso em
+**Backend de hardware** (aba Geral); consulte [Configuração → Geral](#geral).
 
 ## 2. Conceito de segurança
 
@@ -117,48 +119,69 @@ que usa.
   (`[DRY-RUN] would …`) em vez dos estados reais. Ideal para o comissionamento e para testar uma
   configuração antes de conectá-la ao hardware.
 - **Backend de hardware** – `Estados existentes do ioBroker` (padrão) controla suas válvulas/bomba
-  por meio de estados de outros adaptadores. `ESP32 (direto)` comunica-se por HTTP com o
-  [firmware de referência](https://ssbingo.github.io/pond-aeration-flash/) em um Waveshare
-  ESP32-S3-POE-ETH-8DI-8RO — grave o firmware no navegador a partir da página de flash (Chrome/Edge,
-  sem software adicional), defina o **host/IP** e mapeie o **relé da válvula de emergência** e o
+  por meio de estados de outros adaptadores. `ESP32 (direto)` comunica-se por HTTP com o firmware de
+  referência em um Waveshare ESP32-S3-POE-ETH-8DI-8RO. Grave o firmware no navegador a partir da
+  [página de flash do firmware](https://ssbingo.github.io/pond-aeration-flash/) (Chrome/Edge, sem
+  software adicional), depois defina o **host/IP** e mapeie o **relé da válvula de emergência** e o
   **relé da bomba** (0–7); os pontos de aeração usam o canal de relé definido por ponto. O adaptador
   envia uma configuração de segurança e um heartbeat para que a proteção contra falhas no próprio
   dispositivo do firmware proteja o lago mesmo se o ioBroker estiver fora do ar.
-  - **Agendamento autónomo (funciona sem o ioBroker)** *(apenas ESP32, opcional)* – quando ativado,
-    o adaptador também envia os seus agendamentos ao dispositivo; se a ligação cair, o ESP32
-    continua a executá-los sozinho usando o seu relógio NTP (o encravamento de segurança dead-head
-    continua a aplicar-se). A sequência cíclica permanece no adaptador.
-  - **Compatibilidade de firmware** – o adaptador e o firmware são correspondidos por uma **versão
-    do protocolo** (o contrato rígido), não por números de versão exatos. Esta versão do adaptador
-    fala o **protocolo 1** e **recomenda o firmware v1.1.0** (mínimo v1.0.0); a aba de configuração
-    ESP32 mostra isso e liga para a [página de flash](https://ssbingo.github.io/pond-aeration-flash/). Ao conectar, a versão do
-    dispositivo e um sinalizador de compatibilidade são publicados como `info.deviceFirmware` e
-    `info.firmwareCompatible`, e qualquer incompatibilidade de protocolo é escrita no log.
+  - **Agendamento autônomo (funciona sem o ioBroker)** *(apenas ESP32, opcional)* – quando ativado,
+    o adaptador também envia os seus horários programados ao dispositivo; se a conexão cair, o ESP32
+    continua a executá-los sozinho usando o seu relógio NTP (o bloqueio de segurança dead-head
+    continua a valer). A sequência cíclica permanece no adaptador.
+  - **Compatibilidade de firmware** – o adaptador e o firmware são correspondidos por uma **versão do
+    protocolo** (o contrato rígido), não por números de versão exatos. Esta versão do adaptador fala
+    o **protocolo 1** e **recomenda o firmware v1.2.2** (mínimo v1.0.0); o admin mostra isso e liga
+    para as releases. Ao conectar, a versão do dispositivo e um sinalizador de compatibilidade são
+    publicados como `info.deviceFirmware` e `info.firmwareCompatible`, e qualquer incompatibilidade de
+    protocolo é escrita no log. Consulte a tabela de compatibilidade no
+    [manual](../../docs/manual/pond-aeration-manual.en.pdf) / repositório do firmware.
   - **Licenciamento** *(apenas se o seu firmware incluir a camada de licenciamento opcional)* – o
     dispositivo funciona num nível: **free** (apenas monitoramento), **community** (controle de
-    relés) ou **pro** (+ o agendamento autónomo); a segurança (proteção contra falhas, válvula de
-    emergência, encravamento dead-head, botões manuais) está sempre ativa, independentemente disso.
-    Um dispositivo novo funciona plenamente (**pro**) durante um período de avaliação e depois volta
-    para free até que uma chave de ativação seja introduzida na página `/license` do dispositivo. O
-    adaptador mostra o estado em `info.licenseTier` / `info.licenseTrialDaysLeft` / `info.deviceCode`;
-    se o dispositivo **não estiver licenciado para controle**, o monitoramento continua a funcionar e
-    o controle é ignorado (ver `info.licenseControlBlocked`). O firmware público sem a camada não é
-    afetado.
+    relés) ou **pro** (+ o agendamento autônomo standalone); a segurança (proteção contra falhas,
+    válvula de emergência, bloqueio dead-head, botões manuais) está sempre ativa, independentemente
+    disso. Um dispositivo novo funciona plenamente (**pro**) durante um período de avaliação e depois
+    volta para free até que uma chave de ativação seja introduzida na página `/license` do
+    dispositivo. O adaptador mostra o estado em `info.licenseTier` / `info.licenseTrialDaysLeft` /
+    `info.deviceCode`; se o dispositivo **não estiver licenciado para controle**, o monitoramento
+    continua a funcionar e o controle é ignorado (ver `info.licenseControlBlocked`). O firmware
+    público sem a camada não é afetado.
+    *Nota sobre a regravação:* a chave de ativação é armazenada no ESP e é **apagada quando você
+    regrava pelo instalador do navegador** (começa um novo período de avaliação). O **código do
+    dispositivo é derivado do hardware e nunca muda**, portanto a **mesma chave de ativação pode
+    simplesmente ser reinserida** — nenhuma chave nova é necessária. Uma **atualização de firmware
+    pela página Update do dispositivo** (atualização online com um clique ou upload de arquivo)
+    mantém a ativação e todas as configurações; apenas o instalador a redefine.
+  - **Espelhamento de sensores** – a cada sondagem o adaptador também envia seus pontos de dados de
+    sensor configurados (oxigênio, temperatura da água/ar, pressão) ao dispositivo, de modo que
+    apareçam na **própria interface web do ESP** (marcados como *(ioBroker)*) — mesmo para sensores
+    que são apenas estados do ioBroker e não estão ligados ao ESP. Um sensor fisicamente ligado ao ESP
+    mantém a prioridade; os valores enviados expiram após alguns minutos. Requer firmware ≥ 1.1.7.
 - **Intervalo de sondagem (s)** – com que frequência o status do backend é consultado (por ex. `30`).
 
 ### Pontos de aeração
 O coração da configuração. Adicione **até 8** pontos; cada ponto é uma válvula. Por ponto:
 - **Nome** – por ex. `Pier`, `Deep zone`.
 - **Habilitado** – incluir este ponto no controle.
-- **Backend** – `ioBroker` (um estado externo) ou `ESP32` (um canal de relé, planejado).
+- **Backend** – `ioBroker` (um estado externo) ou `ESP32` (um canal de relé no dispositivo). A opção
+  `ESP32` só aparece quando o **Backend de hardware** (aba Geral) está em `ESP32 (direto)`.
 - **Estado da válvula / canal** – para o backend ioBroker, escolha o estado interruptor que abre a
-  válvula (pelo navegador de objetos); para ESP32, o número do canal.
+  válvula (pelo navegador de objetos). Para o backend ESP32, escolha o **canal de relé** em uma lista
+  suspensa: os canais que acionam a **bomba** e a **válvula de emergência** são exibidos como
+  *reservados* e os canais já ocupados por outro ponto como *em uso*, de modo que você só pode
+  escolher um livre. Quando não sobrar nenhum canal, adicione mais pontos como **estados do ioBroker**
+  pela coluna Backend.
 - **Botão de substituição (override)** *(opcional)* – um botão físico por ponto (por ex. uma entrada
   digital de um ESP32, ou qualquer estado booleano). Funciona como um **comutador (toggle)**: uma
   pressão força o ponto **ligado com prioridade sobre o controle automático**
   (horário/sequência/inverno/oxigênio) e até sobre uma pausa do feeder — *apenas o interruptor
   principal ou um disparo de segurança o anulam*. Pressione novamente para soltá-lo. (Mais modos de
-  botão estão planejados; o campo está preparado para eles.) Um botão só está disponível para uma **válvula de arejamento** — um ponto que fica no canal de relé do ESP32 da **bomba** ou da **válvula de emergência** não pode ter um (a opção fica desativada). Com o backend ESP32, um botão premido **no dispositivo** é refletido de volta no ioBroker (`aeration.point.<n>.buttonOn`) e recebe a mesma prioridade.
+  botão estão planejados; o campo está preparado para eles.) Um botão só está disponível para uma
+  **válvula de aeração** — um ponto que fica no canal de relé do ESP32 da **bomba** ou da **válvula de
+  emergência** não pode ter um (a opção fica desativada). Com o backend ESP32, um botão premido **no
+  dispositivo** é refletido de volta no ioBroker (`aeration.point.<n>.buttonOn`) e recebe a mesma
+  prioridade.
 
 ### Grupos
 Agrupe pontos para comutá-los juntos (por ex. um botão abre vários difusores). Dê um nome ao grupo e
@@ -222,11 +245,15 @@ Cada campo desta aba traz uma **explicação no admin** do que ele faz e do seu 
 esta é a aba em que um valor errado mais importa.
 - **Válvulas abertas mín. enquanto a bomba funciona** – a proteção contra o dead-heading (padrão `1`).
 - **Intervalo do watchdog (s)** e **sobreposição make-before-break (s)**.
-- **Bomba** – se é controlável (então o bloqueio pode desligá-la), seu estado e os tempos mínimos de
-  liga/desliga contra o chaveamento muito frequente.
-- **Válvula de emergência** – seu estado, se é **normalmente aberta** (à prova de falhas), o **tipo**
-  de válvula (solenoide ou válvula de esfera motorizada) e, para uma válvula motorizada, seu **tempo
-  de curso**.
+- **Bomba** – se é controlável (então o bloqueio pode desligá-la), o **sinal** da bomba e os tempos
+  mínimos de liga/desliga contra o chaveamento muito frequente. *Com o backend **ESP32**, o sinal da
+  bomba é o **canal de relé do ESP32** — exatamente o mesmo definido em Geral → Backend de hardware,
+  exibido aqui para que as duas abas nunca possam se contradizer; com o backend **ioBroker** é um
+  estado do ioBroker.*
+- **Válvula de emergência** – seu **sinal**, se é **normalmente aberta** (à prova de falhas), o
+  **tipo** de válvula (solenoide ou válvula de esfera motorizada) e, para uma válvula motorizada, seu
+  **tempo de curso**. *Com o backend ESP32, o sinal é igualmente o canal de relé do ESP32 da válvula
+  de emergência (o mesmo de Geral).*
 
 ### Notificações
 Habilite as notificações e escolha uma **instância de messaging** (qualquer adaptador do tipo
@@ -259,7 +286,7 @@ comandos graváveis; todos os outros são valores de estado somente leitura atua
 |--------|------|--------|-----------|
 | `info.deviceFirmware` | string | `text` | Versão do firmware reportada pelo ESP32 |
 | `info.firmwareCompatible` | boolean | `indicator` | O protocolo do firmware é compatível com este adaptador |
-| `info.licenseTier` | string | `text` | Nível de licença ativo: `free` (monitoramento), `community` (controle de relés) ou `pro` (+ agendamento autónomo); vazio se o firmware não tiver a camada de licenciamento |
+| `info.licenseTier` | string | `text` | Nível de licença ativo: `free` (monitoramento), `community` (controle de relés) ou `pro` (+ agendamento standalone); vazio se o firmware não tiver a camada de licenciamento |
 | `info.licenseTrialDaysLeft` | number | `value` | Dias de avaliação restantes da licença (0 = nenhuma avaliação em andamento) |
 | `info.deviceCode` | string | `text` | Código do dispositivo — informe-o ao desbloquear para receber uma chave de ativação |
 | `info.licenseControlBlocked` | boolean | `indicator` | O dispositivo rejeitou um comando de controle (não licenciado para controle) |
@@ -310,11 +337,11 @@ comandos graváveis; todos os outros são valores de estado somente leitura atua
 | `sensors.oxygen` | number | `value` | Oxigênio dissolvido (mg/l) |
 | `sensors.oxygenSaturation` | number | `value` | Saturação de oxigênio (%) |
 | `sensors.oxygenAlarm` | boolean | `indicator.alarm` | Oxigênio abaixo do limite inferior |
+| `sensors.oxygenBoostActive` | boolean | `indicator` | A malha fechada de oxigênio está forçando a aeração a ligar (apenas com a malha habilitada) |
 | `sensors.airTemperature` | number | `value.temperature` | Temperatura do ar (°C) |
 | `sensors.waterTemperature` | number | `value.temperature` | Temperatura da água (°C) |
 | `sensors.pressure` | number | `value.pressure` | Pressão do sistema (bar) |
 | `sensors.pressureAlarm` | boolean | `indicator.alarm` | Pressão fora da faixa |
-| `sensors.oxygenBoostActive` | boolean | `indicator` | A malha fechada de oxigênio está forçando a aeração a ligar (apenas com a malha habilitada) |
 
 **Astronomia e localização**
 
@@ -357,13 +384,9 @@ automaticamente.
 Concluído: interface de configuração, controle de válvulas (horário/round-robin/grupos), o bloqueio
 de segurança contra o dead-heading, o monitoramento, astro e geolocalização, o acoplamento com o
 feeder, o **modo inverno / livre de gelo**, a **malha fechada de oxigênio**, as **notificações**, as
-**estatísticas de funcionamento** e o **modo de teste dry-run**. O **[firmware de referência](https://ssbingo.github.io/pond-aeration-flash/)**
-para o Waveshare ESP32-S3-POE-ETH-8DI-8RO está disponível e é gravado no navegador a partir da página
-de flash (Chrome/Edge, sem software adicional): o backend ESP32 do lado do adaptador está pronto, e o
-firmware traz Ethernet, relés, botões em entradas digitais, API HTTP/WS, proteção contra falhas no
-próprio dispositivo, interface web adequada a dispositivos móveis na porta 80 e os sensores de
-referência (oxigênio dissolvido, pressão da linha de ar, temperatura da água — consulte a seção
-**Sensores** deste manual). **Ainda por vir:**
+**estatísticas de funcionamento**, o **modo de teste dry-run** e o backend de hardware **ESP32** direto
+com o seu firmware de referência (que você grava no navegador a partir da
+[página de flash do firmware](https://ssbingo.github.io/pond-aeration-flash/)). **Ainda por vir:**
 
 * um **adaptador de widgets vis-2** subsequente para operação e monitoramento.
 

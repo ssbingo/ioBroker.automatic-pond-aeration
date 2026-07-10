@@ -82,8 +82,10 @@ receive air is decided by **solenoid valves**. This adapter decides **when** eac
 * **Cyclic round-robin** – rotate through the points, each open for a configurable dwell time.
 * **Groups** – control several points together; there can **never be more groups than points**.
 
-The valves and the pump are driven through **existing ioBroker states** (from any adapter that
-exposes the switches). A direct **ESP32** hardware backend (no extra ioBroker instance) is planned.
+The valves and the pump are driven **either** through **existing ioBroker states** (from any adapter
+that exposes the switches) **or directly on a dedicated ESP32 controller** running the reference
+firmware — no extra ioBroker instance needed. You choose this under **Hardware backend** (General
+tab); see [Configuration → General](#general).
 
 ## 2. Safety concept
 
@@ -134,7 +136,7 @@ you use.
     sequence stays with the adapter.
   - **Firmware compatibility** – the adapter and the firmware are matched by a **protocol version**
     (the hard contract), not by exact release numbers. This adapter version speaks **protocol 1** and
-    **recommends firmware v1.1.0** (minimum v1.0.0); the admin shows this and links to the releases.
+    **recommends firmware v1.2.2** (minimum v1.0.0); the admin shows this and links to the releases.
     On connect, the device's version and a compatibility flag are published as `info.deviceFirmware`
     and `info.firmwareCompatible`, and any protocol mismatch is written to the log. See the
     compatibility table in the [manual](docs/manual/pond-aeration-manual.en.pdf) / firmware repo.
@@ -162,9 +164,13 @@ you use.
 The heart of the configuration. Add **up to 8** points; each one is one valve. Per point:
 - **Name** – e.g. `Pier`, `Deep zone`.
 - **Enabled** – include this point in the control.
-- **Backend** – `ioBroker` (a foreign state) or `ESP32` (a relay channel, planned).
+- **Backend** – `ioBroker` (a foreign state) or `ESP32` (a relay channel on the device). The
+  `ESP32` option only appears when the **Hardware backend** (General tab) is `ESP32 (direct)`.
 - **Valve state / channel** – for the ioBroker backend, pick the switch state that opens the valve
-  (via the object browser); for ESP32, the channel number.
+  (via the object browser). For the ESP32 backend, choose the **relay channel** from a drop-down:
+  the channels driving the **pump** and the **emergency valve** are shown as *reserved* and channels
+  already taken by another point as *in use*, so you can only pick a free one. When no channel is
+  left, add further points as **ioBroker states** via the Backend column.
 - **Override button** *(optional)* – a physical push-button per point (e.g. an ESP32 digital input,
   or any boolean state). It works as a **toggle**: one press forces the point **on with priority over
   the automatic control** (schedule/sequence/winter/oxygen) and even over a feeder pause — *only the
@@ -229,10 +235,13 @@ Every field on this tab carries an **in-admin explanation** of what it does and 
 them, because this is the tab where a wrong value matters most.
 - **Min. open valves while pump runs** – the dead-head protection (default `1`).
 - **Watchdog interval (s)** and **make-before-break overlap (s)**.
-- **Pump** – whether it is controllable (then the interlock can switch it off), its state, and
-  anti short-cycle min on/off times.
-- **Emergency valve** – its state, whether it is **normally open** (fail-safe), the valve **type**
-  (solenoid or motorized ball valve) and, for a motor valve, its **travel time**.
+- **Pump** – whether it is controllable (then the interlock can switch it off), the pump **signal**,
+  and anti short-cycle min on/off times. *With the **ESP32** backend the pump signal is the **ESP32
+  relay channel** — the very same one set under General → Hardware backend, shown here so the two
+  tabs can never disagree; with the **ioBroker** backend it is an ioBroker state.*
+- **Emergency valve** – its **signal**, whether it is **normally open** (fail-safe), the valve
+  **type** (solenoid or motorized ball valve) and, for a motor valve, its **travel time**. *With the
+  ESP32 backend the signal is likewise the ESP32 emergency-valve relay channel (same as General).*
 
 ### Notifications
 Enable notifications and pick a **messaging instance** (any adapter of type `messaging`, e.g.
@@ -375,6 +384,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.1.6 (2026-07-10)
+* (ssbingo) **Documentation refresh across the whole project.** The English README, all **10 translated docs** and the **EN/DE PDF manual** were brought fully up to date and made more beginner-friendly: the direct **ESP32 backend** is documented as available (no longer “planned”), the ESP32 **channel picker** (which reserves the pump/emergency relay channels) and the **Safety-tab relay-channel** behaviour are described, and the **licence re-flashing** and **sensor-mirroring** notes are included. The adapter now **recommends firmware v1.2.2** (`lib/firmware-compat.js`; minimum unchanged at v1.0.0). No change to the control engine
+
 ### 0.1.5 (2026-07-10)
 * (ssbingo) **Admin consistency for the ESP32 backend.** On the **Safety** tab the pump and emergency valve are now shown as their **ESP32 relay channels** (the very same ones set under *General → Hardware backend*) instead of separate ioBroker states — the two tabs can no longer contradict each other. The **aeration-point channel picker** is now a dropdown that **reserves** the pump/emergency channels and greys out channels already used by other points; when no channel is left, further points are added as ioBroker states. 6 new admin strings localized in 11 languages
 
@@ -401,9 +413,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.0.18 (2026-07-08)
 * (ssbingo) Override-button safety + ESP32 device web UI. The per-point manual override **push-button is now only allowed on an aeration-valve channel** — if a point sits on the ESP32 pump or emergency-valve relay channel the button is force-disabled and greyed out in the admin (those channels are safety-critical and must never be hand-toggled). A button wired to the ESP32 is now **reflected back into ioBroker**: pressing it at the device updates `aeration.point.<n>.buttonOn` and gets the same force-on priority in the arbiter. The companion reference firmware gained an on-device **web UI** (Settings: DHCP/static IP/DNS/hostname, NTP time, WS2812/buzzer; **OTA** firmware update with a GitHub version check; a device-info page), **SNTP** timekeeping (default `de.pool.ntp.org`) and **status LED/buzzer** signalling, plus a beginner install guide (EN/DE)
-
-### 0.0.17 (2026-07-08)
-* (ssbingo) Direct **ESP32 hardware backend** (M7): selecting `ESP32 (direct)` now drives a Waveshare ESP32-S3-POE-ETH-8DI-8RO through the separate reference firmware over HTTP (JSON, port 80) — `GET /api/info` protocol check, `POST /api/config` pushing the safety roles, relay commands, and a heartbeat that keeps the firmware's on-device failsafe disarmed while the adapter is healthy; the polled status is mirrored into the data points. New config `esp32EmergencyRelay`/`esp32PumpRelay`, pure/unit-tested `lib/hal/esp32-protocol.js` and `lib/hal/esp32-backend.js`, admin fields + 3 strings in 11 languages. The ioBroker-state backend remains the default
 
 ---
 

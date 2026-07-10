@@ -36,11 +36,10 @@ napowietrzania podczas karmienia, gdy zainstalowany jest
 > powietrza/wody, ciśnienie z alarmami), **czasy astronomiczne i geolokalizacja**, **sprzężenie z
 > feederem**, **tryb zimowy / bez lodu**, **zamknięta pętla tlenowa**, **powiadomienia przez adapter
 > messaging**, **statystyki czasu pracy**, **testowy tryb dry-run**, **przyciski wymuszenia** na każdy
-> punkt oraz bezpośredni sprzętowy backend **ESP32** (komunikuje się przez HTTP z osobnym
-> [oprogramowaniem referencyjnym](https://ssbingo.github.io/pond-aeration-flash/); firmware jest
-> dostępne i wgrywane w przeglądarce ze strony flashowania — Chrome/Edge, bez dodatkowego
-> oprogramowania). Domyślny backend steruje Twoimi zaworami i pompą przez istniejące stany
-> ioBroker, więc działa dowolna płytka przekaźników.
+> punkt oraz bezpośredni sprzętowy backend **ESP32** (komunikuje się przez HTTP z oprogramowaniem
+> referencyjnym — wgraj je w przeglądarce ze [strony
+> flashowania](https://ssbingo.github.io/pond-aeration-flash/)). Domyślny backend steruje Twoimi
+> zaworami i pompą przez istniejące stany ioBroker, więc działa dowolna płytka przekaźników.
 
 > 📘 **Kompletny przewodnik krok po kroku (PDF, dla początkujących — ze schematami połączeń, FAQ i
 > rozwiązywaniem problemów):** English → [../../docs/manual/pond-aeration-manual.en.pdf](../../docs/manual/pond-aeration-manual.en.pdf) ·
@@ -72,9 +71,10 @@ otwiera się każdy zawór:
   konfigurowalny czas przetrzymania.
 * **Grupy** – sterowanie kilkoma punktami razem; **nigdy nie może być więcej grup niż punktów**.
 
-Zawory i pompa są sterowane przez **istniejące stany ioBroker** (z dowolnego adaptera
-udostępniającego przełączniki). Bezpośredni sprzętowy backend **ESP32** (bez dodatkowej instancji
-ioBroker) jest planowany.
+Zawory i pompa są sterowane **albo** przez **istniejące stany ioBroker** (z dowolnego adaptera
+udostępniającego przełączniki), **albo bezpośrednio na dedykowanym kontrolerze ESP32** z uruchomionym
+oprogramowaniem referencyjnym — bez dodatkowej instancji ioBroker. Wybierasz to w sekcji **Backend
+sprzętowy** (zakładka „Ogólne"); zobacz [Konfiguracja → Ogólne](#ogólne).
 
 ## 2. Koncepcja bezpieczeństwa
 
@@ -116,9 +116,9 @@ części, których używasz.
   konfiguracji przed jej podłączeniem.
 - **Backend sprzętowy** – `Istniejące stany ioBroker` (domyślnie) steruje Twoimi zaworami/pompą przez
   stany innych adapterów. `ESP32 (bezpośrednio)` komunikuje się przez HTTP z oprogramowaniem
-  referencyjnym na Waveshare ESP32-S3-POE-ETH-8DI-8RO, które [wgrywasz w przeglądarce ze strony
+  referencyjnym na Waveshare ESP32-S3-POE-ETH-8DI-8RO. Wgraj firmware w przeglądarce ze [strony
   flashowania](https://ssbingo.github.io/pond-aeration-flash/) (Chrome/Edge, bez dodatkowego
-  oprogramowania) — ustaw **host/IP** oraz przypisz **przekaźnik zaworu awaryjnego**
+  oprogramowania), a następnie ustaw **host/IP** oraz przypisz **przekaźnik zaworu awaryjnego**
   i **przekaźnik pompy** (0–7); punkty napowietrzania używają kanału przekaźnika ustawionego dla
   każdego punktu. Adapter wysyła konfigurację bezpieczeństwa oraz sygnał kontrolny (heartbeat), aby
   wbudowane w urządzenie zabezpieczenie firmware chroniło staw, nawet gdy ioBroker jest niedostępny.
@@ -128,10 +128,11 @@ części, których używasz.
     bezpieczeństwa dead-head nadal obowiązuje). Sekwencja cykliczna pozostaje po stronie adaptera.
   - **Zgodność firmware** – adapter i firmware są dopasowywane za pomocą **wersji protokołu** (twardy
     kontrakt), a nie dokładnych numerów wydań. Ta wersja adaptera mówi **protokołem 1** i **zaleca
-    firmware v1.1.0** (minimum v1.0.0); zakładka konfiguracji ESP32 pokazuje to i odsyła do
-    [strony flashowania](https://ssbingo.github.io/pond-aeration-flash/), z której wgrywasz w przeglądarce właściwe firmware. Po połączeniu wersja urządzenia i flaga zgodności są publikowane jako
-    `info.deviceFirmware` i `info.firmwareCompatible`, a każda niezgodność protokołu jest zapisywana
-    w dzienniku.
+    firmware v1.2.2** (minimum v1.0.0); panel admin pokazuje to i odsyła do wydań. Po połączeniu
+    wersja urządzenia i flaga zgodności są publikowane jako `info.deviceFirmware` i
+    `info.firmwareCompatible`, a każda niezgodność protokołu jest zapisywana w dzienniku. Zobacz
+    tabelę zgodności w [podręczniku](../../docs/manual/pond-aeration-manual.en.pdf) / repozytorium
+    firmware.
   - **Licencjonowanie** *(tylko jeśli Twoje firmware zawiera opcjonalną nakładkę licencyjną)* –
     urządzenie działa na jednym z poziomów: **free** (tylko monitorowanie), **community** (sterowanie
     przekaźnikami) lub **pro** (+ autonomiczny, samodzielny harmonogram); bezpieczeństwo
@@ -142,21 +143,42 @@ części, których używasz.
     `info.licenseTrialDaysLeft` / `info.deviceCode`; jeśli urządzenie **nie ma licencji na
     sterowanie**, monitorowanie nadal działa, a sterowanie jest pomijane (zobacz
     `info.licenseControlBlocked`). Publiczne firmware bez tej nakładki nie jest tym objęte.
+    *Uwaga o ponownym flashowaniu:* klucz aktywacyjny jest przechowywany na ESP i **jest usuwany
+    podczas ponownego flashowania przez instalator w przeglądarce** (rozpoczyna się nowy okres
+    próbny). **Kod urządzenia wynika ze sprzętu i nigdy się nie zmienia**, więc **można po prostu
+    wprowadzić ponownie ten sam klucz aktywacyjny** — nowy klucz nie jest potrzebny. Aktualizacja
+    firmware **przez stronę Update urządzenia** (aktualizacja online jednym kliknięciem lub przesłanie
+    pliku) zachowuje aktywację i wszystkie ustawienia; tylko instalator ją resetuje.
+  - **Dublowanie czujników** – przy każdym odpytaniu adapter dodatkowo wysyła Twoje skonfigurowane
+    punkty danych czujników (tlen, temperatura wody/powietrza, ciśnienie) do urządzenia, dzięki czemu
+    pojawiają się we **własnym interfejsie webowym ESP** (oznaczone *(ioBroker)*) — nawet dla
+    czujników, które są tylko stanami ioBroker i nie są podłączone do ESP. Fizycznie podłączony
+    czujnik ESP zachowuje priorytet; przesłane wartości znikają po kilku minutach. Wymaga firmware
+    ≥ 1.1.7.
 - **Interwał odpytywania (s)** – jak często odpytywany jest status backendu (np. `30`).
 
 ### Punkty napowietrzania
 Serce konfiguracji. Dodaj **do 8** punktów; każdy punkt to jeden zawór. Dla każdego punktu:
 - **Nazwa** – np. `Pier`, `Deep zone`.
 - **Włączony** – uwzględnij ten punkt w sterowaniu.
-- **Backend** – `ioBroker` (obcy stan) lub `ESP32` (kanał przekaźnika, planowany).
+- **Backend** – `ioBroker` (obcy stan) lub `ESP32` (kanał przekaźnika na urządzeniu). Opcja `ESP32`
+  pojawia się tylko wtedy, gdy **Backend sprzętowy** (zakładka „Ogólne") ma wartość
+  `ESP32 (bezpośrednio)`.
 - **Stan zaworu / kanał** – dla backendu ioBroker wybierz stan przełącznika, który otwiera zawór
-  (przez przeglądarkę obiektów); dla ESP32 numer kanału.
+  (przez przeglądarkę obiektów). Dla backendu ESP32 wybierz **kanał przekaźnika** z listy rozwijanej:
+  kanały sterujące **pompą** i **zaworem awaryjnym** są pokazane jako *zarezerwowane*, a kanały już
+  zajęte przez inny punkt jako *w użyciu*, więc można wybrać tylko wolny. Gdy nie zostanie żaden wolny
+  kanał, dodaj kolejne punkty jako **stany ioBroker** przez kolumnę „Backend".
 - **Przycisk wymuszenia (override)** *(opcjonalny)* – fizyczny przycisk na każdy punkt (np. wejście
   cyfrowe ESP32 lub dowolny stan logiczny). Działa jako **przełącznik (toggle)**: jedno naciśnięcie
   wymusza punkt **wł. z priorytetem nad sterowaniem automatycznym**
   (harmonogram/sekwencja/zima/tlen), a nawet nad pauzą feedera — *tylko główny wyłącznik lub
   zadziałanie zabezpieczenia go zastępują*. Naciśnij ponownie, aby zwolnić. (Planowane są kolejne
-  tryby przycisku; pole jest na nie przygotowane.) Przycisk jest dostępny tylko dla **zaworu napowietrzania** — punkt znajdujący się na kanale przekaźnika ESP32 **pompy** lub **zaworu awaryjnego** nie może go mieć (opcja jest wyszarzona). W backendzie ESP32 przycisk naciśnięty **na urządzeniu** jest odzwierciedlany z powrotem w ioBroker (`aeration.point.<n>.buttonOn`) i otrzymuje ten sam priorytet.
+  tryby przycisku; pole jest na nie przygotowane.) Przycisk jest dostępny tylko dla **zaworu
+  napowietrzania** — punkt znajdujący się na kanale przekaźnika ESP32 **pompy** lub **zaworu
+  awaryjnego** nie może go mieć (opcja jest wyszarzona). W backendzie ESP32 przycisk naciśnięty **na
+  urządzeniu** jest odzwierciedlany z powrotem w ioBroker (`aeration.point.<n>.buttonOn`) i otrzymuje
+  ten sam priorytet.
 
 ### Grupy
 Grupuj punkty, aby przełączać je razem (np. jeden przycisk otwiera kilka dyfuzorów). Nadaj grupie
@@ -165,7 +187,7 @@ nazwę i zaznacz jej punkty składowe. **Nigdy nie może być więcej grup niż 
 ### Sterowanie
 - **Cykliczna rotacja (round-robin)** – kolejne przełączanie punktów, każdy otwarty przez **czas
   przetrzymania** (sekundy).
-  * **Sekwencja (punkty i grupy)** – opcjonalnie zdefiniuj **uporządkowany cykl kroków**, gdzie każdy
+  - **Sekwencja (punkty i grupy)** – opcjonalnie zdefiniuj **uporządkowany cykl kroków**, gdzie każdy
     krok odnosi się do pojedynczego **punktu lub całej grupy** i może mieć własny czas przetrzymania.
     Pozwala to uruchomić np. *grupa 1 → grupa 3 → punkt 1 → …* i swobodnie **mieszać** punkty i grupy.
     Zmieniaj kolejność kroków strzałkami w górę/w dół w adminie. Pozostaw sekwencję pustą, aby wrócić
@@ -187,7 +209,7 @@ nazwę i zaznacz jej punkty składowe. **Nigdy nie może być więcej grup niż 
 Opcjonalne monitorowanie. Dla każdego czujnika zaznacz **Włączony** i wybierz **stan źródłowy**:
 - **Rozpuszczony tlen** – z dolnym progiem (wyzwala `sensors.oxygenAlarm`), wartością docelową i
   histerezą; **nasycenie tlenem %** jest obliczane z temperatury wody.
-  * **Zamknięta pętla tlenowa** – po włączeniu adapter **wymusza napowietrzanie na wł.**, gdy tlen
+  - **Zamknięta pętla tlenowa** – po włączeniu adapter **wymusza napowietrzanie na wł.**, gdy tlen
     jest poniżej dolnego progu, i utrzymuje je do powrotu do wartości docelowej (lub
     `low + hysteresis`, gdy nie ustawiono wartości docelowej). Pozostaw **Punkty wzmacniane** puste,
     aby wzmocnić cały staw. Podobnie jak tryb zimowy, pętla działa w trybie `auto` i ustępuje
@@ -220,10 +242,15 @@ je, bo to karta, na której błędna wartość ma największe znaczenie.
 - **Min. otwartych zaworów przy pracującej pompie** – zabezpieczenie przed pracą przy zamkniętych
   zaworach (domyślnie `1`).
 - **Interwał watchdoga (s)** oraz **nakładanie make-before-break (s)**.
-- **Pompa** – czy jest sterowalna (wtedy blokada może ją wyłączyć), jej stan oraz minimalne czasy
-  wł./wył. przeciw zbyt częstemu taktowaniu.
-- **Zawór awaryjny** – jego stan, czy jest **normalnie otwarty** (fail-safe), **typ** zaworu
-  (elektrozawór lub silnikowy zawór kulowy) oraz, dla zaworu silnikowego, jego **czas przejścia**.
+- **Pompa** – czy jest sterowalna (wtedy blokada może ją wyłączyć), **sygnał** pompy oraz minimalne
+  czasy wł./wył. przeciw zbyt częstemu taktowaniu. *W backendzie **ESP32** sygnałem pompy jest **kanał
+  przekaźnika ESP32** — dokładnie ten sam, który ustawiono w Ogólne → Backend sprzętowy, pokazany
+  tutaj, aby obie zakładki nigdy nie mogły sobie zaprzeczać; w backendzie **ioBroker** jest to stan
+  ioBroker.*
+- **Zawór awaryjny** – jego **sygnał**, czy jest **normalnie otwarty** (fail-safe), **typ** zaworu
+  (elektrozawór lub silnikowy zawór kulowy) oraz, dla zaworu silnikowego, jego **czas przejścia**. *W
+  backendzie ESP32 sygnałem jest również kanał przekaźnika zaworu awaryjnego ESP32 (tak samo jak w
+  Ogólne).*
 
 ### Powiadomienia
 Włącz powiadomienia i wybierz **instancję messaging** (dowolny adapter typu `messaging`, np. Telegram
@@ -307,11 +334,11 @@ zapisywalne; wszystkie pozostałe to wartości stanu tylko do odczytu aktualizow
 | `sensors.oxygen` | number | `value` | Rozpuszczony tlen (mg/l) |
 | `sensors.oxygenSaturation` | number | `value` | Nasycenie tlenem (%) |
 | `sensors.oxygenAlarm` | boolean | `indicator.alarm` | Tlen poniżej dolnego progu |
+| `sensors.oxygenBoostActive` | boolean | `indicator` | Zamknięta pętla tlenowa wymusza napowietrzanie na wł. (tylko przy włączonej pętli) |
 | `sensors.airTemperature` | number | `value.temperature` | Temperatura powietrza (°C) |
 | `sensors.waterTemperature` | number | `value.temperature` | Temperatura wody (°C) |
 | `sensors.pressure` | number | `value.pressure` | Ciśnienie w systemie (bar) |
 | `sensors.pressureAlarm` | boolean | `indicator.alarm` | Ciśnienie poza zakresem |
-| `sensors.oxygenBoostActive` | boolean | `indicator` | Zamknięta pętla tlenowa wymusza napowietrzanie na wł. (tylko przy włączonej pętli) |
 
 **Astronomia i lokalizacja**
 
@@ -353,16 +380,11 @@ czyszczone.
 
 Gotowe: interfejs konfiguracji, sterowanie zaworami (harmonogram/round-robin/grupy), blokada
 bezpieczeństwa przeciw pracy przy zamkniętych zaworach, monitorowanie, astro i geolokalizacja,
-sprzężenie z feederem, tryb zimowy / bez lodu, zamknięta pętla tlenowa, powiadomienia, statystyki
-czasu pracy oraz testowy tryb dry-run. **Wciąż przed nami:**
+sprzężenie z feederem, **tryb zimowy / bez lodu**, **zamknięta pętla tlenowa**, **powiadomienia**,
+**statystyki czasu pracy**, **testowy tryb dry-run** oraz bezpośredni sprzętowy backend **ESP32** z
+jego oprogramowaniem referencyjnym (które wgrywasz w przeglądarce ze [strony
+flashowania](https://ssbingo.github.io/pond-aeration-flash/)). **Wciąż przed nami:**
 
-* **czujniki referencyjne** dla **[oprogramowania referencyjnego](https://ssbingo.github.io/pond-aeration-flash/)**
-  na Waveshare ESP32-S3-POE-ETH-8DI-8RO (rozpuszczony tlen, ciśnienie w linii powietrza, temperatura
-  wody — zobacz sekcję **Czujniki** powyżej). Samo oprogramowanie referencyjne jest dostępne i wgrywane
-  w przeglądarce ze strony flashowania (Chrome/Edge, bez dodatkowego oprogramowania); backend ESP32 po
-  stronie adaptera jest gotowy, a podstawa firmware (Ethernet, przekaźniki, przyciski na wejściach
-  cyfrowych, API HTTP/WS, wbudowane w urządzenie zabezpieczenie, przyjazny dla urządzeń mobilnych
-  interfejs webowy na porcie 80) działa;
 * kolejny **adapter widżetów vis-2** do obsługi i monitorowania.
 
 Pełny, oparty na kamieniach milowych plan znajdziesz w [PROJECT_PLAN.md](../../PROJECT_PLAN.md).

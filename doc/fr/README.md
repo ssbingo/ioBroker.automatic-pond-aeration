@@ -36,13 +36,13 @@ pause certains points d'aération pendant la distribution de nourriture lorsque
 > vannes (planning, cycle en rotation round-robin, groupes), le **verrouillage de sécurité** contre le
 > dead-heading, la **surveillance** (oxygène, température air/eau, pression avec alarmes), les
 > **heures astronomiques & la géolocalisation**, le **couplage au feeder**, le **mode hiver /
-> hors-gel**, la **boucle fermée d'oxygène**, les **notifications via un adaptateur de messagerie**,
+> hors-gel**, la **boucle fermée d'oxygène**, les **notifications** via un adaptateur de messagerie,
 > les **statistiques de fonctionnement**, un **mode de test à blanc (dry-run)**, les **boutons de
-> forçage** par point et le backend matériel **ESP32** direct (communique en HTTP avec le firmware
-> de référence, disponible et flashé dans le navigateur depuis la
-> [page de flash](https://ssbingo.github.io/pond-aeration-flash/) — Chrome/Edge, sans logiciel
-> supplémentaire). Le backend par défaut pilote tes vannes et ta pompe
-> via des états ioBroker existants, de sorte que n'importe quelle carte à relais fonctionne.
+> forçage** par point et le backend matériel **ESP32** direct (communique en HTTP avec le firmware de
+> référence — flashe-le dans ton navigateur depuis la
+> [page de flash](https://ssbingo.github.io/pond-aeration-flash/)). Le backend par défaut pilote tes
+> vannes et ta pompe via des états ioBroker existants, de sorte que n'importe quelle carte à relais
+> fonctionne.
 
 > 📘 **Manuel complet pas à pas (PDF, pour débutants — avec schémas de câblage, FAQ et
 > dépannage) :** English → [../../docs/manual/pond-aeration-manual.en.pdf](../../docs/manual/pond-aeration-manual.en.pdf) ·
@@ -76,9 +76,10 @@ chaque vanne s'ouvre :
 * **Groupes** – commander plusieurs points ensemble ; il ne peut **jamais y avoir plus de groupes que
   de points**.
 
-Les vannes et la pompe sont pilotées via des **états ioBroker existants** (de n'importe quel
-adaptateur qui expose les commutateurs). Un backend matériel **ESP32** direct (sans instance ioBroker
-supplémentaire) est prévu.
+Les vannes et la pompe sont pilotées **soit** via des **états ioBroker existants** (de n'importe quel
+adaptateur qui expose les commutateurs) **soit directement sur un contrôleur ESP32 dédié** exécutant
+le firmware de référence – sans instance ioBroker supplémentaire. Tu choisis cela sous **Backend
+matériel** (onglet Général) ; voir [Configuration → Général](#général).
 
 ## 2. Concept de sécurité
 
@@ -122,34 +123,47 @@ parties que tu utilises.
   uniquement écrites dans le journal (`[DRY-RUN] would …`) au lieu des états réels. Idéal pour la mise
   en service et pour tester une configuration avant de la câbler.
 - **Backend matériel** – `États ioBroker existants` (par défaut) pilote tes vannes/ta pompe via les
-  états d'autres adaptateurs. `ESP32 (direct)` communique en HTTP avec le firmware de référence,
-  flashé dans le navigateur depuis la [page de flash](https://ssbingo.github.io/pond-aeration-flash/)
-  (Chrome/Edge, sans logiciel supplémentaire), sur un Waveshare
-  ESP32-S3-POE-ETH-8DI-8RO — définis le **host/IP** et associe le **relais de la vanne de secours** et
-  le **relais de la pompe** (0–7) ; les points d'aération utilisent le canal de relais défini par
-  point. L'adaptateur envoie une configuration de sécurité et un battement (heartbeat) pour que la
-  sécurité intégrée à l'appareil du firmware protège le bassin même si ioBroker est hors service.
+  états d'autres adaptateurs. `ESP32 (direct)` communique en HTTP avec le firmware de référence sur un
+  Waveshare ESP32-S3-POE-ETH-8DI-8RO. Flashe le firmware dans ton navigateur depuis la
+  [page de flash](https://ssbingo.github.io/pond-aeration-flash/) (Chrome/Edge, sans logiciel
+  supplémentaire), puis définis le **host/IP** et associe le **relais de la vanne de secours** et le
+  **relais de la pompe** (0–7) ; les points d'aération utilisent le canal de relais défini par point.
+  L'adaptateur envoie une configuration de sécurité et un battement (heartbeat) pour que la sécurité
+  intégrée à l'appareil du firmware protège le bassin même si ioBroker est hors service.
   - **Horaire autonome (fonctionne sans ioBroker)** *(ESP32 uniquement, facultatif)* – lorsqu'il est
-    activé, l'adaptateur envoie aussi tes horaires à l'appareil ; si la connexion est perdue,
-    l'ESP32 continue de les exécuter lui-même à l'aide de son horloge NTP (le verrouillage de
+    activé, l'adaptateur envoie aussi tes plannings horaires à l'appareil ; si la connexion est
+    perdue, l'ESP32 continue de les exécuter lui-même à l'aide de son horloge NTP (le verrouillage de
     sécurité dead-head reste actif). La séquence cyclique reste gérée par l'adaptateur.
   - **Compatibilité du firmware** – l'adaptateur et le firmware sont appariés par une **version du
     protocole** (le contrat strict), et non par des numéros de version exacts. Cette version de
-    l'adaptateur parle le **protocole 1** et **recommande le firmware v1.1.0** (minimum v1.0.0) ;
-    l'onglet de configuration ESP32 l'affiche et renvoie à la [page de flash](https://ssbingo.github.io/pond-aeration-flash/). À la
-    connexion, la version de l'appareil et un indicateur de compatibilité sont publiés sous
-    `info.deviceFirmware` et `info.firmwareCompatible`, et toute incompatibilité de protocole est
-    consignée dans le journal.
+    l'adaptateur parle le **protocole 1** et **recommande le firmware v1.2.2** (minimum v1.0.0) ;
+    l'admin l'affiche et renvoie aux releases. À la connexion, la version de l'appareil et un
+    indicateur de compatibilité sont publiés sous `info.deviceFirmware` et `info.firmwareCompatible`,
+    et toute incompatibilité de protocole est consignée dans le journal. Voir le tableau de
+    compatibilité dans le [manuel](../../docs/manual/pond-aeration-manual.en.pdf) / le dépôt du
+    firmware.
   - **Licence** *(uniquement si ton firmware embarque la surcouche de licence facultative)* –
-    l'appareil fonctionne à un niveau de licence : **free** (surveillance uniquement),
-    **community** (commande des relais) ou **pro** (+ l'horaire autonome) ; la sécurité
-    (fail-safe, vanne de secours, verrouillage dead-head, boutons de forçage) reste toujours
-    active quoi qu'il en soit. Un appareil neuf fonctionne pleinement (**pro**) pendant une
-    période d'essai, puis revient à free jusqu'à ce qu'une clé d'activation soit saisie sur la
-    page `/license` de l'appareil. L'adaptateur affiche l'état sous `info.licenseTier` /
-    `info.licenseTrialDaysLeft` / `info.deviceCode` ; si l'appareil est **sans licence pour la
-    commande**, la surveillance continue de fonctionner et la commande est ignorée (voir
-    `info.licenseControlBlocked`). Le firmware public sans la surcouche n'est pas concerné.
+    l'appareil fonctionne à un niveau de licence : **free** (surveillance uniquement), **community**
+    (commande des relais) ou **pro** (+ l'horaire autonome standalone) ; la sécurité (fail-safe, vanne
+    de secours, verrouillage dead-head, boutons de forçage) reste toujours active quoi qu'il en soit.
+    Un appareil neuf fonctionne pleinement (**pro**) pendant une période d'essai, puis revient à free
+    jusqu'à ce qu'une clé d'activation soit saisie sur la page `/license` de l'appareil. L'adaptateur
+    affiche l'état sous `info.licenseTier` / `info.licenseTrialDaysLeft` / `info.deviceCode` ; si
+    l'appareil est **sans licence pour la commande**, la surveillance continue de fonctionner et la
+    commande est ignorée (voir `info.licenseControlBlocked`). Le firmware public sans la surcouche
+    n'est pas concerné.
+    *Remarque sur le reflashage :* la clé d'activation est stockée sur l'ESP et **est effacée lorsque
+    tu reflashes via l'installateur de navigateur** (une nouvelle période d'essai démarre). Le **code
+    de l'appareil est dérivé du matériel et ne change jamais**, de sorte que **la même clé
+    d'activation peut simplement être ressaisie** — aucune nouvelle clé n'est nécessaire. Une **mise à
+    jour du firmware via la page Update de l'appareil** (mise à jour en ligne en un clic ou envoi de
+    fichier) conserve l'activation et tous les réglages ; seul l'installateur les réinitialise.
+  - **Recopie des capteurs** – à chaque interrogation, l'adaptateur envoie aussi tes points de données
+    de capteurs configurés (oxygène, température eau/air, pression) à l'appareil, afin qu'ils
+    apparaissent sur la **propre interface web de l'ESP** (étiquetés *(ioBroker)*) — même pour des
+    capteurs qui ne sont que des états ioBroker et ne sont pas câblés à l'ESP. Un capteur physiquement
+    câblé à l'ESP garde la priorité ; les valeurs recopiées disparaissent après quelques minutes.
+    Nécessite un firmware ≥ 1.1.7.
 - **Intervalle d'interrogation (s)** – à quelle fréquence l'état du backend est interrogé (p. ex.
   `30`).
 
@@ -157,15 +171,25 @@ parties que tu utilises.
 Le cœur de la configuration. Ajoute **jusqu'à 8** points ; chaque point est une vanne. Par point :
 - **Nom** – p. ex. `Pier`, `Deep zone`.
 - **Activé** – inclure ce point dans la commande.
-- **Backend** – `ioBroker` (un état étranger) ou `ESP32` (un canal de relais, prévu).
+- **Backend** – `ioBroker` (un état étranger) ou `ESP32` (un canal de relais sur l'appareil).
+  L'option `ESP32` n'apparaît que lorsque le **Backend matériel** (onglet Général) est réglé sur
+  `ESP32 (direct)`.
 - **État de vanne / canal** – pour le backend ioBroker, choisis l'état commutateur qui ouvre la vanne
-  (via l'explorateur d'objets) ; pour ESP32, le numéro de canal.
+  (via l'explorateur d'objets). Pour le backend ESP32, choisis le **canal de relais** dans une liste
+  déroulante : les canaux qui pilotent la **pompe** et la **vanne de secours** sont affichés comme
+  *réservés* et les canaux déjà pris par un autre point comme *utilisés*, de sorte que tu ne peux
+  choisir qu'un canal libre. Quand il ne reste plus de canal, ajoute d'autres points en tant qu'**états
+  ioBroker** via la colonne Backend.
 - **Bouton de forçage** *(optionnel)* – un bouton-poussoir physique par point (p. ex. une entrée
   numérique d'un ESP32, ou n'importe quel état booléen). Il fonctionne comme un **inverseur
   (toggle)** : une pression force le point **en marche, avec priorité sur la commande automatique**
   (planning/séquence/hiver/oxygène) et même sur une pause du feeder — *seuls l'interrupteur principal
   ou un déclenchement de sécurité le supplantent*. Appuie de nouveau pour le relâcher. (D'autres
-  modes de bouton sont prévus ; le champ est préparé pour eux.) Un bouton n'est disponible que pour une **vanne d'aération** — un point situé sur le canal de relais ESP32 de la **pompe** ou de la **vanne de secours** ne peut pas en avoir (l'option est grisée). Avec le backend ESP32, un bouton pressé **sur l'appareil** est répercuté dans ioBroker (`aeration.point.<n>.buttonOn`) et obtient la même priorité.
+  modes de bouton sont prévus ; le champ est préparé pour eux.) Un bouton n'est disponible que pour
+  une **vanne d'aération** — un point situé sur le canal de relais ESP32 de la **pompe** ou de la
+  **vanne de secours** ne peut pas en avoir (l'option est grisée). Avec le backend ESP32, un bouton
+  pressé **sur l'appareil** est répercuté dans ioBroker (`aeration.point.<n>.buttonOn`) et obtient la
+  même priorité.
 
 ### Groupes
 Regroupe des points pour les commuter ensemble (p. ex. un bouton ouvre plusieurs diffuseurs). Donne
@@ -232,11 +256,15 @@ Chaque champ de cet onglet comporte une **explication dans l'admin** de ce qu'il
 - **Vannes ouvertes min. pendant que la pompe tourne** – la protection contre le dead-heading (par
   défaut `1`).
 - **Intervalle du watchdog (s)** et **chevauchement make-before-break (s)**.
-- **Pompe** – si elle est commandable (le verrouillage peut alors l'arrêter), son état et les durées
-  min. de marche/arrêt contre les cycles trop courts.
-- **Vanne de secours** – son état, si elle est **normalement ouverte** (fail-safe), le **type** de
-  vanne (électrovanne ou vanne à bille motorisée) et, pour une vanne motorisée, son **temps de
-  course**.
+- **Pompe** – si elle est commandable (le verrouillage peut alors l'arrêter), le **signal** de la
+  pompe et les durées min. de marche/arrêt contre les cycles trop courts. *Avec le backend **ESP32**,
+  le signal de la pompe est le **canal de relais ESP32** — exactement le même que celui défini sous
+  Général → Backend matériel, affiché ici pour que les deux onglets ne puissent jamais se contredire ;
+  avec le backend **ioBroker**, c'est un état ioBroker.*
+- **Vanne de secours** – son **signal**, si elle est **normalement ouverte** (fail-safe), le **type**
+  de vanne (électrovanne ou vanne à bille motorisée) et, pour une vanne motorisée, son **temps de
+  course**. *Avec le backend ESP32, le signal est de même le canal de relais ESP32 de la vanne de
+  secours (comme sous Général).*
 
 ### Notifications
 Active les notifications et choisis une **instance de messagerie** (n'importe quel adaptateur de type
@@ -368,15 +396,11 @@ automatiquement.
 
 Terminé : interface de configuration, commande des vannes (planning/round-robin/groupes), le
 verrouillage de sécurité contre le dead-heading, la surveillance, l'astro & la géolocalisation, le
-couplage au feeder, le mode hiver / hors-gel, la boucle fermée d'oxygène, les notifications, les
-statistiques de fonctionnement et le mode de test à blanc (dry-run). **Encore à venir :**
+couplage au feeder, le **mode hiver / hors-gel**, la **boucle fermée d'oxygène**, les
+**notifications**, les **statistiques de fonctionnement**, le **mode de test à blanc (dry-run)** et le
+backend matériel **ESP32** direct avec son firmware de référence (que tu flashes dans ton navigateur
+depuis la [page de flash](https://ssbingo.github.io/pond-aeration-flash/)). **Encore à venir :**
 
-* le **firmware de référence** pour le Waveshare ESP32-S3-POE-ETH-8DI-8RO est disponible et se flashe
-  dans le navigateur depuis la [page de flash](https://ssbingo.github.io/pond-aeration-flash/)
-  (Chrome/Edge, sans logiciel supplémentaire) — Ethernet, relais, boutons sur entrées numériques,
-  API HTTP/WS, sécurité intégrée à l'appareil et interface web adaptée aux mobiles sur le port 80 ;
-  les capteurs de référence (oxygène dissous, pression de la conduite d'air, température de l'eau —
-  voir la section [Capteurs](#capteurs)) constituent l'étape suivante ;
 * un **adaptateur de widgets vis-2** ultérieur pour l'exploitation et la surveillance.
 
 Voir [PROJECT_PLAN.md](../../PROJECT_PLAN.md) pour le plan complet, basé sur des étapes.

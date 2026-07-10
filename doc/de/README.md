@@ -37,11 +37,10 @@ der Fütterung pausieren, wenn
 > **astronomische Zeiten & Geoposition**, die **Feeder-Kopplung**, der **Winter-/Eisfrei-Modus**, der
 > **Sauerstoff-Regelkreis**, **Benachrichtigungen über einen Messaging-Adapter**, die
 > **Laufzeitstatistik**, ein **Trockenlauf-Testmodus**, **Übersteuerungstaster** pro Punkt sowie das
-> direkte **ESP32**-Hardware-Backend (spricht über HTTP mit der separaten
-> [Referenz-Firmware](https://ssbingo.github.io/pond-aeration-flash/), die du im Browser von der
-> Flash-Seite – Chrome/Edge, keine Zusatzsoftware – auf den ESP32 flashst). Das Standard-Backend
-> steuert deine Ventile und Pumpe über vorhandene
-> ioBroker-States, sodass jede Relaisplatine funktioniert.
+> direkte **ESP32**-Hardware-Backend (spricht über HTTP mit der Referenz-Firmware — flashe sie im
+> Browser von der [Firmware-Flash-Seite](https://ssbingo.github.io/pond-aeration-flash/)). Das
+> Standard-Backend steuert deine Ventile und Pumpe über vorhandene ioBroker-States, sodass jede
+> Relaisplatine funktioniert.
 
 > 📘 **Vollständige Schritt-für-Schritt-Anleitung (PDF, für Einsteiger – mit Schaltplänen, FAQ &
 > Fehlerbehebung):** English → [../../docs/manual/pond-aeration-manual.en.pdf](../../docs/manual/pond-aeration-manual.en.pdf) ·
@@ -73,9 +72,10 @@ Ventil öffnet:
   einstellbare Verweildauer geöffnet.
 * **Gruppen** – mehrere Punkte gemeinsam steuern; es kann **nie mehr Gruppen als Punkte geben**.
 
-Die Ventile und die Pumpe werden über **vorhandene ioBroker-States** angesteuert (aus einem
-beliebigen Adapter, der die Schalter bereitstellt). Ein direktes **ESP32**-Hardware-Backend (ohne
-zusätzliche ioBroker-Instanz) ist geplant.
+Die Ventile und die Pumpe werden **entweder** über **vorhandene ioBroker-States** angesteuert (aus
+einem beliebigen Adapter, der die Schalter bereitstellt) **oder direkt auf einem dedizierten
+ESP32-Controller**, auf dem die Referenz-Firmware läuft – ohne zusätzliche ioBroker-Instanz. Du
+wählst dies unter **Hardware-Backend** (Tab Allgemein); siehe [Konfiguration → Allgemein](#allgemein).
 
 ## 2. Sicherheitskonzept
 
@@ -120,10 +120,10 @@ die Teile, die du tatsächlich nutzt.
   (`[DRY-RUN] would …`) statt in die echten States. Ideal für die Inbetriebnahme und zum Testen einer
   Konfiguration, bevor sie verdrahtet wird.
 - **Hardware-Backend** – `Vorhandene ioBroker-States` (Standard) steuert deine Ventile/Pumpe über
-  States anderer Adapter. `ESP32 (direkt)` spricht über HTTP mit der
-  [Referenz-Firmware](https://ssbingo.github.io/pond-aeration-flash/) auf einem Waveshare
-  ESP32-S3-POE-ETH-8DI-8RO (die Firmware flashst du im Browser von der Flash-Seite – Chrome/Edge, keine
-  Zusatzsoftware) — lege die **Host/IP** fest und ordne das **Notventil-Relais** und das
+  States anderer Adapter. `ESP32 (direkt)` spricht über HTTP mit der Referenz-Firmware auf einem
+  Waveshare ESP32-S3-POE-ETH-8DI-8RO. Flashe die Firmware im Browser von der
+  [Firmware-Flash-Seite](https://ssbingo.github.io/pond-aeration-flash/) (Chrome/Edge, keine
+  Zusatzsoftware), lege dann die **Host/IP** fest und ordne das **Notventil-Relais** und das
   **Pumpen-Relais** (0–7) zu; die Belüftungspunkte nutzen den pro Punkt eingestellten Relaiskanal. Der
   Adapter überträgt eine Sicherheitskonfiguration und einen Heartbeat, damit die geräteinterne
   Ausfallsicherung der Firmware den Teich schützt, selbst wenn ioBroker ausfällt.
@@ -133,10 +133,11 @@ die Teile, die du tatsächlich nutzt.
     weiterhin). Die zyklische Sequenz bleibt beim Adapter.
   - **Firmware-Kompatibilität** – Adapter und Firmware werden über eine **Protokoll-Version** (der
     harte Vertrag) abgeglichen, nicht über exakte Release-Nummern. Diese Adapter-Version spricht
-    **Protokoll 1** und **empfiehlt Firmware v1.1.0** (mindestens v1.0.0); der ESP32-Konfigurationstab
-    zeigt dies an und verlinkt auf die [Flash-Seite](https://ssbingo.github.io/pond-aeration-flash/), von der du die passende Firmware im Browser flashst. Beim Verbinden werden die Version
-    des Geräts und ein Kompatibilitäts-Flag als `info.deviceFirmware` und `info.firmwareCompatible`
-    veröffentlicht; jede Protokoll-Abweichung wird ins Log geschrieben.
+    **Protokoll 1** und **empfiehlt Firmware v1.2.2** (mindestens v1.0.0); der Admin zeigt dies an und
+    verlinkt auf die Releases. Beim Verbinden werden die Version des Geräts und ein
+    Kompatibilitäts-Flag als `info.deviceFirmware` und `info.firmwareCompatible` veröffentlicht, und
+    jede Protokoll-Abweichung wird ins Log geschrieben. Siehe die Kompatibilitätstabelle im
+    [Handbuch](../../docs/manual/pond-aeration-manual.de.pdf) / Firmware-Repo.
   - **Lizenzierung** *(nur wenn deine Firmware das optionale Lizenz-Overlay mitbringt)* – das Gerät
     läuft in einer Stufe: **free** (nur Überwachung), **community** (Relaissteuerung) oder **pro**
     (+ der autonome Standalone-Zeitplan); die Sicherheit (Ausfallsicherung, Notventil,
@@ -147,6 +148,17 @@ die Teile, die du tatsächlich nutzt.
     **nicht für die Steuerung lizenziert**, läuft die Überwachung weiter und die Steuerung wird
     übersprungen (siehe `info.licenseControlBlocked`). Öffentliche Firmware ohne das Overlay ist
     nicht betroffen.
+    *Hinweis zum Neu-Flashen:* Der Aktivierungsschlüssel wird auf dem ESP gespeichert und **beim
+    erneuten Flashen über den Browser-Installer gelöscht** (es startet ein frischer Testzeitraum).
+    Der **Gerätecode ist hardwarebasiert und ändert sich nie**, sodass **einfach derselbe
+    Aktivierungsschlüssel erneut eingegeben** werden kann – ein neuer Schlüssel ist nicht nötig. Ein
+    Firmware-**Update über die Update-Seite des Geräts** (Ein-Klick-Online-Update oder Datei-Upload)
+    behält die Aktivierung und alle Einstellungen; nur der Installer setzt sie zurück.
+  - **Sensor-Spiegelung** – bei jeder Abfrage überträgt der Adapter zusätzlich deine konfigurierten
+    Sensor-Datenpunkte (Sauerstoff, Wasser-/Lufttemperatur, Druck) an das Gerät, sodass sie auf der
+    **eigenen Web-UI des ESP** erscheinen (mit *(ioBroker)* gekennzeichnet) – selbst bei Sensoren, die
+    nur ioBroker-States sind und nicht am ESP verdrahtet sind. Ein physisch am ESP verdrahteter Sensor
+    behält Vorrang; übertragene Werte verfallen nach einigen Minuten. Benötigt Firmware ≥ 1.1.7.
 - **Abfrageintervall (s)** – wie oft der Backend-Status abgefragt wird (z. B. `30`).
 
 ### Belüftungspunkte
@@ -154,15 +166,25 @@ Das Herzstück der Konfiguration. Füge **bis zu 8** Punkte hinzu; jeder Punkt i
 Punkt:
 - **Name** – z. B. `Pier`, `Deep zone`.
 - **Aktiviert** – diesen Punkt in die Steuerung einbeziehen.
-- **Backend** – `ioBroker` (ein fremder State) oder `ESP32` (ein Relaiskanal, geplant).
+- **Backend** – `ioBroker` (ein fremder State) oder `ESP32` (ein Relaiskanal auf dem Gerät). Die
+  Option `ESP32` erscheint nur, wenn das **Hardware-Backend** (Tab Allgemein) auf `ESP32 (direkt)`
+  steht.
 - **Ventil-State / Kanal** – für das ioBroker-Backend den Schalter-State wählen, der das Ventil
-  öffnet (über den Objektbrowser); für ESP32 die Kanalnummer.
+  öffnet (über den Objektbrowser). Für das ESP32-Backend den **Relaiskanal** aus einem Dropdown
+  wählen: die Kanäle, die die **Pumpe** und das **Notventil** ansteuern, werden als *reserviert*
+  angezeigt und bereits von einem anderen Punkt belegte Kanäle als *belegt*, sodass du nur einen
+  freien wählen kannst. Wenn kein Kanal mehr frei ist, füge weitere Punkte über die Spalte Backend
+  als **ioBroker-States** hinzu.
 - **Übersteuerungstaster** *(optional)* – ein physischer Taster pro Punkt (z. B. ein digitaler
   ESP32-Eingang oder ein beliebiger boolescher State). Er wirkt als **Umschalter (Toggle)**: ein
   Druck erzwingt den Punkt **ein, mit Vorrang vor der automatischen Steuerung**
   (Zeitplan/Sequenz/Winter/Sauerstoff) und sogar vor einer Feeder-Pause — *nur der Hauptschalter oder
   eine Sicherheitsauslösung setzt ihn außer Kraft*. Zum Freigeben erneut drücken. (Weitere
-  Tastermodi sind geplant; das Feld ist dafür vorbereitet.) Ein Taster ist nur für ein **Belüftungsventil** verfügbar — eine Stelle, die auf dem ESP32-Relaiskanal der **Pumpe** oder des **Notventils** liegt, kann keinen haben (die Option ist ausgegraut). Beim ESP32-Backend wird ein **am Gerät** gedrückter Taster in ioBroker zurückgespiegelt (`aeration.point.<n>.buttonOn`) und erhält dieselbe Priorität.
+  Tastermodi sind geplant; das Feld ist dafür vorbereitet.) Ein Taster ist nur für ein
+  **Belüftungsventil** verfügbar — eine Stelle, die auf dem ESP32-Relaiskanal der **Pumpe** oder des
+  **Notventils** liegt, kann keinen haben (die Option ist ausgegraut). Beim ESP32-Backend wird ein
+  **am Gerät** gedrückter Taster in ioBroker zurückgespiegelt (`aeration.point.<n>.buttonOn`) und
+  erhält dieselbe Priorität.
 
 ### Gruppen
 Punkte zu Gruppen zusammenfassen, um sie gemeinsam zu schalten (z. B. öffnet eine Schaltfläche
@@ -227,10 +249,14 @@ Jedes Feld auf diesem Tab trägt eine **In-Admin-Erklärung**, was es bewirkt un
 hat — lies sie, denn dies ist der Tab, auf dem ein falscher Wert am meisten zählt.
 - **Min. offene Ventile bei laufender Pumpe** – der Schutz gegen Nullförderung (Standard `1`).
 - **Watchdog-Intervall (s)** und **Make-before-break-Überlappung (s)**.
-- **Pumpe** – ob sie steuerbar ist (dann kann die Verriegelung sie abschalten), ihr State sowie
-  Mindest-Ein-/Ausschaltzeiten gegen zu häufiges Takten.
-- **Notventil** – sein State, ob es **stromlos offen** ist (fail-safe), der Ventil**typ** (Magnetventil
-  oder motorisierter Kugelhahn) und, bei einem Motorventil, seine **Laufzeit**.
+- **Pumpe** – ob sie steuerbar ist (dann kann die Verriegelung sie abschalten), das Pumpen-**Signal**
+  sowie Mindest-Ein-/Ausschaltzeiten gegen zu häufiges Takten. *Beim **ESP32**-Backend ist das
+  Pumpen-Signal der **ESP32-Relaiskanal** — genau derselbe, der unter Allgemein → Hardware-Backend
+  gesetzt ist, hier angezeigt, damit die beiden Tabs sich nie widersprechen können; beim
+  **ioBroker**-Backend ist es ein ioBroker-State.*
+- **Notventil** – sein **Signal**, ob es **stromlos offen** ist (fail-safe), der Ventil**typ**
+  (Magnetventil oder motorisierter Kugelhahn) und, bei einem Motorventil, seine **Laufzeit**. *Beim
+  ESP32-Backend ist das Signal ebenso der ESP32-Notventil-Relaiskanal (wie bei Allgemein).*
 
 ### Benachrichtigungen
 Benachrichtigungen aktivieren und eine **Messaging-Instanz** wählen (ein beliebiger Adapter vom Typ
@@ -362,14 +388,10 @@ automatisch bereinigt.
 Fertig: Konfigurations-UI, Ventilsteuerung (Zeitplan/Round-Robin/Gruppen), die
 Sicherheitsverriegelung gegen Nullförderung, Überwachung, Astro & Geoposition, die Feeder-Kopplung,
 der **Winter-/Eisfrei-Modus**, der **Sauerstoff-Regelkreis**, **Benachrichtigungen**, die
-**Laufzeitstatistik** sowie der **Trockenlauf-Testmodus**. **Noch ausstehend:**
+**Laufzeitstatistik**, der **Trockenlauf-Testmodus** und das direkte **ESP32**-Hardware-Backend mit
+seiner Referenz-Firmware (die du im Browser von der
+[Firmware-Flash-Seite](https://ssbingo.github.io/pond-aeration-flash/) flashst). **Noch ausstehend:**
 
-* die **Referenzsensoren** für die **[Referenz-Firmware](https://ssbingo.github.io/pond-aeration-flash/)**
-  auf dem Waveshare ESP32-S3-POE-ETH-8DI-8RO (gelöster Sauerstoff, Luftleitungsdruck, Wassertemperatur —
-  siehe den Abschnitt **Sensoren**). Die Referenz-Firmware selbst ist verfügbar und wird im Browser von
-  der Flash-Seite (Chrome/Edge, keine Zusatzsoftware) auf das Gerät geflasht; das adapterseitige
-  ESP32-Backend ist vorhanden, und die Firmware-Grundlage (Ethernet, Relais, digitale Eingangs-Taster,
-  HTTP/WS-API, geräteinterne Ausfallsicherung, mobilfreundliche Web-UI auf Port 80) läuft;
 * ein nachgelagerter **vis-2-Widget-Adapter** für Bedienung und Überwachung.
 
 Den vollständigen, meilensteinbasierten Plan findest du in [PROJECT_PLAN.md](../../PROJECT_PLAN.md).

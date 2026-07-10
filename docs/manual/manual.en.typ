@@ -45,8 +45,8 @@ air flows, by opening and closing *valves* — one valve per _aeration point_ (u
 #figure(
   image("assets/system-overview.svg", width: 100%),
   caption: [How the parts fit together: the adapter (the "brain") decides which valves open; the pump
-  feeds air through the manifold; each open valve sends air to one diffuser in the pond. The direct
-  ESP32 path is planned #src(3).],
+  feeds air through the manifold; each open valve sends air to one diffuser in the pond. The adapter
+  can alternatively drive the hardware directly via an ESP32 #src(3).],
 )
 
 == Who should read which part
@@ -327,9 +327,9 @@ index. Items marked *(w)* are writable commands; the rest are read-only status v
 
 = Hardware & wiring (reference build)
 
-Today the adapter drives your valves and pump through *existing ioBroker states*, so any relay board
-or smart plug works. A *direct ESP32 build* is planned so you need no extra PC — this section is the
-reference for that build.
+The adapter drives your valves and pump either through *existing ioBroker states* (any relay board
+or smart plug works) **or** *directly via an ESP32*, so you need no extra PC — this section is the
+reference for the ESP32 build.
 
 == Controller board
 
@@ -580,7 +580,7 @@ your configuration and the relevant log lines (set the instance log level to `de
 / State / data point: A named value in ioBroker the adapter reads or writes (e.g. a valve switch).
 / ioBroker: The open-source smart-home platform this adapter runs in #src(1).
 / ESP32: A small networked microcontroller that can drive the relays and read the sensors directly
-  (planned build).
+  (the direct ESP32 build).
 / I²C / 1-Wire: Two simple wiring "buses" for sensors — I²C for the oxygen and pressure sensors,
   1-Wire for the DS18B20 temperature probe.
 

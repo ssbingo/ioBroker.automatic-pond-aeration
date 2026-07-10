@@ -35,13 +35,11 @@ geïnstalleerd.
 > klepbesturing (tijdschema, cyclische roundrobin, groepen), de **veiligheidsvergrendeling** tegen
 > dead-heading, de **bewaking** (zuurstof, lucht-/watertemperatuur, druk met alarmen),
 > **astronomische tijden & geolocatie**, de **feeder-koppeling**, de **winter-/ijsvrijmodus**, de
-> **zuurstofregelkring**, **meldingen via een messaging-adapter**, **looptijdstatistieken**, een
+> **zuurstofregelkring**, **meldingen** via een messaging-adapter, **looptijdstatistieken**, een
 > **dry-run-testmodus**, **overrideknoppen** per punt en de directe **ESP32**-hardware-backend
-> (communiceert via HTTP met de aparte
-> [referentiefirmware](https://ssbingo.github.io/pond-aeration-flash/); de firmware is beschikbaar en
-> wordt vanaf de flash-pagina in de browser geflasht — Chrome/Edge, geen extra software). De
-> standaard-backend stuurt je kleppen en pomp aan via bestaande ioBroker-states, dus elke relaisprint
-> werkt.
+> (communiceert via HTTP met de referentiefirmware — flash deze in je browser vanaf de
+> [firmware-flash-pagina](https://ssbingo.github.io/pond-aeration-flash/)). De standaard-backend
+> stuurt je kleppen en pomp aan via bestaande ioBroker-states, dus elke relaisprint werkt.
 
 > 📘 **Volledige stapsgewijze handleiding (PDF, voor beginners — met bedradingsschema's, FAQ en
 > probleemoplossing):** English → [../../docs/manual/pond-aeration-manual.en.pdf](../../docs/manual/pond-aeration-manual.en.pdf) ·
@@ -73,9 +71,10 @@ klep opent:
   instelbare verblijftijd.
 * **Groepen** – meerdere punten samen aansturen; er kunnen **nooit meer groepen dan punten** zijn.
 
-De kleppen en de pomp worden aangestuurd via **bestaande ioBroker-states** (van elke adapter die de
-schakelaars beschikbaar stelt). Een directe **ESP32**-hardware-backend (zonder extra
-ioBroker-instantie) is gepland.
+De kleppen en de pomp worden **ofwel** via **bestaande ioBroker-states** aangestuurd (van elke
+adapter die de schakelaars beschikbaar stelt) **ofwel rechtstreeks op een specifieke
+ESP32-controller** waarop de referentiefirmware draait – zonder extra ioBroker-instantie. Je kiest
+dit onder **Hardware-backend** (tabblad Algemeen); zie [Configuratie → Algemeen](#algemeen).
 
 ## 2. Veiligheidsconcept
 
@@ -116,24 +115,24 @@ onderdelen die je gebruikt.
   (`[DRY-RUN] would …`) in plaats van naar de echte states. Ideaal voor inbedrijfstelling en het
   testen van een configuratie voordat je alles bedraadt.
 - **Hardware-backend** – `Bestaande ioBroker-states` (standaard) stuurt je kleppen/pomp aan via
-  states van andere adapters. `ESP32 (direct)` communiceert via HTTP met de
-  [referentiefirmware](https://ssbingo.github.io/pond-aeration-flash/) op een Waveshare
-  ESP32-S3-POE-ETH-8DI-8RO — die je vanaf de flash-pagina in de browser flasht (Chrome/Edge, geen extra
-  software). Stel de **host/IP** in en wijs het **noodklep-relais** en het
+  states van andere adapters. `ESP32 (direct)` communiceert via HTTP met de referentiefirmware op een
+  Waveshare ESP32-S3-POE-ETH-8DI-8RO. Flash de firmware in je browser vanaf de
+  [firmware-flash-pagina](https://ssbingo.github.io/pond-aeration-flash/) (Chrome/Edge, geen extra
+  software), stel vervolgens de **host/IP** in en wijs het **noodklep-relais** en het
   **pomp-relais** (0–7) toe; de beluchtingspunten gebruiken het per punt ingestelde relaiskanaal. De
   adapter stuurt een veiligheidsconfiguratie en een heartbeat, zodat de failsafe op het apparaat zelf
   van de firmware de vijver beschermt, zelfs als ioBroker uitvalt.
   - **Autonoom schema (draait zonder ioBroker)** *(alleen ESP32, optioneel)* – wanneer ingeschakeld,
-    stuurt de adapter ook je schema's naar het apparaat; valt de verbinding weg, dan blijft de ESP32
-    ze zelf uitvoeren met zijn NTP-klok (de dead-head-veiligheidsvergrendeling blijft van kracht).
-    De cyclische sequentie blijft bij de adapter.
+    stuurt de adapter ook je tijdschema's naar het apparaat; valt de verbinding weg, dan blijft de
+    ESP32 ze zelf uitvoeren met zijn NTP-klok (de dead-head-veiligheidsvergrendeling blijft van
+    kracht). De cyclische sequentie blijft bij de adapter.
   - **Firmwarecompatibiliteit** – de adapter en de firmware worden op elkaar afgestemd via een
     **protocolversie** (het harde contract), niet op exacte versienummers. Deze adapterversie spreekt
-    **protocol 1** en **beveelt firmware v1.1.0 aan** (minimaal v1.0.0); het
-    ESP32-configuratietabblad toont dit en verwijst naar de [flash-pagina](https://ssbingo.github.io/pond-aeration-flash/), waar je de firmware in de browser flasht (Chrome/Edge, geen extra software). Bij het
-    verbinden worden de versie van het apparaat en een compatibiliteitsvlag gepubliceerd als
-    `info.deviceFirmware` en `info.firmwareCompatible`, en elke protocolafwijking wordt naar het
-    logboek geschreven.
+    **protocol 1** en **beveelt firmware v1.2.2 aan** (minimaal v1.0.0); de admin toont dit en
+    verwijst naar de releases. Bij het verbinden worden de versie van het apparaat en een
+    compatibiliteitsvlag gepubliceerd als `info.deviceFirmware` en `info.firmwareCompatible`, en elke
+    protocolafwijking wordt naar het logboek geschreven. Zie de compatibiliteitstabel in de
+    [handleiding](../../docs/manual/pond-aeration-manual.en.pdf) / firmware-repo.
   - **Licentiëring** *(alleen als je firmware de optionele licentie-overlay bevat)* – het apparaat
     draait een tier: **free** (alleen bewaking), **community** (relaisbesturing) of **pro** (+ het
     autonome standalone-schema); de veiligheid (failsafe, noodklep, dead-head-vergrendeling,
@@ -143,21 +142,42 @@ onderdelen die je gebruikt.
     `info.licenseTier` / `info.licenseTrialDaysLeft` / `info.deviceCode`; als het apparaat **niet
     gelicentieerd is voor besturing**, blijft de bewaking werken en wordt de besturing overgeslagen
     (zie `info.licenseControlBlocked`). Publieke firmware zonder de overlay wordt niet beïnvloed.
+    *Opmerking over opnieuw flashen:* de activeringssleutel wordt op de ESP opgeslagen en wordt
+    **gewist wanneer je opnieuw flasht via de browser-installer** (er start een nieuwe proefperiode).
+    De **apparaatcode is hardware-gebaseerd en verandert nooit**, zodat je gewoon **dezelfde
+    activeringssleutel opnieuw kunt invoeren** — er is geen nieuwe sleutel nodig. Een firmware-**update
+    via de Update-pagina van het apparaat** (online-update met één klik of bestandsupload) behoudt de
+    activering en alle instellingen; alleen de installer zet die terug.
+  - **Sensor-spiegeling** – bij elke polling stuurt de adapter ook je geconfigureerde
+    sensor-datapunten (zuurstof, water-/luchttemperatuur, druk) naar het apparaat, zodat ze op de
+    **eigen web-UI van de ESP** verschijnen (gemarkeerd met *(ioBroker)*) — zelfs bij sensoren die
+    alleen ioBroker-states zijn en niet op de ESP zijn bedraad. Een fysiek op de ESP bedrade sensor
+    behoudt voorrang; doorgestuurde waarden vervallen na enkele minuten. Vereist firmware ≥ 1.1.7.
 - **Pollinterval (s)** – hoe vaak de backendstatus wordt opgevraagd (bijv. `30`).
 
 ### Beluchtingspunten
 Het hart van de configuratie. Voeg **maximaal 8** punten toe; elk punt is één klep. Per punt:
 - **Naam** – bijv. `Pier`, `Deep zone`.
 - **Ingeschakeld** – dit punt opnemen in de besturing.
-- **Backend** – `ioBroker` (een vreemde state) of `ESP32` (een relaiskanaal, gepland).
+- **Backend** – `ioBroker` (een vreemde state) of `ESP32` (een relaiskanaal op het apparaat). De
+  optie `ESP32` verschijnt alleen wanneer het **Hardware-backend** (tabblad Algemeen) op `ESP32
+  (direct)` staat.
 - **Klep-state / kanaal** – kies voor de ioBroker-backend de schakelaar-state die de klep opent (via
-  de objectbrowser); voor ESP32 het kanaalnummer.
+  de objectbrowser). Kies voor de ESP32-backend het **relaiskanaal** uit een dropdown: de kanalen die
+  de **pomp** en de **noodklep** aansturen worden als *gereserveerd* weergegeven en kanalen die al
+  door een ander punt in gebruik zijn als *in gebruik*, zodat je alleen een vrij kanaal kunt kiezen.
+  Wanneer er geen kanaal meer vrij is, voeg je verdere punten via de kolom Backend toe als
+  **ioBroker-states**.
 - **Overrideknop** *(optioneel)* – een fysieke drukknop per punt (bijv. een digitale ingang van een
   ESP32, of een willekeurige booleaanse state). Hij werkt als een **schakelaar (toggle)**: één druk
   forceert het punt **aan met voorrang op de automatische besturing**
   (tijdschema/reeks/winter/zuurstof) en zelfs op een feeder-pauze — *alleen de hoofdschakelaar of een
   veiligheidsactivering heffen dit op*. Druk nogmaals om los te laten. (Er zijn meer knopmodi
-  gepland; het veld is daarop voorbereid.) Een knop is alleen beschikbaar voor een **beluchtingsklep** — een punt dat op het ESP32-relaiskanaal van de **pomp** of de **noodklep** zit, kan er geen hebben (de optie is grijs weergegeven). Bij de ESP32-backend wordt een **op het apparaat** ingedrukte knop teruggespiegeld naar ioBroker (`aeration.point.<n>.buttonOn`) en krijgt dezelfde prioriteit.
+  gepland; het veld is daarop voorbereid.) Een knop is alleen beschikbaar voor een
+  **beluchtingsklep** — een punt dat op het ESP32-relaiskanaal van de **pomp** of de **noodklep** zit,
+  kan er geen hebben (de optie is grijs weergegeven). Bij de ESP32-backend wordt een **op het
+  apparaat** ingedrukte knop teruggespiegeld naar ioBroker (`aeration.point.<n>.buttonOn`) en krijgt
+  dezelfde prioriteit.
 
 ### Groepen
 Groepeer punten om ze samen te schakelen (bijv. één knop opent meerdere uitstromers). Geef de groep
@@ -220,10 +240,14 @@ Elk veld op dit tabblad heeft een **uitleg in de admin** van wat het doet en het
 ze, want dit is het tabblad waar een verkeerde waarde het meest telt.
 - **Min. open kleppen terwijl de pomp draait** – de dead-heading-beveiliging (standaard `1`).
 - **Watchdog-interval (s)** en **make-before-break-overlap (s)**.
-- **Pomp** – of deze bestuurbaar is (dan kan de vergrendeling hem uitschakelen), zijn state en
-  minimale aan-/uittijden tegen te snel schakelen.
-- **Noodklep** – zijn state, of deze **normaal open** is (fail-safe), het klep**type** (magneetklep of
-  gemotoriseerde kogelkraan) en, voor een motorklep, zijn **looptijd**.
+- **Pomp** – of deze bestuurbaar is (dan kan de vergrendeling hem uitschakelen), het pomp-**signaal**
+  en minimale aan-/uittijden tegen te snel schakelen. *Bij de **ESP32**-backend is het pomp-signaal
+  het **ESP32-relaiskanaal** — precies hetzelfde dat onder Algemeen → Hardware-backend is ingesteld,
+  hier weergegeven zodat de twee tabbladen elkaar nooit kunnen tegenspreken; bij de **ioBroker**-backend
+  is het een ioBroker-state.*
+- **Noodklep** – zijn **signaal**, of deze **normaal open** is (fail-safe), het klep**type**
+  (magneetklep of gemotoriseerde kogelkraan) en, voor een motorklep, zijn **looptijd**. *Bij de
+  ESP32-backend is het signaal eveneens het ESP32-noodklep-relaiskanaal (net als bij Algemeen).*
 
 ### Meldingen
 Schakel meldingen in en kies een **messaging-instantie** (elke adapter van het type `messaging`,
@@ -352,16 +376,11 @@ objecten automatisch opgeruimd.
 ## 7. Roadmap
 
 Klaar: configuratie-UI, klepbesturing (tijdschema/roundrobin/groepen), de veiligheidsvergrendeling
-tegen dead-heading, bewaking, astro & geolocatie, de feeder-koppeling, de winter-/ijsvrijmodus, de
-zuurstofregelkring, meldingen, looptijdstatistieken en de dry-run-testmodus. **Nog te komen:**
+tegen dead-heading, bewaking, astro & geolocatie, de feeder-koppeling, de **winter-/ijsvrijmodus**,
+de **zuurstofregelkring**, **meldingen**, **looptijdstatistieken**, de **dry-run-testmodus** en de
+directe **ESP32**-hardware-backend met zijn referentiefirmware (die je in je browser flasht vanaf de
+[firmware-flash-pagina](https://ssbingo.github.io/pond-aeration-flash/)). **Nog te komen:**
 
-* de **[referentiefirmware](https://ssbingo.github.io/pond-aeration-flash/)** voor de Waveshare
-  ESP32-S3-POE-ETH-8DI-8RO is beschikbaar en wordt vanaf de flash-pagina in de browser geflasht
-  (Chrome/Edge, geen extra software) — de ESP32-backend aan de adapterzijde is aanwezig; de
-  firmwarebasis (Ethernet, relais, knoppen op digitale ingangen, HTTP/WS-API, failsafe op het apparaat
-  zelf, mobielvriendelijke web-UI op poort 80) staat vast, met de referentiesensoren (opgeloste
-  zuurstof, luchtleidingdruk, watertemperatuur — zie de sectie [Sensoren](#sensoren)) als volgende
-  stap;
 * een daaropvolgende **vis-2-widget-adapter** voor bediening en bewaking.
 
 Zie [PROJECT_PLAN.md](../../PROJECT_PLAN.md) voor het volledige, op mijlpalen gebaseerde plan.
