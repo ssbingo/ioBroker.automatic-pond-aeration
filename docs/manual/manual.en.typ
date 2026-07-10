@@ -525,6 +525,21 @@ With the board flashed and wired, the adapter can drive it directly — no relay
   #link("https://ssbingo.github.io/pond-aeration-flash/")[flash page] itself.
 ]
 
+#tipbox("WiFi (optional)")[
+  The board's ESP32-S3 also has native 2.4 GHz *WiFi*, usable as an alternative or in addition to the
+  W5500 Ethernet. Enable it and enter *SSID + password* on the *Settings* page (the password is never
+  read back). Enabling, disabling or switching networks applies *live* — no reboot. Ethernet stays the
+  default route while its cable is plugged in, so a wired install is unaffected; unplug the cable and
+  the device keeps running over WiFi. Handy in the garden by the pond where a LAN cable is not always
+  at hand.
+]
+
+#safety("WiFi needs the external antenna — mandatory")[
+  WiFi works *only with the external 2.4 GHz antenna* fitted to the module's antenna connector — the
+  "1U" module has *no* on-board antenna. The reference device *ships with this antenna*; connect it
+  before enabling WiFi. Ethernet / PoE does not need it.
+]
+
 = FAQ
 
 / Do I need an ESP32 to use the adapter?: No. By default it controls valves and the pump through

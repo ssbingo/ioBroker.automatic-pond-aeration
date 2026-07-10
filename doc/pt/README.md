@@ -132,7 +132,7 @@ que usa.
     continua a valer). A sequência cíclica permanece no adaptador.
   - **Compatibilidade de firmware** – o adaptador e o firmware são correspondidos por uma **versão do
     protocolo** (o contrato rígido), não por números de versão exatos. Esta versão do adaptador fala
-    o **protocolo 1** e **recomenda o firmware v1.4.0** (mínimo v1.0.0); o admin mostra isso e liga
+    o **protocolo 1** e **recomenda o firmware v1.6.0** (mínimo v1.0.0); o admin mostra isso e liga
     para as releases. Ao conectar, a versão do dispositivo e um sinalizador de compatibilidade são
     publicados como `info.deviceFirmware` e `info.firmwareCompatible`, e qualquer incompatibilidade de
     protocolo é escrita no log. Consulte a tabela de compatibilidade no

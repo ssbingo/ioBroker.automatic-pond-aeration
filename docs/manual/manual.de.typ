@@ -508,7 +508,7 @@ dazwischen.
 
   #dtable(
     [Adapter-Version], [Firmware],
-    [0.0.20 +], [Protokoll 1 · empfohlen v1.4.0 · Minimum v1.0.0],
+    [0.0.20 +], [Protokoll 1 · empfohlen v1.6.0 · Minimum v1.0.0],
   )
 
   Beim Verbinden liest der Adapter die Version des Geräts und veröffentlicht sie als
@@ -567,6 +567,20 @@ dazwischen.
   kein Link, blau = ein Taster-Override ist aktiv, rot-blinkend = Failsafe; der Buzzer piept einmal,
   wenn die Ausfallsicherung auslöst. Die anfängertaugliche Installations- & Freischaltungsanleitung
   (Deutsch + Englisch) ist die #link("https://ssbingo.github.io/pond-aeration-flash/")[Flash-Seite] selbst.
+]
+
+#tipbox("WLAN (optional)")[
+  Der ESP32-S3 des Boards hat auch natives 2,4-GHz-*WLAN*, nutzbar als Alternative oder Ergänzung zum
+  W5500-Ethernet. Auf der Seite *Settings* einschalten und *SSID + Passwort* eintragen (das Passwort
+  wird nie zurückgelesen). Ein-/Ausschalten oder ein Netzwerkwechsel wirken *sofort* — kein Neustart.
+  Solange das LAN-Kabel steckt, bleibt Ethernet der Standardweg; ziehen Sie das Kabel, läuft das Gerät
+  über WLAN weiter. Praktisch im Garten am Teich, wo nicht immer ein LAN-Kabel zur Hand ist.
+]
+
+#safety("WLAN benötigt zwingend die externe Antenne")[
+  WLAN funktioniert *nur mit der externen 2,4-GHz-Antenne* am Antennenanschluss des Moduls — das
+  „1U"-Modul hat *keine* eingebaute Antenne. Dem Referenzgerät *liegt diese Antenne bei*; schließen Sie
+  sie an, bevor Sie WLAN aktivieren. Ethernet/PoE braucht sie nicht.
 ]
 
 = FAQ

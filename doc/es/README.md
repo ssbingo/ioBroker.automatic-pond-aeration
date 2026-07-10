@@ -138,7 +138,7 @@ uses.
     seguridad dead-head sigue aplicándose). La secuencia cíclica permanece en el adaptador.
   - **Compatibilidad del firmware** – el adaptador y el firmware se emparejan mediante una **versión
     del protocolo** (el contrato estricto), no por números de versión exactos. Esta versión del
-    adaptador habla **protocolo 1** y **recomienda firmware v1.4.0** (mínimo v1.0.0); el admin lo
+    adaptador habla **protocolo 1** y **recomienda firmware v1.6.0** (mínimo v1.0.0); el admin lo
     muestra y enlaza a las publicaciones (releases). Al conectar, la versión del dispositivo y una
     marca de compatibilidad se publican como `info.deviceFirmware` e `info.firmwareCompatible`, y
     cualquier discrepancia de protocolo se escribe en el registro. Consulta la tabla de compatibilidad

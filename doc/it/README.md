@@ -134,7 +134,7 @@ usi.
     sicurezza dead-head resta valido). La sequenza ciclica resta gestita dall'adattatore.
   - **Compatibilità del firmware** – l'adattatore e il firmware vengono abbinati tramite una
     **versione del protocollo** (il contratto vincolante), non in base ai numeri di release esatti.
-    Questa versione dell'adattatore parla il **protocollo 1** e **consiglia il firmware v1.4.0**
+    Questa versione dell'adattatore parla il **protocollo 1** e **consiglia il firmware v1.6.0**
     (minimo v1.0.0); l'admin lo mostra e rimanda alle release. Alla connessione, la versione del
     dispositivo e un flag di compatibilità vengono pubblicati come `info.deviceFirmware` e
     `info.firmwareCompatible`, e qualsiasi discrepanza di protocollo viene scritta nel log. Vedi la

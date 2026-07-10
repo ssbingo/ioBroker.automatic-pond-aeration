@@ -129,14 +129,16 @@ you use.
   [firmware flash page](https://ssbingo.github.io/pond-aeration-flash/) (Chrome/Edge, no extra
   software), then set the **host/IP** and map the **emergency-valve relay** and **pump relay** (0–7);
   the aeration points use the relay channel set per point. The adapter pushes a safety config and a
-  heartbeat so the firmware's on-device failsafe protects the pond even if ioBroker is down.
+  heartbeat so the firmware's on-device failsafe protects the pond even if ioBroker is down. The device
+  is reached over its **IP** — via **Ethernet/PoE** or **optional WiFi** (enabled on the device's own
+  Settings page; WiFi needs the device's external antenna — see the manual).
   - **Autonomous schedule (run without ioBroker)** *(ESP32 only, optional)* – when enabled, the adapter
     also pushes your time schedules to the device; if the connection drops, the ESP32 keeps running
     them on its own using its NTP clock (the dead-head safety interlock still applies). The cyclic
     sequence stays with the adapter.
   - **Firmware compatibility** – the adapter and the firmware are matched by a **protocol version**
     (the hard contract), not by exact release numbers. This adapter version speaks **protocol 1** and
-    **recommends firmware v1.4.0** (minimum v1.0.0); the admin shows this and links to the releases.
+    **recommends firmware v1.6.0** (minimum v1.0.0); the admin shows this and links to the releases.
     On connect, the device's version and a compatibility flag are published as `info.deviceFirmware`
     and `info.firmwareCompatible`, and any protocol mismatch is written to the log. See the
     compatibility table in the [manual](docs/manual/pond-aeration-manual.en.pdf) / firmware repo.
@@ -405,6 +407,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.1.11 (2026-07-10)
+* (ssbingo) **Optional WiFi for the ESP32 device** and **recommend firmware v1.6.0**. The reference firmware 1.6.0 can now join a **WiFi** network in addition to Ethernet — enable/disable and configure it (SSID + password) on the device's Settings page, applied live; it needs the device's **external antenna** (shipped with the reference device). It also adds an on-device **diagnostic log** with a level filter and a full OTA-update trace (for pinpointing update problems). The adapter now treats **any non-free licence tier** as licensed for control (covers higher tiers automatically). Recommended-firmware note (`lib/firmware-compat.js` 1.4.0 → 1.6.0), README, all 10 translated docs and the EN/DE PDF manual updated with WiFi and the mandatory-antenna note. No change to the control engine
+
 ### 0.1.10 (2026-07-10)
 * (ssbingo) **Recommend firmware v1.4.0** and document its new on-device **Log / Debug page** (`/log`). The reference firmware 1.4.0 adds a live diagnostic log — boot, Ethernet, licence, operating mode and the full **OTA online-update trace with the exact failure reason** — the place to analyse an update or connection problem over the network. The recommended-firmware note (`lib/firmware-compat.js` 1.2.2 → 1.4.0) was updated across the README, all 10 translated docs and the EN/DE PDF manual (now listing seven device pages). No functional change to the adapter
 
@@ -431,9 +436,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.1.2 (2026-07-09)
 * (ssbingo) **ESP32 licence awareness.** The adapter now reads the device's licence status from `GET /api/info` — the active tier (`free` = monitoring, `community` = relay control, `pro` = + standalone schedule), the trial days remaining and the device code — and publishes them as `info.licenseTier`, `info.licenseTrialDaysLeft`, `info.deviceCode` and `info.licenseControlBlocked`. A device that is **not licensed for control** is handled gracefully: **monitoring keeps working**, control commands are skipped with a single clear hint (device code + how to unlock) instead of repeated errors. Public firmware without the optional licensing overlay is unaffected (control stays open). New unit-tested `parseLicense` helper; localized news in 11 languages
-
-### 0.1.1 (2026-07-09)
-* (ssbingo) **ESP32 configuration UX.** Aeration points now offer **ESP32 relay channels only when the ESP32 backend is selected** — with the ioBroker-state backend a point always maps to an ioBroker state (no more confusing/incorrect ESP options). A new **“Test connection”** button probes the device (via the running instance) and shows its firmware version, so you can immediately see whether **host and port** are right. The **port** field is now explained — the reference firmware **always serves on port 80** — and warns on any other value. The non-functional **“Use WebSocket”** toggle was removed (the adapter polls status over HTTP). New `testEsp32` admin message + explanations; 9 admin strings in 11 languages
 
 ---
 

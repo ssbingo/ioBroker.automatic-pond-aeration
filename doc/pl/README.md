@@ -128,7 +128,7 @@ części, których używasz.
     bezpieczeństwa dead-head nadal obowiązuje). Sekwencja cykliczna pozostaje po stronie adaptera.
   - **Zgodność firmware** – adapter i firmware są dopasowywane za pomocą **wersji protokołu** (twardy
     kontrakt), a nie dokładnych numerów wydań. Ta wersja adaptera mówi **protokołem 1** i **zaleca
-    firmware v1.4.0** (minimum v1.0.0); panel admin pokazuje to i odsyła do wydań. Po połączeniu
+    firmware v1.6.0** (minimum v1.0.0); panel admin pokazuje to i odsyła do wydań. Po połączeniu
     wersja urządzenia i flaga zgodności są publikowane jako `info.deviceFirmware` i
     `info.firmwareCompatible`, a każda niezgodność protokołu jest zapisywana w dzienniku. Zobacz
     tabelę zgodności w [podręczniku](../../docs/manual/pond-aeration-manual.en.pdf) / repozytorium
