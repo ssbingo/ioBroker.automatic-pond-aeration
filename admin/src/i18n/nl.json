@@ -93,6 +93,7 @@
 	"Notifications": "Meldingen",
 	"Offset (s)": "Offset (s)",
 	"On (recommended): the valve is open without power (fail-safe) — on a power cut the pump can always vent. Off: it is closed without power.": "Aan (aanbevolen): de klep is open zonder stroom (fail-safe) — bij stroomuitval kan de pomp altijd ontluchten. Uit: hij is gesloten zonder stroom.",
+	"On: the adapter drives the pump — it runs while the pond is aerating (at least the minimum valves open) and switches off when idle or on a dead-head emergency (honouring the min on/off times). Off: the pump is only observed — the adapter never switches it and relies on the emergency valve.": "Aan: de adapter drijft de pomp aan; deze draait terwijl de vijver wordt belucht (minstens de minimale kleppen zijn open) en schakelt uit bij inactiviteit of bij een noodstop (waarbij de minimale aan/uit-tijden worden gerespecteerd). Uit: de pomp wordt alleen geobserveerd – de adapter schakelt hem nooit in en vertrouwt op de noodklep.",
 	"On: the adapter may switch the pump off (needs the pump state below). Off: the pump is only observed — the adapter never switches it, and relies on the emergency valve.": "Aan: de adapter mag de pomp uitschakelen (vereist de pompstatus hieronder). Uit: de pomp wordt alleen geobserveerd — de adapter schakelt hem nooit en vertrouwt op de noodklep.",
 	"Only day and month are used (recurring every year).": "Alleen dag en maand worden gebruikt (jaarlijks terugkerend).",
 	"Only when it is cold (frost protection)": "Alleen als het koud is (vorstbescherming)",

@@ -98,6 +98,7 @@
 	"Notifications": "Notifications",
 	"Offset (s)": "Offset (s)",
 	"On (recommended): the valve is open without power (fail-safe) — on a power cut the pump can always vent. Off: it is closed without power.": "On (recommended): the valve is open without power (fail-safe) — on a power cut the pump can always vent. Off: it is closed without power.",
+	"On: the adapter drives the pump — it runs while the pond is aerating (at least the minimum valves open) and switches off when idle or on a dead-head emergency (honouring the min on/off times). Off: the pump is only observed — the adapter never switches it and relies on the emergency valve.": "On: the adapter drives the pump — it runs while the pond is aerating (at least the minimum valves open) and switches off when idle or on a dead-head emergency (honouring the min on/off times). Off: the pump is only observed — the adapter never switches it and relies on the emergency valve.",
 	"On: the adapter may switch the pump off (needs the pump state below). Off: the pump is only observed — the adapter never switches it, and relies on the emergency valve.": "On: the adapter may switch the pump off (needs the pump state below). Off: the pump is only observed — the adapter never switches it, and relies on the emergency valve.",
 	"Only day and month are used (recurring every year).": "Only day and month are used (recurring every year).",
 	"Only when it is cold (frost protection)": "Only when it is cold (frost protection)",

@@ -93,6 +93,7 @@
 	"Notifications": "Benachrichtigungen",
 	"Offset (s)": "Versatz (s)",
 	"On (recommended): the valve is open without power (fail-safe) — on a power cut the pump can always vent. Off: it is closed without power.": "Ein (empfohlen): Das Ventil ist stromlos offen (ausfallsicher) — bei Stromausfall kann die Pumpe immer entlüften. Aus: Es ist stromlos geschlossen.",
+	"On: the adapter drives the pump — it runs while the pond is aerating (at least the minimum valves open) and switches off when idle or on a dead-head emergency (honouring the min on/off times). Off: the pump is only observed — the adapter never switches it and relies on the emergency valve.": "Ein: Der Adapter treibt die Pumpe an – sie läuft, während der Teich belüftet wird (mindestens die Mindestventile sind geöffnet) und schaltet sich im Leerlauf oder bei einem Leerlaufnotfall aus (unter Einhaltung der minimalen Ein-/Ausschaltzeiten). Aus: Die Pumpe wird nur beobachtet – der Adapter schaltet sie nie und verlässt sich auf das Notventil.",
 	"On: the adapter may switch the pump off (needs the pump state below). Off: the pump is only observed — the adapter never switches it, and relies on the emergency valve.": "Ein: Der Adapter darf die Pumpe ausschalten (benötigt den Pumpen-Datenpunkt unten). Aus: Die Pumpe wird nur beobachtet — der Adapter schaltet sie nie und verlässt sich auf das Notventil.",
 	"Only day and month are used (recurring every year).": "Es werden nur Tag und Monat verwendet (jährlich wiederkehrend).",
 	"Only when it is cold (frost protection)": "Nur bei Kälte (Frostschutz)",

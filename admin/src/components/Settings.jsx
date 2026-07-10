@@ -782,7 +782,7 @@ function Settings(props) {
 			</Section>
 			<Section title={I18n.t('Pump')} desc={I18n.t('Tell the adapter about your air pump. If it is controllable, the interlock may switch it off in an emergency; if it is only observed, the emergency valve alone protects it.')}>
 				<Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', alignItems: 'flex-start' }}>
-					<Field help={I18n.t('On: the adapter may switch the pump off (needs the pump state below). Off: the pump is only observed — the adapter never switches it, and relies on the emergency valve.')}>
+					<Field help={I18n.t('On: the adapter drives the pump — it runs while the pond is aerating (at least the minimum valves open) and switches off when idle or on a dead-head emergency (honouring the min on/off times). Off: the pump is only observed — the adapter never switches it and relies on the emergency valve.')}>
 						<Sw label={I18n.t('Pump is controllable')} checked={native.pumpControllable} onChange={v => set('pumpControllable', v)} />
 					</Field>
 					<Field help={native.controlBackend === 'esp32'

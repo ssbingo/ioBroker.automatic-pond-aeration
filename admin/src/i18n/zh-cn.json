@@ -93,6 +93,7 @@
 	"Notifications": "通知",
 	"Offset (s)": "偏移量（秒）",
 	"On (recommended): the valve is open without power (fail-safe) — on a power cut the pump can always vent. Off: it is closed without power.": "开启（推荐）：阀门在断电时处于打开状态（故障安全）— 断电时泵始终可以泄压。关闭：断电时它处于关闭状态。",
+	"On: the adapter drives the pump — it runs while the pond is aerating (at least the minimum valves open) and switches off when idle or on a dead-head emergency (honouring the min on/off times). Off: the pump is only observed — the adapter never switches it and relies on the emergency valve.": "打开：适配器驱动泵 - 它在池塘通气时运行（至少打开最小阀门），并在空闲或紧急紧急情况下关闭（遵守最短开/关时间）。关闭：仅观察到泵 - 适配器从不切换泵并依赖紧急阀。",
 	"On: the adapter may switch the pump off (needs the pump state below). Off: the pump is only observed — the adapter never switches it, and relies on the emergency valve.": "开启：适配器可以关闭泵（需要下方的泵状态）。关闭：仅观察泵 — 适配器绝不会切换它，而是依靠紧急阀。",
 	"Only day and month are used (recurring every year).": "仅使用日和月（每年重复）。",
 	"Only when it is cold (frost protection)": "仅在寒冷时（防冻保护）",

@@ -6,6 +6,9 @@
 	@alcalzone/release-script.
 -->
 
+### 0.0.19 (2026-07-08)
+* (ssbingo) **Autonomous schedule on the ESP32.** A new *Autonomous schedule (run without ioBroker)* option (ESP32 backend) makes the adapter flatten your time schedules into per-relay-channel windows and push them to the device; if the adapter connection drops, the firmware **keeps running the schedule on its own** against its NTP clock instead of only failing safe — the pond stays aerated when ioBroker or the network is down. The on-device dead-head interlock still overrides everything and the pump only runs while at least `minOpen` valves are open; the cyclic round-robin sequence stays adapter-side. New `esp32AutonomousEnabled` config, extended `POST /api/config` (`autonomous`/`schedule`), pure/unit-tested `buildSchedulePayload`, admin toggle + 2 strings in 11 languages
+
 ### 0.0.18 (2026-07-08)
 * (ssbingo) Override-button safety + ESP32 device web UI. The per-point manual override **push-button is now only allowed on an aeration-valve channel** — if a point sits on the ESP32 pump or emergency-valve relay channel the button is force-disabled and greyed out in the admin (those channels are safety-critical and must never be hand-toggled). A button wired to the ESP32 is now **reflected back into ioBroker**: pressing it at the device updates `aeration.point.<n>.buttonOn` and gets the same force-on priority in the arbiter. The companion reference firmware gained an on-device **web UI** (Settings: DHCP/static IP/DNS/hostname, NTP time, WS2812/buzzer; **OTA** firmware update with a GitHub version check; a device-info page), **SNTP** timekeeping (default `de.pool.ntp.org`) and **status LED/buzzer** signalling, plus a beginner install guide (EN/DE)
 

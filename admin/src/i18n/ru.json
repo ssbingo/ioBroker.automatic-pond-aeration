@@ -93,6 +93,7 @@
 	"Notifications": "Уведомления",
 	"Offset (s)": "Смещение (с)",
 	"On (recommended): the valve is open without power (fail-safe) — on a power cut the pump can always vent. Off: it is closed without power.": "Вкл (рекомендуется): клапан открыт без питания (отказоустойчиво) — при отключении питания насос всегда может стравить давление. Выкл: он закрыт без питания.",
+	"On: the adapter drives the pump — it runs while the pond is aerating (at least the minimum valves open) and switches off when idle or on a dead-head emergency (honouring the min on/off times). Off: the pump is only observed — the adapter never switches it and relies on the emergency valve.": "Включено: адаптер управляет насосом — он работает во время аэрации пруда (по крайней мере, открыты минимальные клапаны) и выключается при простое или в случае аварийной остановки (с соблюдением минимального времени включения/выключения). Выключено: насос только наблюдается — адаптер его никогда не включает и полагается на аварийный клапан.",
 	"On: the adapter may switch the pump off (needs the pump state below). Off: the pump is only observed — the adapter never switches it, and relies on the emergency valve.": "Вкл: адаптер может выключать насос (нужно состояние насоса ниже). Выкл: насос только наблюдается — адаптер никогда не переключает его и полагается на аварийный клапан.",
 	"Only day and month are used (recurring every year).": "Используются только день и месяц (повторяется каждый год).",
 	"Only when it is cold (frost protection)": "Только когда холодно (защита от мороза)",

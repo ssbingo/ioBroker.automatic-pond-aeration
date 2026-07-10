@@ -28,7 +28,7 @@ const { validateConfig } = require('./lib/config');
 const { buildObjectModel, computeObsolete } = require('./lib/objects');
 const { IoBrokerBackend } = require('./lib/hal/iobroker-backend');
 const { Esp32Backend } = require('./lib/hal/esp32-backend');
-const { evaluateSafety, planValveTransition } = require('./lib/safety');
+const { evaluateSafety, planValveTransition, pumpShouldRun, canSwitchPump } = require('./lib/safety');
 const { resolveDesiredValves } = require('./lib/control/arbiter');
 const { resolveWinter } = require('./lib/control/winter');
 const { resolveOxygenControl } = require('./lib/control/o2-control');
@@ -82,6 +82,7 @@ class AutomaticPondAeration extends utils.Adapter {
 		this.lastActive = [];
 		this.lastActiveMode = '';
 		this.lastOpenCount = -1;
+		this.lastPumpChangeMs = 0; // for the pump anti short-cycle guard (min on/off times)
 		// System language for localized INFO messages (detected in onReady).
 		this.sysLang = 'en';
 		// Monitoring / astro / geolocation runtime state.
@@ -490,10 +491,15 @@ class AutomaticPondAeration extends utils.Adapter {
 			return;
 		}
 		const cur = this.backend.getCurrentState();
+		// The pump state is "monitored" when the backend actually knows it: the ESP32 backend polls
+		// the pump relay, the ioBroker backend needs a pump state id. (Backends report this; older
+		// ones fall back to the ioBroker-state id.)
+		const pumpMonitored =
+			cur.pumpMonitored !== undefined ? Boolean(cur.pumpMonitored) : Boolean(this.cfg.pumpObjectId);
 		const decision = evaluateSafety({
 			valveOpen: cur.valves,
 			pumpRunning: cur.pumpRunning,
-			pumpMonitored: Boolean(this.cfg.pumpObjectId),
+			pumpMonitored,
 			pumpControllable: Boolean(this.cfg.pumpControllable),
 			minOpenValves: this.cfg.minOpenValves,
 		});
@@ -515,9 +521,32 @@ class AutomaticPondAeration extends utils.Adapter {
 		if (decision.emergencyValve !== cur.emergencyOpen) {
 			await this.backend.setEmergency(decision.emergencyValve);
 		}
-		// Emergency pump stop (bypasses the anti short-cycle guard).
-		if (decision.stopPump && cur.pumpRunning) {
-			await this.backend.setPump(false);
+		// Pump control (only when the pump is controllable):
+		//  - a safety trip force-stops it immediately (bypasses the anti short-cycle guard);
+		//  - otherwise the pump FOLLOWS the aeration demand — on while at least `minOpenValves`
+		//    valves are open, off when the pond is idle — honouring the min on/off times. This is
+		//    the on-path that makes the pump actually run; the interlock above is the emergency stop.
+		if (this.cfg.pumpControllable) {
+			if (decision.stopPump && cur.pumpRunning) {
+				await this.backend.setPump(false);
+				this.lastPumpChangeMs = Date.now();
+			} else {
+				const wantPump = pumpShouldRun(decision.interlockActive, decision.openValveCount, this.cfg.minOpenValves);
+				if (
+					wantPump !== cur.pumpRunning &&
+					canSwitchPump(
+						wantPump,
+						cur.pumpRunning,
+						this.lastPumpChangeMs,
+						Date.now(),
+						this.cfg.pumpMinOnSec,
+						this.cfg.pumpMinOffSec,
+					)
+				) {
+					await this.backend.setPump(wantPump);
+					this.lastPumpChangeMs = Date.now();
+				}
+			}
 		}
 
 		// Update the status states only on change (avoid rewriting every tick).

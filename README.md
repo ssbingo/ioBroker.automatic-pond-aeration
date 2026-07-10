@@ -384,6 +384,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.1.8 (2026-07-10)
+* (ssbingo) **Fix: the pump is now actually driven (both backends).** The adapter never had an ON-path for the pump — it only ever switched it *off* in an emergency — so on the ESP32 backend the pump relay stayed off forever. Now, when the pump is **controllable**, it **follows the aeration demand**: it runs while at least `minOpenValves` valves are open and switches off when the pond is idle or on a dead-head trip, honouring the anti short-cycle min on/off times. The interlock also now knows the ESP32 pump state is **monitored** (the relay is polled) instead of assuming the pump might always be running — this stops the emergency valve being held open unnecessarily. New unit-tested `pumpShouldRun` helper; pump-controllable help text clarified
+
 ### 0.1.7 (2026-07-10)
 * (ssbingo) **Admin: the ESP32 pump & emergency-valve relays are now drop-downs.** On both the **General** and **Safety** tabs the ESP32 pump and emergency-valve relay channels are picked from a drop-down — just like the aeration-point channel — that **reserves** the other role’s channel and greys out channels already used by an aeration point, so the two can no longer silently collide. No functional change; reuses existing localized strings
 
@@ -410,9 +413,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.0.20 (2026-07-09)
 * (ssbingo) **Firmware compatibility, made visible.** The adapter now declares, in one place (`lib/firmware-compat.js`), the ESP32 firmware it expects — the **protocol version** is the hard contract, plus a **recommended** (v1.1.0) and **minimum** (v1.0.0) firmware version. The ESP32 config tab shows a note with the recommended version and a link to the firmware releases. On connect the adapter reads the device's `GET /api/info`, publishes the reported version and a compatibility flag as **`info.deviceFirmware`** / **`info.firmwareCompatible`**, and logs an error on a protocol mismatch or a warning on outdated firmware. Pure/unit-tested `evaluateFirmware`; the manual and firmware repo gained a compatibility table. 5 new admin strings in 11 languages
-
-### 0.0.19 (2026-07-08)
-* (ssbingo) **Autonomous schedule on the ESP32.** A new *Autonomous schedule (run without ioBroker)* option (ESP32 backend) makes the adapter flatten your time schedules into per-relay-channel windows and push them to the device; if the adapter connection drops, the firmware **keeps running the schedule on its own** against its NTP clock instead of only failing safe — the pond stays aerated when ioBroker or the network is down. The on-device dead-head interlock still overrides everything and the pump only runs while at least `minOpen` valves are open; the cyclic round-robin sequence stays adapter-side. New `esp32AutonomousEnabled` config, extended `POST /api/config` (`autonomous`/`schedule`), pure/unit-tested `buildSchedulePayload`, admin toggle + 2 strings in 11 languages
 
 ---
 
