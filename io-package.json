@@ -1,267 +1,267 @@
 {
-	"common": {
-		"name": "automatic-pond-aeration",
-		"version": "0.1.4",
-		"news": {
-			"0.1.4": {
-				"en": "The adapter now mirrors your configured sensor data points (oxygen, water/air temperature, pressure) to the ESP32 device web UI, so they show on the device page even for sensors that are only ioBroker states and not wired to the ESP. A physically wired ESP sensor keeps priority; pushed values are tagged (ioBroker) and drop out after a few minutes.",
-				"de": "Der Adapter spiegelt jetzt Ihre konfigurierten Sensordatenpunkte (Sauerstoff, Wasser-/Lufttemperatur, Druck) auf die Web-Benutzeroberfläche des ESP32-Geräts, sodass sie auf der Geräteseite auch für Sensoren angezeigt werden, die nur ioBroker-Zustände haben und nicht mit dem ESP verbunden sind. Ein physisch verkabelter ESP-Sensor behält die Priorität; Gepushte Werte werden mit Tags versehen (ioBroker) und fallen nach einigen Minuten aus.",
-				"ru": "Теперь адаптер отображает настроенные точки данных датчиков (кислород, температура воды/воздуха, давление) в веб-интерфейсе устройства ESP32, поэтому они отображаются на странице устройства даже для датчиков, которые находятся только в состояниях ioBroker и не подключены к ESP. Физически подключенный датчик ESP сохраняет приоритет; отправленные значения помечаются тегами (ioBroker) и исчезают через несколько минут.",
-				"pt": "O adaptador agora espelha os pontos de dados do sensor configurados (oxigênio, temperatura da água/ar, pressão) para a IU da web do dispositivo ESP32, para que eles sejam exibidos na página do dispositivo mesmo para sensores que são apenas estados ioBroker e não conectados ao ESP. Um sensor ESP fisicamente conectado mantém a prioridade; os valores enviados são marcados (ioBroker) e desaparecem após alguns minutos.",
-				"nl": "De adapter weerspiegelt nu uw geconfigureerde sensorgegevenspunten (zuurstof, water-/luchttemperatuur, druk) naar de webinterface van het ESP32-apparaat, zodat ze op de apparaatpagina worden weergegeven, zelfs voor sensoren die alleen ioBroker-statussen hebben en niet zijn aangesloten op de ESP. Een fysiek bedrade ESP-sensor behoudt voorrang; gepushte waarden worden getagd (ioBroker) en vallen na een paar minuten weg.",
-				"fr": "L'adaptateur reflète désormais les points de données de vos capteurs configurés (oxygène, température de l'eau/air, pression) sur l'interface utilisateur Web de l'appareil ESP32, de sorte qu'ils s'affichent sur la page de l'appareil même pour les capteurs qui sont uniquement des états ioBroker et non câblés à l'ESP. Un capteur ESP physiquement câblé garde la priorité ; les valeurs poussées sont étiquetées (ioBroker) et disparaissent après quelques minutes.",
-				"it": "L'adattatore ora rispecchia i punti dati del sensore configurato (ossigeno, temperatura acqua/aria, pressione) sull'interfaccia utente web del dispositivo ESP32, in modo che vengano visualizzati sulla pagina del dispositivo anche per i sensori che sono solo stati ioBroker e non collegati all'ESP. Un sensore ESP fisicamente cablato mantiene la priorità; i valori inviati vengono contrassegnati (ioBroker) e vengono eliminati dopo alcuni minuti.",
-				"es": "El adaptador ahora refleja los puntos de datos del sensor configurados (oxígeno, temperatura del agua/aire, presión) en la interfaz de usuario web del dispositivo ESP32, por lo que se muestran en la página del dispositivo incluso para sensores que solo son estados de ioBroker y no están conectados al ESP. Un sensor ESP físicamente cableado tiene prioridad; los valores enviados se etiquetan (ioBroker) y desaparecen después de unos minutos.",
-				"pl": "Adapter odzwierciedla teraz skonfigurowane punkty danych czujnika (tlen, temperatura wody/powietrza, ciśnienie) w internetowym interfejsie użytkownika urządzenia ESP32, dzięki czemu są one wyświetlane na stronie urządzenia nawet w przypadku czujników, które mają tylko stany ioBroker i nie są podłączone do ESP. Fizycznie podłączony czujnik ESP zachowuje priorytet; wypchnięte wartości są oznaczane (ioBroker) i usuwane po kilku minutach.",
-				"uk": "Адаптер тепер відображає налаштовані точки даних датчика (кисень, температура води/повітря, тиск) у веб-інтерфейс пристрою ESP32, тому вони відображаються на сторінці пристрою навіть для датчиків, які є лише станами ioBroker і не підключені до ESP. Фізично підключений датчик ESP зберігає пріоритет; надіслані значення позначаються тегами (ioBroker) і випадають через кілька хвилин.",
-				"zh-cn": "适配器现在将您配置的传感器数据点（氧气、水/空气温度、压力）镜像到 ESP32 设备 Web UI，因此即使对于仅处于 ioBroker 状态且未连接到 ESP 的传感器，它们也会显示在设备页面上。物理连接的 ESP 传感器保持优先；推送的值被标记（ioBroker）并在几分钟后退出。"
-			}
-		},
-		"titleLang": {
-			"en": "Automatic Pond Aeration",
-			"de": "Automatische Teichbelüftung",
-			"ru": "Автоматическая аэрация пруда",
-			"pt": "Arejamento automático de lago",
-			"nl": "Automatische vijverbeluchting",
-			"fr": "Aération automatique d'étang",
-			"it": "Aerazione automatica del laghetto",
-			"es": "Aireación automática de estanque",
-			"pl": "Automatyczne napowietrzanie stawu",
-			"uk": "Автоматична аерація ставка",
-			"zh-cn": "自动池塘增氧"
-		},
-		"desc": {
-			"en": "Controls and monitors a pond aeration: switches valves at up to 8 aeration points by schedule, round-robin or groups, with a pump safety interlock and optional oxygen, temperature and pressure monitoring.",
-			"de": "Steuert und überwacht eine Teichbelüftung: schaltet Ventile an bis zu 8 Belüftungsstellen per Zeitplan, Rundlauf oder Gruppen, mit Pumpen-Sicherheitsverriegelung und optionaler Sauerstoff-, Temperatur- und Drucküberwachung.",
-			"ru": "Управляет и контролирует аэрацию пруда: переключает клапаны на 8 точках аэрации по расписанию, циклически или группами, с защитной блокировкой насоса и опциональным контролем кислорода, температуры и давления.",
-			"pt": "Controla e monitoriza o arejamento de um lago: comuta válvulas em até 8 pontos de arejamento por horário, rotação cíclica ou grupos, com bloqueio de segurança da bomba e monitorização opcional de oxigénio, temperatura e pressão.",
-			"nl": "Bestuurt en bewaakt een vijverbeluchting: schakelt kleppen op maximaal 8 beluchtingspunten via schema, cyclische rondgang of groepen, met een veiligheidsvergrendeling voor de pomp en optionele bewaking van zuurstof, temperatuur en druk.",
-			"fr": "Contrôle et surveille l'aération d'un étang : commute des vannes sur jusqu'à 8 points d'aération par horaire, rotation cyclique ou groupes, avec un verrouillage de sécurité de la pompe et une surveillance optionnelle de l'oxygène, de la température et de la pression.",
-			"it": "Controlla e monitora l'aerazione di un laghetto: commuta le valvole in un massimo di 8 punti di aerazione tramite pianificazione, rotazione ciclica o gruppi, con un interblocco di sicurezza della pompa e monitoraggio opzionale di ossigeno, temperatura e pressione.",
-			"es": "Controla y supervisa la aireación de un estanque: conmuta válvulas en hasta 8 puntos de aireación por horario, rotación cíclica o grupos, con un enclavamiento de seguridad de la bomba y supervisión opcional de oxígeno, temperatura y presión.",
-			"pl": "Steruje i monitoruje napowietrzanie stawu: przełącza zawory w maksymalnie 8 punktach napowietrzania według harmonogramu, rotacji cyklicznej lub grup, z blokadą bezpieczeństwa pompy oraz opcjonalnym monitorowaniem tlenu, temperatury i ciśnienia.",
-			"uk": "Керує та контролює аерацію ставка: перемикає клапани на до 8 точок аерації за розкладом, циклічним обходом або групами, із запобіжним блокуванням насоса та опціональним контролем кисню, температури й тиску.",
-			"zh-cn": "控制并监测池塘增氧：通过计划、循环轮换或分组方式切换最多 8 个增氧点的阀门，具备水泵安全联锁以及可选的溶氧、温度和压力监测。"
-		},
-		"authors": [
-			"ssbingo <s.sternitzke@online.de>"
-		],
-		"keywords": [
-			"pond",
-			"aeration",
-			"Teich",
-			"Belüftung",
-			"valve",
-			"oxygen",
-			"Koi"
-		],
-		"licenseInformation": {
-			"type": "free",
-			"license": "MIT"
-		},
-		"platform": "Javascript/Node.js",
-		"icon": "automatic-pond-aeration.png",
-		"enabled": true,
-		"extIcon": "https://raw.githubusercontent.com/ssbingo/ioBroker.automatic-pond-aeration/main/admin/automatic-pond-aeration.png",
-		"readme": "https://github.com/ssbingo/ioBroker.automatic-pond-aeration/blob/main/README.md",
-		"loglevel": "info",
-		"tier": 3,
-		"mode": "daemon",
-		"type": "garden",
-		"compact": true,
-		"messagebox": true,
-		"connectionType": "local",
-		"dataSource": "push",
-		"adminUI": {
-			"config": "materialize"
-		},
-		"eraseOnUpload": true,
-		"dependencies": [
-			{
-				"js-controller": ">=6.0.11"
-			}
-		],
-		"globalDependencies": [
-			{
-				"admin": ">=7.6.20"
-			}
-		]
-	},
-	"native": {
-		"masterEnable": true,
-		"dryRun": false,
-		"controlBackend": "iobroker",
-		"esp32Host": "",
-		"esp32Port": 80,
-		"esp32AuthToken": "",
-		"esp32EmergencyRelay": 6,
-		"esp32PumpRelay": 7,
-		"esp32AutonomousEnabled": false,
-		"pollIntervalSec": 30,
-		"locationMode": "system",
-		"latitude": "",
-		"longitude": "",
-		"address": "",
-		"pumpControllable": false,
-		"pumpObjectId": "",
-		"pumpMinOnSec": 0,
-		"pumpMinOffSec": 0,
-		"emergencyObjectId": "",
-		"emergencyNormallyOpen": true,
-		"emergencyValveType": "solenoid",
-		"emergencyMotorTravelSec": 5,
-		"minOpenValves": 1,
-		"watchdogIntervalSec": 5,
-		"overlapSec": 2,
-		"roundRobinEnabled": false,
-		"roundRobinDwellSec": 60,
-		"sequenceSteps": [],
-		"o2Enabled": false,
-		"o2ObjectId": "",
-		"o2LowThreshold": null,
-		"o2TargetThreshold": null,
-		"o2Hysteresis": 0.5,
-		"o2ControlEnabled": false,
-		"o2AffectedPoints": [],
-		"airTempEnabled": false,
-		"airTempObjectId": "",
-		"waterTempEnabled": false,
-		"waterTempObjectId": "",
-		"pressureEnabled": false,
-		"pressureObjectId": "",
-		"pressureMin": null,
-		"pressureMax": null,
-		"winterEnabled": false,
-		"winterStart": "11-01",
-		"winterEnd": "03-15",
-		"winterFrostProtect": false,
-		"winterAirTempThreshold": 2,
-		"winterAffectedPoints": [],
-		"feederEnabled": false,
-		"feederInstance": "",
-		"feederSwitches": [],
-		"feederOffsetSec": 60,
-		"feederFeedingDurationSec": 15,
-		"feederDurationMode": "measure",
-		"feederAffectedPoints": [],
-		"notifyEnabled": false,
-		"messagingInstance": "",
-		"notifyEvents": [
-			"interlock",
-			"oxygen",
-			"pressure"
-		],
-		"points": [],
-		"groups": [],
-		"schedules": []
-	},
-	"encryptedNative": [
-		"esp32AuthToken"
-	],
-	"protectedNative": [
-		"esp32AuthToken"
-	],
-	"objects": [],
-	"instanceObjects": [
-		{
-			"_id": "info",
-			"type": "channel",
-			"common": {
-				"name": "Information"
-			},
-			"native": {}
-		},
-		{
-			"_id": "info.connection",
-			"type": "state",
-			"common": {
-				"role": "indicator.connected",
-				"name": "Adapter running / configuration valid",
-				"type": "boolean",
-				"read": true,
-				"write": false,
-				"def": false
-			},
-			"native": {}
-		},
-		{
-			"_id": "info.deviceFirmware",
-			"type": "state",
-			"common": {
-				"role": "text",
-				"name": "ESP32 firmware version reported by the connected device",
-				"type": "string",
-				"read": true,
-				"write": false,
-				"def": ""
-			},
-			"native": {}
-		},
-		{
-			"_id": "info.firmwareCompatible",
-			"type": "state",
-			"common": {
-				"role": "indicator",
-				"name": "ESP32 firmware protocol is compatible with this adapter",
-				"type": "boolean",
-				"read": true,
-				"write": false,
-				"def": false
-			},
-			"native": {}
-		},
-		{
-			"_id": "info.licenseTier",
-			"type": "state",
-			"common": {
-				"role": "text",
-				"name": "ESP32 active licence tier (free/community/pro; empty if firmware is ungated)",
-				"type": "string",
-				"read": true,
-				"write": false,
-				"def": ""
-			},
-			"native": {}
-		},
-		{
-			"_id": "info.licenseTrialDaysLeft",
-			"type": "state",
-			"common": {
-				"role": "value",
-				"name": "ESP32 licence trial days remaining (0 = no trial running)",
-				"type": "number",
-				"unit": "d",
-				"read": true,
-				"write": false,
-				"def": 0
-			},
-			"native": {}
-		},
-		{
-			"_id": "info.deviceCode",
-			"type": "state",
-			"common": {
-				"role": "text",
-				"name": "ESP32 device code (give this when unlocking to receive an activation key)",
-				"type": "string",
-				"read": true,
-				"write": false,
-				"def": ""
-			},
-			"native": {}
-		},
-		{
-			"_id": "info.licenseControlBlocked",
-			"type": "state",
-			"common": {
-				"role": "indicator",
-				"name": "ESP32 rejected a control command — device not licensed for control",
-				"type": "boolean",
-				"read": true,
-				"write": false,
-				"def": false
-			},
-			"native": {}
-		}
-	]
+  "common": {
+    "name": "automatic-pond-aeration",
+    "version": "0.1.5",
+    "news": {
+      "0.1.5": {
+        "en": "Admin consistency for the ESP32 backend: on the Safety tab the pump and emergency valve are shown as their ESP32 relay channels (the same ones set under General) instead of separate ioBroker states, so the two tabs can no longer contradict each other. The aeration-point channel picker is now a dropdown that reserves the pump/emergency channels and greys out channels already used by other points.",
+        "de": "Admin-Konsistenz für das ESP32-Backend: Auf der Registerkarte „Sicherheit“ werden die Pumpe und das Notventil als ihre ESP32-Relaiskanäle (die gleichen, die unter „Allgemein“ eingestellt sind) anstelle separater ioBroker-Zustände angezeigt, sodass sich die beiden Registerkarten nicht mehr widersprechen können. Die Kanalauswahl für Belüftungspunkte ist jetzt ein Dropdown-Menü, das die Pumpen-/Notfallkanäle reserviert und Kanäle ausgraut, die bereits von anderen Punkten verwendet werden.",
+        "ru": "Согласованность администрирования для серверной части ESP32: на вкладке «Безопасность» насос и аварийный клапан отображаются как соответствующие каналы реле ESP32 (те же, что установлены в разделе «Общие»), а не отдельные состояния ioBroker, поэтому две вкладки больше не могут противоречить друг другу. Средство выбора каналов точки аэрации теперь представляет собой раскрывающийся список, в котором резервируются насосные/аварийные каналы и выделяются серым цветом каналы, уже используемые другими точками.",
+        "pt": "Consistência administrativa para o back-end ESP32: na guia Segurança, a bomba e a válvula de emergência são mostradas como seus canais de retransmissão ESP32 (os mesmos definidos em Geral) em vez de estados ioBroker separados, para que as duas guias não possam mais se contradizer. O seletor de canal do ponto de aeração agora é um menu suspenso que reserva os canais de bomba/emergência e desativa os canais já usados ​​por outros pontos.",
+        "nl": "Beheerconsistentie voor de ESP32-backend: op het tabblad Veiligheid worden de pomp en de noodklep weergegeven als hun ESP32-relaiskanalen (dezelfde die zijn ingesteld onder Algemeen) in plaats van afzonderlijke ioBroker-statussen, zodat de twee tabbladen elkaar niet langer kunnen tegenspreken. De kanaalkiezer voor beluchtingspunten is nu een vervolgkeuzelijst waarin de pomp-/noodkanalen worden gereserveerd en kanalen die al door andere punten worden gebruikt, grijs worden weergegeven.",
+        "fr": "Cohérence de l'administration pour le backend ESP32 : dans l'onglet Sécurité, la pompe et la vanne d'urgence sont affichées comme leurs canaux de relais ESP32 (les mêmes que ceux définis sous Général) au lieu d'états ioBroker séparés, de sorte que les deux onglets ne peuvent plus se contredire. Le sélecteur de canaux de point d'aération est désormais une liste déroulante qui réserve les canaux de pompe/urgence et grise les canaux déjà utilisés par d'autres points.",
+        "it": "Coerenza amministrativa per il backend ESP32: nella scheda Sicurezza la pompa e la valvola di emergenza vengono mostrate come canali relè ESP32 (gli stessi impostati in Generale) invece che come stati ioBroker separati, quindi le due schede non possono più contraddirsi a vicenda. Il selettore di canali del punto di aerazione è ora un menu a discesa che riserva i canali della pompa/emergenza e oscura i canali già utilizzati da altri punti.",
+        "es": "Coherencia administrativa para el backend de ESP32: en la pestaña Seguridad, la bomba y la válvula de emergencia se muestran como sus canales de relé ESP32 (los mismos configurados en General) en lugar de estados separados de ioBroker, por lo que las dos pestañas ya no pueden contradecirse entre sí. El selector de canales del punto de aireación ahora es un menú desplegable que reserva los canales de bomba/emergencia y atenúa los canales ya utilizados por otros puntos.",
+        "pl": "Spójność administracyjna dla backendu ESP32: na karcie Bezpieczeństwo pompa i zawór awaryjny są pokazane jako kanały przekaźników ESP32 (te same ustawione w obszarze Ogólne), a nie jako oddzielne stany ioBroker, więc te dwie zakładki nie mogą już być ze sobą sprzeczne. Selektor kanałów punktu napowietrzania jest teraz menu rozwijanym, które rezerwuje kanały pompy/awaryjne i wyszarza kanały już używane przez inne punkty.",
+        "uk": "Узгодженість адміністратора для серверної частини ESP32: на вкладці «Безпека» насос і аварійний клапан відображаються як їхні канали реле ESP32 (ті самі, що налаштовані в розділі «Загальні») замість окремих станів ioBroker, тому ці дві вкладки більше не можуть суперечити одна одній. Засіб вибору каналів точки аерації тепер є розкривним меню, яке резервує насосні/аварійні канали та виділяє сірим кольором канали, які вже використовуються іншими точками.",
+        "zh-cn": "ESP32 后端的管理一致性：在“安全”选项卡上，泵和紧急阀显示为其 ESP32 继电器通道（与“常规”下设置的通道相同），而不是单独的 ioBroker 状态，因此这两个选项卡不再相互矛盾。通气点通道选择器现在是一个下拉列表，保留泵/紧急通道并将其他点已使用的通道灰显。"
+      }
+    },
+    "titleLang": {
+      "en": "Automatic Pond Aeration",
+      "de": "Automatische Teichbelüftung",
+      "ru": "Автоматическая аэрация пруда",
+      "pt": "Arejamento automático de lago",
+      "nl": "Automatische vijverbeluchting",
+      "fr": "Aération automatique d'étang",
+      "it": "Aerazione automatica del laghetto",
+      "es": "Aireación automática de estanque",
+      "pl": "Automatyczne napowietrzanie stawu",
+      "uk": "Автоматична аерація ставка",
+      "zh-cn": "自动池塘增氧"
+    },
+    "desc": {
+      "en": "Controls and monitors a pond aeration: switches valves at up to 8 aeration points by schedule, round-robin or groups, with a pump safety interlock and optional oxygen, temperature and pressure monitoring.",
+      "de": "Steuert und überwacht eine Teichbelüftung: schaltet Ventile an bis zu 8 Belüftungsstellen per Zeitplan, Rundlauf oder Gruppen, mit Pumpen-Sicherheitsverriegelung und optionaler Sauerstoff-, Temperatur- und Drucküberwachung.",
+      "ru": "Управляет и контролирует аэрацию пруда: переключает клапаны на 8 точках аэрации по расписанию, циклически или группами, с защитной блокировкой насоса и опциональным контролем кислорода, температуры и давления.",
+      "pt": "Controla e monitoriza o arejamento de um lago: comuta válvulas em até 8 pontos de arejamento por horário, rotação cíclica ou grupos, com bloqueio de segurança da bomba e monitorização opcional de oxigénio, temperatura e pressão.",
+      "nl": "Bestuurt en bewaakt een vijverbeluchting: schakelt kleppen op maximaal 8 beluchtingspunten via schema, cyclische rondgang of groepen, met een veiligheidsvergrendeling voor de pomp en optionele bewaking van zuurstof, temperatuur en druk.",
+      "fr": "Contrôle et surveille l'aération d'un étang : commute des vannes sur jusqu'à 8 points d'aération par horaire, rotation cyclique ou groupes, avec un verrouillage de sécurité de la pompe et une surveillance optionnelle de l'oxygène, de la température et de la pression.",
+      "it": "Controlla e monitora l'aerazione di un laghetto: commuta le valvole in un massimo di 8 punti di aerazione tramite pianificazione, rotazione ciclica o gruppi, con un interblocco di sicurezza della pompa e monitoraggio opzionale di ossigeno, temperatura e pressione.",
+      "es": "Controla y supervisa la aireación de un estanque: conmuta válvulas en hasta 8 puntos de aireación por horario, rotación cíclica o grupos, con un enclavamiento de seguridad de la bomba y supervisión opcional de oxígeno, temperatura y presión.",
+      "pl": "Steruje i monitoruje napowietrzanie stawu: przełącza zawory w maksymalnie 8 punktach napowietrzania według harmonogramu, rotacji cyklicznej lub grup, z blokadą bezpieczeństwa pompy oraz opcjonalnym monitorowaniem tlenu, temperatury i ciśnienia.",
+      "uk": "Керує та контролює аерацію ставка: перемикає клапани на до 8 точок аерації за розкладом, циклічним обходом або групами, із запобіжним блокуванням насоса та опціональним контролем кисню, температури й тиску.",
+      "zh-cn": "控制并监测池塘增氧：通过计划、循环轮换或分组方式切换最多 8 个增氧点的阀门，具备水泵安全联锁以及可选的溶氧、温度和压力监测。"
+    },
+    "authors": [
+      "ssbingo <s.sternitzke@online.de>"
+    ],
+    "keywords": [
+      "pond",
+      "aeration",
+      "Teich",
+      "Belüftung",
+      "valve",
+      "oxygen",
+      "Koi"
+    ],
+    "licenseInformation": {
+      "type": "free",
+      "license": "MIT"
+    },
+    "platform": "Javascript/Node.js",
+    "icon": "automatic-pond-aeration.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/ssbingo/ioBroker.automatic-pond-aeration/main/admin/automatic-pond-aeration.png",
+    "readme": "https://github.com/ssbingo/ioBroker.automatic-pond-aeration/blob/main/README.md",
+    "loglevel": "info",
+    "tier": 3,
+    "mode": "daemon",
+    "type": "garden",
+    "compact": true,
+    "messagebox": true,
+    "connectionType": "local",
+    "dataSource": "push",
+    "adminUI": {
+      "config": "materialize"
+    },
+    "eraseOnUpload": true,
+    "dependencies": [
+      {
+        "js-controller": ">=6.0.11"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=7.6.20"
+      }
+    ]
+  },
+  "native": {
+    "masterEnable": true,
+    "dryRun": false,
+    "controlBackend": "iobroker",
+    "esp32Host": "",
+    "esp32Port": 80,
+    "esp32AuthToken": "",
+    "esp32EmergencyRelay": 6,
+    "esp32PumpRelay": 7,
+    "esp32AutonomousEnabled": false,
+    "pollIntervalSec": 30,
+    "locationMode": "system",
+    "latitude": "",
+    "longitude": "",
+    "address": "",
+    "pumpControllable": false,
+    "pumpObjectId": "",
+    "pumpMinOnSec": 0,
+    "pumpMinOffSec": 0,
+    "emergencyObjectId": "",
+    "emergencyNormallyOpen": true,
+    "emergencyValveType": "solenoid",
+    "emergencyMotorTravelSec": 5,
+    "minOpenValves": 1,
+    "watchdogIntervalSec": 5,
+    "overlapSec": 2,
+    "roundRobinEnabled": false,
+    "roundRobinDwellSec": 60,
+    "sequenceSteps": [],
+    "o2Enabled": false,
+    "o2ObjectId": "",
+    "o2LowThreshold": null,
+    "o2TargetThreshold": null,
+    "o2Hysteresis": 0.5,
+    "o2ControlEnabled": false,
+    "o2AffectedPoints": [],
+    "airTempEnabled": false,
+    "airTempObjectId": "",
+    "waterTempEnabled": false,
+    "waterTempObjectId": "",
+    "pressureEnabled": false,
+    "pressureObjectId": "",
+    "pressureMin": null,
+    "pressureMax": null,
+    "winterEnabled": false,
+    "winterStart": "11-01",
+    "winterEnd": "03-15",
+    "winterFrostProtect": false,
+    "winterAirTempThreshold": 2,
+    "winterAffectedPoints": [],
+    "feederEnabled": false,
+    "feederInstance": "",
+    "feederSwitches": [],
+    "feederOffsetSec": 60,
+    "feederFeedingDurationSec": 15,
+    "feederDurationMode": "measure",
+    "feederAffectedPoints": [],
+    "notifyEnabled": false,
+    "messagingInstance": "",
+    "notifyEvents": [
+      "interlock",
+      "oxygen",
+      "pressure"
+    ],
+    "points": [],
+    "groups": [],
+    "schedules": []
+  },
+  "encryptedNative": [
+    "esp32AuthToken"
+  ],
+  "protectedNative": [
+    "esp32AuthToken"
+  ],
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "Adapter running / configuration valid",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.deviceFirmware",
+      "type": "state",
+      "common": {
+        "role": "text",
+        "name": "ESP32 firmware version reported by the connected device",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.firmwareCompatible",
+      "type": "state",
+      "common": {
+        "role": "indicator",
+        "name": "ESP32 firmware protocol is compatible with this adapter",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.licenseTier",
+      "type": "state",
+      "common": {
+        "role": "text",
+        "name": "ESP32 active licence tier (free/community/pro; empty if firmware is ungated)",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.licenseTrialDaysLeft",
+      "type": "state",
+      "common": {
+        "role": "value",
+        "name": "ESP32 licence trial days remaining (0 = no trial running)",
+        "type": "number",
+        "unit": "d",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.deviceCode",
+      "type": "state",
+      "common": {
+        "role": "text",
+        "name": "ESP32 device code (give this when unlocking to receive an activation key)",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.licenseControlBlocked",
+      "type": "state",
+      "common": {
+        "role": "indicator",
+        "name": "ESP32 rejected a control command — device not licensed for control",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    }
+  ]
 }

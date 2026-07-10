@@ -375,6 +375,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.1.5 (2026-07-10)
+* (ssbingo) **Admin consistency for the ESP32 backend.** On the **Safety** tab the pump and emergency valve are now shown as their **ESP32 relay channels** (the very same ones set under *General → Hardware backend*) instead of separate ioBroker states — the two tabs can no longer contradict each other. The **aeration-point channel picker** is now a dropdown that **reserves** the pump/emergency channels and greys out channels already used by other points; when no channel is left, further points are added as ioBroker states. 6 new admin strings localized in 11 languages
+
 ### 0.1.4 (2026-07-09)
 * (ssbingo) The adapter now **mirrors the configured sensor data points** (oxygen, water/air temperature, pressure) to the ESP32's **own web UI** via `POST /api/sensors`, so they appear on the device's Home page — even for sensors that are only ioBroker states and not wired to the ESP. A physically wired ESP sensor keeps priority; pushed values are tagged **(ioBroker)** and drop out after a few minutes. Needs firmware ≥ 1.1.7
 
@@ -401,9 +404,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.0.17 (2026-07-08)
 * (ssbingo) Direct **ESP32 hardware backend** (M7): selecting `ESP32 (direct)` now drives a Waveshare ESP32-S3-POE-ETH-8DI-8RO through the separate reference firmware over HTTP (JSON, port 80) — `GET /api/info` protocol check, `POST /api/config` pushing the safety roles, relay commands, and a heartbeat that keeps the firmware's on-device failsafe disarmed while the adapter is healthy; the polled status is mirrored into the data points. New config `esp32EmergencyRelay`/`esp32PumpRelay`, pure/unit-tested `lib/hal/esp32-protocol.js` and `lib/hal/esp32-backend.js`, admin fields + 3 strings in 11 languages. The ioBroker-state backend remains the default
-
-### 0.0.16 (2026-07-08)
-* (ssbingo) Per-point manual override push-button (M7 groundwork): each aeration point can have a physical button (an ESP32 digital input or any boolean state). It toggles — one press forces the point on with **priority over the automatic control** (schedule/sequence/winter/oxygen) and even over a feeder pause; only the master switch or a safety trip overrides it. New per-point config (`buttonEnabled`/`buttonMode`/`buttonObjectId`), state `aeration.point.<n>.buttonOn`, pure/unit-tested `lib/control/button.js`, admin column and localized messages/strings in 11 languages. The button mode is an enum, so more behaviours can be added later
 
 ---
 

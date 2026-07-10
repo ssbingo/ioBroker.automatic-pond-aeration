@@ -79,14 +79,21 @@ const WEEKDAYS = [
 ];
 
 /** A number field; empty maps to `null` when `nullable`, otherwise to `0`. */
-function Num({ label, value, onChange, nullable, min }) {
+function Num({ label, value, onChange, nullable, min, max }) {
+	const inputProps = {};
+	if (min !== undefined) {
+		inputProps.min = min;
+	}
+	if (max !== undefined) {
+		inputProps.max = max;
+	}
 	return (
 		<TextField
 			variant="standard"
 			type="number"
 			label={label}
 			value={value === null || value === undefined ? '' : value}
-			inputProps={min !== undefined ? { min } : undefined}
+			inputProps={Object.keys(inputProps).length ? inputProps : undefined}
 			onChange={e => onChange(e.target.value === '' ? (nullable ? null : 0) : Number(e.target.value))}
 			sx={{ minWidth: 150 }}
 		/>
@@ -105,7 +112,7 @@ function Sel({ label, value, onChange, options, sx }) {
 			<InputLabel>{label}</InputLabel>
 			<Select value={value} onChange={e => onChange(e.target.value)}>
 				{options.map(o => (
-					<MenuItem key={o.value} value={o.value}>
+					<MenuItem key={o.value} value={o.value} disabled={!!o.disabled}>
 						{o.label}
 					</MenuItem>
 				))}
@@ -349,7 +356,9 @@ function Settings(props) {
 	const pointsTab = (
 		<Box>
 			<TabTitle>{I18n.t('Aeration points')}</TabTitle>
-			<Section desc={I18n.t('Up to 8 aeration points. Each valve is an existing ioBroker state or an ESP32 channel.')}>
+			<Section desc={native.controlBackend === 'esp32'
+				? I18n.t('Up to 8 aeration points. On the ESP32 backend each valve is a relay channel; the pump and emergency-valve channels are reserved and cannot be picked here. When no channel is left, add further points as ioBroker states via the Backend column.')
+				: I18n.t('Up to 8 aeration points. Each valve is an existing ioBroker state or an ESP32 channel.')}>
 				<Table size="small">
 					<TableHead>
 						<TableRow>
@@ -401,7 +410,35 @@ function Settings(props) {
 								</TableCell>
 								<TableCell sx={{ minWidth: 240 }}>
 									{espBackend && p.backendType === 'esp32' ? (
-										<Num label={I18n.t('Channel')} value={p.espChannel} onChange={v => updatePoint(i, 'espChannel', v)} min={0} />
+										<Sel
+											label={I18n.t('Channel')}
+											value={Number.isInteger(p.espChannel) && p.espChannel >= 0 && p.espChannel < 8 ? p.espChannel : ''}
+											onChange={v => updatePoint(i, 'espChannel', v)}
+											sx={{ minWidth: 200 }}
+											options={Array.from({ length: 8 }, (_, ch) => {
+												// Reserve the pump / emergency-valve relays and channels already taken by
+												// other ESP32 points; the current row's own channel always stays selectable.
+												const isCurrent = ch === p.espChannel;
+												const usedByOther = points.some(
+													(q, j) => j !== i && q.backendType === 'esp32' && Number(q.espChannel) === ch,
+												);
+												let label = String(ch);
+												let disabled = false;
+												if (!isCurrent) {
+													if (ch === pumpCh) {
+														label = `${ch} — ${I18n.t('pump (reserved)')}`;
+														disabled = true;
+													} else if (ch === emergencyCh) {
+														label = `${ch} — ${I18n.t('emergency valve (reserved)')}`;
+														disabled = true;
+													} else if (usedByOther) {
+														label = `${ch} — ${I18n.t('in use')}`;
+														disabled = true;
+													}
+												}
+												return { value: ch, label, disabled };
+											})}
+										/>
 									) : (
 										<ObjectSelect label="" value={p.objectId} onChange={v => updatePoint(i, 'objectId', v)} {...objProps} />
 									)}
@@ -724,10 +761,16 @@ function Settings(props) {
 					<Field help={I18n.t('On: the adapter may switch the pump off (needs the pump state below). Off: the pump is only observed — the adapter never switches it, and relies on the emergency valve.')}>
 						<Sw label={I18n.t('Pump is controllable')} checked={native.pumpControllable} onChange={v => set('pumpControllable', v)} />
 					</Field>
-					<Field help={I18n.t('The ioBroker state that reports (and, if controllable, switches) the pump. Leave empty if you have no pump signal.')}>
-						<Box sx={{ minWidth: 260 }}>
-							<ObjectSelect label={I18n.t('Pump state')} value={native.pumpObjectId} onChange={v => set('pumpObjectId', v)} {...objProps} />
-						</Box>
+					<Field help={native.controlBackend === 'esp32'
+						? I18n.t('With the ESP32 backend the pump is an ESP32 relay channel — the same one set under General → Hardware backend. Changing it here changes it there too.')
+						: I18n.t('The ioBroker state that reports (and, if controllable, switches) the pump. Leave empty if you have no pump signal.')}>
+						{native.controlBackend === 'esp32' ? (
+							<Num label={I18n.t('Pump relay (0–7)')} value={native.esp32PumpRelay} onChange={v => set('esp32PumpRelay', v)} min={0} max={7} />
+						) : (
+							<Box sx={{ minWidth: 260 }}>
+								<ObjectSelect label={I18n.t('Pump state')} value={native.pumpObjectId} onChange={v => set('pumpObjectId', v)} {...objProps} />
+							</Box>
+						)}
 					</Field>
 					<Field help={I18n.t('Anti short-cycle: once ON, the pump stays on at least this long before it may be switched off (protects the motor). 0 = no limit.')}>
 						<Num label={I18n.t('Min. on-time (s)')} value={native.pumpMinOnSec} onChange={v => set('pumpMinOnSec', v)} min={0} />
@@ -739,10 +782,16 @@ function Settings(props) {
 			</Section>
 			<Section title={I18n.t('Emergency valve')} desc={I18n.t('The relief valve the interlock opens when too few normal valves are open. Wire it normally-open (NO) so it opens by itself on a power cut.')}>
 				<Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', alignItems: 'flex-start' }}>
-					<Field help={I18n.t('The ioBroker state that opens/closes the emergency valve.')}>
-						<Box sx={{ minWidth: 260 }}>
-							<ObjectSelect label={I18n.t('Emergency valve state')} value={native.emergencyObjectId} onChange={v => set('emergencyObjectId', v)} {...objProps} />
-						</Box>
+					<Field help={native.controlBackend === 'esp32'
+						? I18n.t('With the ESP32 backend the emergency valve is an ESP32 relay channel — the same one set under General → Hardware backend. Changing it here changes it there too.')
+						: I18n.t('The ioBroker state that opens/closes the emergency valve.')}>
+						{native.controlBackend === 'esp32' ? (
+							<Num label={I18n.t('Emergency-valve relay (0–7)')} value={native.esp32EmergencyRelay} onChange={v => set('esp32EmergencyRelay', v)} min={0} max={7} />
+						) : (
+							<Box sx={{ minWidth: 260 }}>
+								<ObjectSelect label={I18n.t('Emergency valve state')} value={native.emergencyObjectId} onChange={v => set('emergencyObjectId', v)} {...objProps} />
+							</Box>
+						)}
 					</Field>
 					<Field help={I18n.t('On (recommended): the valve is open without power (fail-safe) — on a power cut the pump can always vent. Off: it is closed without power.')}>
 						<Sw label={I18n.t('Normally open (fail-safe)')} checked={native.emergencyNormallyOpen} onChange={v => set('emergencyNormallyOpen', v)} />

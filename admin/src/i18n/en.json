@@ -32,6 +32,7 @@
 	"Dwell (s, optional)": "Dwell (s, optional)",
 	"Dwell per point (s)": "Dwell per point (s)",
 	"Emergency valve": "Emergency valve",
+	"emergency valve (reserved)": "emergency valve (reserved)",
 	"Emergency valve state": "Emergency valve state",
 	"Emergency-valve relay (0–7)": "Emergency-valve relay (0–7)",
 	"Enabled": "Enabled",
@@ -61,6 +62,7 @@
 	"Hysteresis": "Hysteresis",
 	"If the adapter connection drops, the ESP32 keeps running your time schedules on its own using its NTP clock — the dead-head safety interlock still applies. The cyclic sequence is not run autonomously; it stays with the adapter.": "If the adapter connection drops, the ESP32 keeps running your time schedules on its own using its NTP clock — the dead-head safety interlock still applies. The cyclic sequence is not run autonomously; it stays with the adapter.",
 	"In dry-run the adapter only logs the intended valve and pump actions — no hardware is switched.": "In dry-run the adapter only logs the intended valve and pump actions — no hardware is switched.",
+	"in use": "in use",
 	"incompatible protocol!": "incompatible protocol!",
 	"ioBroker state": "ioBroker state",
 	"ioBroker system location": "ioBroker system location",
@@ -112,6 +114,7 @@
 	"protocol": "protocol",
 	"Pulse (fixed duration)": "Pulse (fixed duration)",
 	"Pump": "Pump",
+	"pump (reserved)": "pump (reserved)",
 	"Pump is controllable": "Pump is controllable",
 	"Pump relay (0–7)": "Pump relay (0–7)",
 	"Pump state": "Pump state",
@@ -153,6 +156,7 @@
 	"Trial — %s days left": "Trial — %s days left",
 	"Tue": "Tue",
 	"Up to 8 aeration points. Each valve is an existing ioBroker state or an ESP32 channel.": "Up to 8 aeration points. Each valve is an existing ioBroker state or an ESP32 channel.",
+	"Up to 8 aeration points. On the ESP32 backend each valve is a relay channel; the pump and emergency-valve channels are reserved and cannot be picked here. When no channel is left, add further points as ioBroker states via the Backend column.": "Up to 8 aeration points. On the ESP32 backend each valve is a relay channel; the pump and emergency-valve channels are reserved and cannot be picked here. When no channel is left, add further points as ioBroker states via the Backend column.",
 	"Valve state / channel": "Valve state / channel",
 	"Valve type": "Valve type",
 	"Warning: the firmware only listens on port 80. A different port will not connect unless a reverse proxy forwards it.": "Warning: the firmware only listens on port 80. A different port will not connect unless a reverse proxy forwards it.",
@@ -167,5 +171,7 @@
 	"While the pump runs, at least this many valves are always kept open. If that cannot be reached, the emergency valve opens and the pump is switched off. Higher = safer against dead-heading, but forces more points open.": "While the pump runs, at least this many valves are always kept open. If that cannot be reached, the emergency valve opens and the pump is switched off. Higher = safer against dead-heading, but forces more points open.",
 	"Winter / ice-free mode": "Winter / ice-free mode",
 	"Winter end": "Winter end",
-	"Winter start": "Winter start"
+	"Winter start": "Winter start",
+	"With the ESP32 backend the emergency valve is an ESP32 relay channel — the same one set under General → Hardware backend. Changing it here changes it there too.": "With the ESP32 backend the emergency valve is an ESP32 relay channel — the same one set under General → Hardware backend. Changing it here changes it there too.",
+	"With the ESP32 backend the pump is an ESP32 relay channel — the same one set under General → Hardware backend. Changing it here changes it there too.": "With the ESP32 backend the pump is an ESP32 relay channel — the same one set under General → Hardware backend. Changing it here changes it there too."
 }
