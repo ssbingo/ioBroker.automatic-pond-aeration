@@ -205,6 +205,30 @@ function Settings(props) {
 	const schedules = Array.isArray(native.schedules) ? native.schedules : [];
 	const objProps = { socket: props.socket, theme: props.theme, themeName: props.themeName, themeType: props.themeType };
 
+	// --- ESP32 relay-channel helpers (shared by the General + Safety pump/emergency pickers) -------
+	// The ESP32 has 8 relay channels (0–7). A channel drives exactly one thing, so the pump and the
+	// emergency valve must not collide with each other or with an aeration valve. These build the
+	// same reserved/in-use drop-down the aeration-point channel picker uses.
+	const espChValue = v => (Number.isInteger(v) && v >= 0 && v < 8 ? v : '');
+	const espChannelUsedByPoint = ch => points.some(p => p.backendType === 'esp32' && Number(p.espChannel) === ch);
+	/** Options for a pump/emergency relay select: `otherVal` (the other role's channel) is reserved,
+	 *  channels taken by an aeration point are "in use"; the current value always stays selectable. */
+	const espRelayOptions = (currentVal, otherVal, otherLabelKey) =>
+		Array.from({ length: 8 }, (_, ch) => {
+			let label = String(ch);
+			let disabled = false;
+			if (ch !== currentVal) {
+				if (ch === otherVal) {
+					label = `${ch} — ${I18n.t(otherLabelKey)}`;
+					disabled = true;
+				} else if (espChannelUsedByPoint(ch)) {
+					label = `${ch} — ${I18n.t('in use')}`;
+					disabled = true;
+				}
+			}
+			return { value: ch, label, disabled };
+		});
+
 	const updatePoint = (i, key, value) => set('points', points.map((p, idx) => (idx === i ? { ...p, [key]: value } : p)));
 	const addPoint = () => {
 		if (points.length >= MAX_POINTS) {
@@ -335,8 +359,8 @@ function Settings(props) {
 							</Box>
 						) : null}
 						<Box sx={{ mt: 1, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-							<Num label={I18n.t('Emergency-valve relay (0–7)')} value={native.esp32EmergencyRelay} onChange={v => set('esp32EmergencyRelay', v)} min={0} />
-							<Num label={I18n.t('Pump relay (0–7)')} value={native.esp32PumpRelay} onChange={v => set('esp32PumpRelay', v)} min={0} />
+							<Sel label={I18n.t('Emergency-valve relay (0–7)')} value={espChValue(native.esp32EmergencyRelay ?? 6)} onChange={v => set('esp32EmergencyRelay', v)} sx={{ minWidth: 200 }} options={espRelayOptions(native.esp32EmergencyRelay ?? 6, native.esp32PumpRelay ?? 7, 'pump (reserved)')} />
+							<Sel label={I18n.t('Pump relay (0–7)')} value={espChValue(native.esp32PumpRelay ?? 7)} onChange={v => set('esp32PumpRelay', v)} sx={{ minWidth: 200 }} options={espRelayOptions(native.esp32PumpRelay ?? 7, native.esp32EmergencyRelay ?? 6, 'emergency valve (reserved)')} />
 						</Box>
 						<Typography variant="caption" color="textSecondary" sx={{ display: 'block', mt: 0.5 }}>
 							{I18n.t('The aeration-point valves use the relay channel set per point; here you map the emergency valve and the pump. The firmware runs an on-device failsafe from these settings.')}
@@ -765,7 +789,7 @@ function Settings(props) {
 						? I18n.t('With the ESP32 backend the pump is an ESP32 relay channel — the same one set under General → Hardware backend. Changing it here changes it there too.')
 						: I18n.t('The ioBroker state that reports (and, if controllable, switches) the pump. Leave empty if you have no pump signal.')}>
 						{native.controlBackend === 'esp32' ? (
-							<Num label={I18n.t('Pump relay (0–7)')} value={native.esp32PumpRelay} onChange={v => set('esp32PumpRelay', v)} min={0} max={7} />
+							<Sel label={I18n.t('Pump relay (0–7)')} value={espChValue(native.esp32PumpRelay ?? 7)} onChange={v => set('esp32PumpRelay', v)} sx={{ minWidth: 200 }} options={espRelayOptions(native.esp32PumpRelay ?? 7, native.esp32EmergencyRelay ?? 6, 'emergency valve (reserved)')} />
 						) : (
 							<Box sx={{ minWidth: 260 }}>
 								<ObjectSelect label={I18n.t('Pump state')} value={native.pumpObjectId} onChange={v => set('pumpObjectId', v)} {...objProps} />
@@ -786,7 +810,7 @@ function Settings(props) {
 						? I18n.t('With the ESP32 backend the emergency valve is an ESP32 relay channel — the same one set under General → Hardware backend. Changing it here changes it there too.')
 						: I18n.t('The ioBroker state that opens/closes the emergency valve.')}>
 						{native.controlBackend === 'esp32' ? (
-							<Num label={I18n.t('Emergency-valve relay (0–7)')} value={native.esp32EmergencyRelay} onChange={v => set('esp32EmergencyRelay', v)} min={0} max={7} />
+							<Sel label={I18n.t('Emergency-valve relay (0–7)')} value={espChValue(native.esp32EmergencyRelay ?? 6)} onChange={v => set('esp32EmergencyRelay', v)} sx={{ minWidth: 200 }} options={espRelayOptions(native.esp32EmergencyRelay ?? 6, native.esp32PumpRelay ?? 7, 'pump (reserved)')} />
 						) : (
 							<Box sx={{ minWidth: 260 }}>
 								<ObjectSelect label={I18n.t('Emergency valve state')} value={native.emergencyObjectId} onChange={v => set('emergencyObjectId', v)} {...objProps} />
