@@ -162,7 +162,10 @@ you use.
 
 ### Aeration points
 The heart of the configuration. Add **up to 8** points; each one is one valve. Per point:
-- **Name** – e.g. `Pier`, `Deep zone`.
+- **Name** – e.g. `Pier`, `Deep zone`. With the **ESP32** backend this name is also **shown on the
+  device's own web UI** (on the relay channel of the point) — a **licensed feature** (from tier
+  **community**). `Ch 7 = Notventil` (emergency valve) and `Ch 8 = Pumpe` (pump) are fixed labels.
+  See [Names on the ESP32 web UI](#names-on-the-esp32-web-ui).
 - **Enabled** – include this point in the control.
 - **Backend** – `ioBroker` (a foreign state) or `ESP32` (a relay channel on the device). The
   `ESP32` option only appears when the **Hardware backend** (General tab) is `ESP32 (direct)`.
@@ -179,6 +182,21 @@ The heart of the configuration. Add **up to 8** points; each one is one valve. P
   point that sits on the ESP32 **pump** or **emergency-valve** relay channel cannot have one (the
   option is greyed out). With the ESP32 backend, a button pressed **at the device** is reflected back
   into ioBroker (`aeration.point.<n>.buttonOn`) and gets the same priority.
+- **Button name** *(ESP32 backend, optional)* – a friendly name for this point's override button,
+  shown on the device web UI (see below). Empty → the button shows the point name.
+
+#### Names on the ESP32 web UI
+
+*(ESP32 backend, **licensed feature** — available from tier **community**.)* Give your channels and
+buttons friendly names that appear on the device's own web pages instead of `Ch 1…8` / `DI 1…8`:
+
+- The adapter **pushes each aeration point's Name** to its relay channel (Ch 1–6) and each point's
+  optional **Button name** to the matching digital input (DI 1–8).
+- **Ch 7 = Notventil** (emergency valve) and **Ch 8 = Pumpe** (pump) are **fixed** and cannot be renamed.
+- **Standalone (no adapter):** the same names can be edited **on the device** under *Settings → Namen
+  (Kanäle & Taster)* and are stored on the ESP (NVS); when the adapter is connected it overwrites them
+  with the names configured here.
+- On **free** (unlicensed) firmware the names are ignored and the pages show the default `Ch`/`DI` labels.
 
 ### Groups
 Group points to switch them together (e.g. one button opens several diffusers). Give the group a
@@ -235,10 +253,13 @@ Every field on this tab carries an **in-admin explanation** of what it does and 
 them, because this is the tab where a wrong value matters most.
 - **Min. open valves while pump runs** – the dead-head protection (default `1`).
 - **Watchdog interval (s)** and **make-before-break overlap (s)**.
-- **Pump** – whether it is controllable (then the interlock can switch it off), the pump **signal**,
-  and anti short-cycle min on/off times. *With the **ESP32** backend the pump signal is the **ESP32
-  relay channel** — the very same one set under General → Hardware backend, shown here so the two
-  tabs can never disagree; with the **ioBroker** backend it is an ioBroker state.*
+- **Pump** – whether it is **controllable**, the pump **signal**, and anti short-cycle min on/off
+  times. When controllable, the adapter **drives the pump to follow the aeration demand** — it runs
+  while at least the minimum valves are open and switches off when the pond is idle or on a dead-head
+  trip (honouring the min on/off times); when *not* controllable the pump is only observed and the
+  emergency valve alone protects it. *With the **ESP32** backend the pump signal is the **ESP32 relay
+  channel** — the very same one set under General → Hardware backend, shown here so the two tabs can
+  never disagree; with the **ioBroker** backend it is an ioBroker state.*
 - **Emergency valve** – its **signal**, whether it is **normally open** (fail-safe), the valve
   **type** (solenoid or motorized ball valve) and, for a motor valve, its **travel time**. *With the
   ESP32 backend the signal is likewise the ESP32 emergency-valve relay channel (same as General).*
@@ -384,6 +405,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.1.9 (2026-07-10)
+* (ssbingo) **Custom channel & button names on the ESP32 web UI** (licensed, from tier **community**). Each aeration point's **Name** and an optional per-point **Button name** are pushed to the device and shown on its Home page instead of `Ch N` / `DI N`; `Ch 7 = Notventil` and `Ch 8 = Pumpe` stay fixed. In standalone the names are edited on the device (Settings → Namen) and persist in NVS; the adapter overwrites them when connected. Needs firmware **≥ 1.3.0**. Also documents the 0.1.8 pump behaviour (the pump now follows the aeration demand) across the README, all 10 translated docs and the EN/DE PDF manual. New per-point `buttonName` config + 1 admin string in 11 languages
+
 ### 0.1.8 (2026-07-10)
 * (ssbingo) **Fix: the pump is now actually driven (both backends).** The adapter never had an ON-path for the pump — it only ever switched it *off* in an emergency — so on the ESP32 backend the pump relay stayed off forever. Now, when the pump is **controllable**, it **follows the aeration demand**: it runs while at least `minOpenValves` valves are open and switches off when the pond is idle or on a dead-head trip, honouring the anti short-cycle min on/off times. The interlock also now knows the ESP32 pump state is **monitored** (the relay is polled) instead of assuming the pump might always be running — this stops the emergency valve being held open unnecessarily. New unit-tested `pumpShouldRun` helper; pump-controllable help text clarified
 
@@ -410,9 +434,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.1.0 (2026-07-09)
 * (ssbingo) **Milestone toward the first published release.** The ESP32 direct-control feature set (on-device web UI, autonomous schedule, OTA update, RTC-backed time) and the adapter↔firmware compatibility handling are considered feature-complete for a first pre-release. Also fixes an internal type-check error in the ESP32 backend. **The adapter is still in active development — please verify every function before unattended use** (see the warning at the top)
-
-### 0.0.20 (2026-07-09)
-* (ssbingo) **Firmware compatibility, made visible.** The adapter now declares, in one place (`lib/firmware-compat.js`), the ESP32 firmware it expects — the **protocol version** is the hard contract, plus a **recommended** (v1.1.0) and **minimum** (v1.0.0) firmware version. The ESP32 config tab shows a note with the recommended version and a link to the firmware releases. On connect the adapter reads the device's `GET /api/info`, publishes the reported version and a compatibility flag as **`info.deviceFirmware`** / **`info.firmwareCompatible`**, and logs an error on a protocol mismatch or a warning on outdated firmware. Pure/unit-tested `evaluateFirmware`; the manual and firmware repo gained a compatibility table. 5 new admin strings in 11 languages
 
 ---
 

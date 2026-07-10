@@ -157,7 +157,10 @@ onderdelen die je gebruikt.
 
 ### Beluchtingspunten
 Het hart van de configuratie. Voeg **maximaal 8** punten toe; elk punt is één klep. Per punt:
-- **Naam** – bijv. `Pier`, `Deep zone`.
+- **Naam** – bijv. `Pier`, `Deep zone`. Bij de **ESP32**-backend wordt deze naam ook **weergegeven op
+  de eigen web-UI van het apparaat** (op het relaiskanaal van het punt) — een **gelicentieerde
+  functie** (vanaf tier **community**). `Ch 7 = Notventil` (noodklep) en `Ch 8 = Pumpe` (pomp) zijn
+  vaste labels. Zie [Namen op de ESP32-web-UI](#namen-op-de-esp32-web-ui).
 - **Ingeschakeld** – dit punt opnemen in de besturing.
 - **Backend** – `ioBroker` (een vreemde state) of `ESP32` (een relaiskanaal op het apparaat). De
   optie `ESP32` verschijnt alleen wanneer het **Hardware-backend** (tabblad Algemeen) op `ESP32
@@ -178,6 +181,25 @@ Het hart van de configuratie. Voeg **maximaal 8** punten toe; elk punt is één 
   kan er geen hebben (de optie is grijs weergegeven). Bij de ESP32-backend wordt een **op het
   apparaat** ingedrukte knop teruggespiegeld naar ioBroker (`aeration.point.<n>.buttonOn`) en krijgt
   dezelfde prioriteit.
+- **Knopnaam** *(ESP32-backend, optioneel)* – een herkenbare naam voor de overrideknop van dit punt,
+  die op de web-UI van het apparaat wordt weergegeven (zie hieronder). Leeg → de knop toont de
+  puntnaam.
+
+#### Namen op de ESP32-web-UI
+
+*(ESP32-backend, **gelicentieerde functie** — beschikbaar vanaf tier **community**.)* Geef je kanalen
+en knoppen herkenbare namen die op de eigen webpagina's van het apparaat verschijnen in plaats van
+`Ch 1…8` / `DI 1…8`:
+
+- De adapter **stuurt de naam van elk beluchtingspunt** naar zijn relaiskanaal (Ch 1–6) en de
+  optionele **knopnaam** van elk punt naar de bijbehorende digitale ingang (DI 1–8).
+- **Ch 7 = Notventil** (noodklep) en **Ch 8 = Pumpe** (pomp) zijn **vast** en kunnen niet worden
+  hernoemd.
+- **Standalone (zonder adapter):** dezelfde namen kunnen **op het apparaat** worden bewerkt onder
+  *Instellingen → Namen (Kanäle & Taster)* en worden op de ESP (NVS) opgeslagen; wanneer de adapter is
+  verbonden, overschrijft hij ze met de hier geconfigureerde namen.
+- Op **free**-firmware (zonder licentie) worden de namen genegeerd en tonen de pagina's de standaard
+  `Ch`/`DI`-labels.
 
 ### Groepen
 Groepeer punten om ze samen te schakelen (bijv. één knop opent meerdere uitstromers). Geef de groep
@@ -240,8 +262,12 @@ Elk veld op dit tabblad heeft een **uitleg in de admin** van wat het doet en het
 ze, want dit is het tabblad waar een verkeerde waarde het meest telt.
 - **Min. open kleppen terwijl de pomp draait** – de dead-heading-beveiliging (standaard `1`).
 - **Watchdog-interval (s)** en **make-before-break-overlap (s)**.
-- **Pomp** – of deze bestuurbaar is (dan kan de vergrendeling hem uitschakelen), het pomp-**signaal**
-  en minimale aan-/uittijden tegen te snel schakelen. *Bij de **ESP32**-backend is het pomp-signaal
+- **Pomp** – of deze **bestuurbaar** is, het pomp-**signaal** en minimale aan-/uittijden tegen te
+  snel schakelen. Wanneer deze bestuurbaar is, **stuurt de adapter de pomp zo aan dat ze de
+  beluchtingsvraag volgt** — ze draait zolang minstens het minimum aantal kleppen geopend is en
+  schakelt uit wanneer de vijver inactief is of bij een dead-heading-activering (met inachtneming van
+  de minimale aan-/uittijden); wanneer deze *niet* bestuurbaar is, wordt de pomp alleen bewaakt en
+  beschermt de noodklep haar alleen. *Bij de **ESP32**-backend is het pomp-signaal
   het **ESP32-relaiskanaal** — precies hetzelfde dat onder Algemeen → Hardware-backend is ingesteld,
   hier weergegeven zodat de twee tabbladen elkaar nooit kunnen tegenspreken; bij de **ioBroker**-backend
   is het een ioBroker-state.*

@@ -14,6 +14,7 @@
 	"Autonomous schedule (run without ioBroker)": "Autonome Zeitpläne (ohne ioBroker laufen)",
 	"Backend": "Backend",
 	"Boosted points (empty = all)": "Verstärkte Stellen (empty = all)",
+	"Button name (ESP32 web UI)": "Schaltflächenname (ESP32-Web-UI)",
 	"Button state": "Tasterstatus",
 	"Buttons are only available on aeration-valve channels — this channel drives the pump or the emergency valve.": "Taster gibt es nur für Belüftungsventil-Kanäle – dieser Kanal steuert die Pumpe oder das Notventil.",
 	"Channel": "Kanal",

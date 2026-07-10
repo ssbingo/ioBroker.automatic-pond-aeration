@@ -164,7 +164,10 @@ die Teile, die du tatsächlich nutzt.
 ### Belüftungspunkte
 Das Herzstück der Konfiguration. Füge **bis zu 8** Punkte hinzu; jeder Punkt ist ein Ventil. Pro
 Punkt:
-- **Name** – z. B. `Pier`, `Deep zone`.
+- **Name** – z. B. `Pier`, `Deep zone`. Beim **ESP32**-Backend wird dieser Name auch **auf der
+  eigenen Web-UI des Geräts angezeigt** (auf dem Relaiskanal des Punkts) — eine **lizenzpflichtige
+  Funktion** (ab Stufe **community**). `Ch 7 = Notventil` und `Ch 8 = Pumpe` sind feste
+  Bezeichnungen. Siehe [Namen auf der ESP32-Web-UI](#namen-auf-der-esp32-web-ui).
 - **Aktiviert** – diesen Punkt in die Steuerung einbeziehen.
 - **Backend** – `ioBroker` (ein fremder State) oder `ESP32` (ein Relaiskanal auf dem Gerät). Die
   Option `ESP32` erscheint nur, wenn das **Hardware-Backend** (Tab Allgemein) auf `ESP32 (direkt)`
@@ -185,6 +188,24 @@ Punkt:
   **Notventils** liegt, kann keinen haben (die Option ist ausgegraut). Beim ESP32-Backend wird ein
   **am Gerät** gedrückter Taster in ioBroker zurückgespiegelt (`aeration.point.<n>.buttonOn`) und
   erhält dieselbe Priorität.
+- **Tastername** *(ESP32-Backend, optional)* – ein sprechender Name für den Übersteuerungstaster
+  dieses Punkts, der auf der Web-UI des Geräts angezeigt wird (siehe unten). Leer → der Taster zeigt
+  den Punktnamen.
+
+#### Namen auf der ESP32-Web-UI
+
+*(ESP32-Backend, **lizenzpflichtige Funktion** — ab Stufe **community** verfügbar.)* Gib deinen
+Kanälen und Tastern sprechende Namen, die auf den eigenen Web-Seiten des Geräts anstelle von
+`Ch 1…8` / `DI 1…8` erscheinen:
+
+- Der Adapter **überträgt den Namen jedes Belüftungspunkts** an dessen Relaiskanal (Ch 1–6) und den
+  optionalen **Tasternamen** jedes Punkts an den zugehörigen digitalen Eingang (DI 1–8).
+- **Ch 7 = Notventil** und **Ch 8 = Pumpe** sind **fest** und können nicht umbenannt werden.
+- **Standalone (ohne Adapter):** dieselben Namen lassen sich **am Gerät** unter *Einstellungen → Namen
+  (Kanäle & Taster)* bearbeiten und werden auf dem ESP (NVS) gespeichert; ist der Adapter verbunden,
+  überschreibt er sie mit den hier konfigurierten Namen.
+- Auf **free**-Firmware (ohne Lizenz) werden die Namen ignoriert und die Seiten zeigen die
+  Standard-Bezeichnungen `Ch`/`DI`.
 
 ### Gruppen
 Punkte zu Gruppen zusammenfassen, um sie gemeinsam zu schalten (z. B. öffnet eine Schaltfläche
@@ -249,8 +270,12 @@ Jedes Feld auf diesem Tab trägt eine **In-Admin-Erklärung**, was es bewirkt un
 hat — lies sie, denn dies ist der Tab, auf dem ein falscher Wert am meisten zählt.
 - **Min. offene Ventile bei laufender Pumpe** – der Schutz gegen Nullförderung (Standard `1`).
 - **Watchdog-Intervall (s)** und **Make-before-break-Überlappung (s)**.
-- **Pumpe** – ob sie steuerbar ist (dann kann die Verriegelung sie abschalten), das Pumpen-**Signal**
-  sowie Mindest-Ein-/Ausschaltzeiten gegen zu häufiges Takten. *Beim **ESP32**-Backend ist das
+- **Pumpe** – ob sie **steuerbar** ist, das Pumpen-**Signal** sowie Mindest-Ein-/Ausschaltzeiten
+  gegen zu häufiges Takten. Ist sie steuerbar, **steuert der Adapter die Pumpe so, dass sie der
+  Belüftungsanforderung folgt** — sie läuft, solange mindestens die minimale Anzahl Ventile geöffnet
+  ist, und schaltet ab, wenn der Teich im Leerlauf ist oder eine Nullförderungs-Auslösung eintritt
+  (unter Einhaltung der Mindest-Ein-/Ausschaltzeiten); ist sie *nicht* steuerbar, wird die Pumpe nur
+  beobachtet und allein das Notventil schützt sie. *Beim **ESP32**-Backend ist das
   Pumpen-Signal der **ESP32-Relaiskanal** — genau derselbe, der unter Allgemein → Hardware-Backend
   gesetzt ist, hier angezeigt, damit die beiden Tabs sich nie widersprechen können; beim
   **ioBroker**-Backend ist es ein ioBroker-State.*

@@ -169,7 +169,10 @@ parties que tu utilises.
 
 ### Points d'aération
 Le cœur de la configuration. Ajoute **jusqu'à 8** points ; chaque point est une vanne. Par point :
-- **Nom** – p. ex. `Pier`, `Deep zone`.
+- **Nom** – p. ex. `Pier`, `Deep zone`. Avec le backend **ESP32**, ce nom est **aussi affiché sur la
+  propre interface web de l'appareil** (sur le canal de relais du point) — une **fonction sous licence**
+  (à partir du niveau **community**). `Ch 7 = Notventil` (vanne de secours) et `Ch 8 = Pumpe` (pompe)
+  sont des libellés fixes. Voir [Noms sur l'interface web de l'ESP32](#noms-sur-linterface-web-de-lesp32).
 - **Activé** – inclure ce point dans la commande.
 - **Backend** – `ioBroker` (un état étranger) ou `ESP32` (un canal de relais sur l'appareil).
   L'option `ESP32` n'apparaît que lorsque le **Backend matériel** (onglet Général) est réglé sur
@@ -190,6 +193,25 @@ Le cœur de la configuration. Ajoute **jusqu'à 8** points ; chaque point est un
   **vanne de secours** ne peut pas en avoir (l'option est grisée). Avec le backend ESP32, un bouton
   pressé **sur l'appareil** est répercuté dans ioBroker (`aeration.point.<n>.buttonOn`) et obtient la
   même priorité.
+- **Nom du bouton** *(backend ESP32, optionnel)* – un nom convivial pour le bouton de forçage de ce
+  point, affiché sur l'interface web de l'appareil (voir ci-dessous). Vide → le bouton affiche le nom
+  du point.
+
+#### Noms sur l'interface web de l'ESP32
+
+*(Backend ESP32, **fonction sous licence** — disponible à partir du niveau **community**.)* Donne à
+tes canaux et à tes boutons des noms conviviaux qui apparaissent sur les propres pages web de
+l'appareil au lieu de `Ch 1…8` / `DI 1…8` :
+
+- L'adaptateur **envoie le Nom de chaque point d'aération** vers son canal de relais (Ch 1–6) et le
+  **Nom du bouton** facultatif de chaque point vers l'entrée numérique correspondante (DI 1–8).
+- `Ch 7 = Notventil` (vanne de secours) et `Ch 8 = Pumpe` (pompe) sont **fixes** et ne peuvent pas
+  être renommés.
+- **Autonome (sans adaptateur) :** les mêmes noms peuvent être édités **sur l'appareil** sous
+  *Paramètres → Namen (Kanäle & Taster)* et sont stockés sur l'ESP (NVS) ; lorsque l'adaptateur est
+  connecté, il les écrase avec les noms configurés ici.
+- Sur un firmware **free** (sans licence), les noms sont ignorés et les pages affichent les libellés
+  `Ch`/`DI` par défaut.
 
 ### Groupes
 Regroupe des points pour les commuter ensemble (p. ex. un bouton ouvre plusieurs diffuseurs). Donne
@@ -256,11 +278,15 @@ Chaque champ de cet onglet comporte une **explication dans l'admin** de ce qu'il
 - **Vannes ouvertes min. pendant que la pompe tourne** – la protection contre le dead-heading (par
   défaut `1`).
 - **Intervalle du watchdog (s)** et **chevauchement make-before-break (s)**.
-- **Pompe** – si elle est commandable (le verrouillage peut alors l'arrêter), le **signal** de la
-  pompe et les durées min. de marche/arrêt contre les cycles trop courts. *Avec le backend **ESP32**,
-  le signal de la pompe est le **canal de relais ESP32** — exactement le même que celui défini sous
-  Général → Backend matériel, affiché ici pour que les deux onglets ne puissent jamais se contredire ;
-  avec le backend **ioBroker**, c'est un état ioBroker.*
+- **Pompe** – si elle est **commandable**, le **signal** de la pompe et les durées min. de
+  marche/arrêt contre les cycles trop courts. Lorsqu'elle est commandable, l'adaptateur **pilote la
+  pompe pour qu'elle suive la demande d'aération** — elle tourne tant qu'au moins le minimum de vannes
+  est ouvert et s'arrête lorsque le bassin est au repos ou lors d'un déclenchement contre le
+  dead-heading (en respectant les durées min. de marche/arrêt) ; lorsqu'elle n'est *pas* commandable,
+  la pompe est seulement observée et la vanne de secours la protège à elle seule. *Avec le backend
+  **ESP32**, le signal de la pompe est le **canal de relais ESP32** — exactement le même que celui
+  défini sous Général → Backend matériel, affiché ici pour que les deux onglets ne puissent jamais se
+  contredire ; avec le backend **ioBroker**, c'est un état ioBroker.*
 - **Vanne de secours** – son **signal**, si elle est **normalement ouverte** (fail-safe), le **type**
   de vanne (électrovanne ou vanne à bille motorisée) et, pour une vanne motorisée, son **temps de
   course**. *Avec le backend ESP32, le signal est de même le canal de relais ESP32 de la vanne de

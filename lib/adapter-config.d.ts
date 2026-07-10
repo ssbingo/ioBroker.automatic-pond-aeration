@@ -27,6 +27,8 @@ declare global {
 			buttonMode: 'toggle';
 			/** Foreign boolean state (or ESP32 DI) that reads the button; rising edge = press. */
 			buttonObjectId: string;
+			/** Optional friendly name for the override button, shown on the ESP32 web UI (licensed). */
+			buttonName: string;
 		}
 
 		/** A group of aeration points. There must never be more groups than points. */

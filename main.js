@@ -531,7 +531,11 @@ class AutomaticPondAeration extends utils.Adapter {
 				await this.backend.setPump(false);
 				this.lastPumpChangeMs = Date.now();
 			} else {
-				const wantPump = pumpShouldRun(decision.interlockActive, decision.openValveCount, this.cfg.minOpenValves);
+				const wantPump = pumpShouldRun(
+					decision.interlockActive,
+					decision.openValveCount,
+					this.cfg.minOpenValves,
+				);
 				if (
 					wantPump !== cur.pumpRunning &&
 					canSwitchPump(

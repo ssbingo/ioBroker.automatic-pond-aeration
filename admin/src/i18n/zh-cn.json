@@ -14,6 +14,7 @@
 	"Autonomous schedule (run without ioBroker)": "自主计划（无需 ioBroker 运行）",
 	"Backend": "后端",
 	"Boosted points (empty = all)": "增强的点位 (empty = all)",
+	"Button name (ESP32 web UI)": "按钮名称（ESP32 Web UI）",
 	"Button state": "按钮状态",
 	"Buttons are only available on aeration-valve channels — this channel drives the pump or the emergency valve.": "按钮仅在曝气阀通道上可用 — 此通道驱动泵或紧急阀。",
 	"Channel": "通道",

@@ -486,6 +486,13 @@ With the board flashed and wired, the adapter can drive it directly — no relay
   monitoring keeps working and control commands are skipped with one clear hint (see
   `info.licenseControlBlocked`) instead of repeated errors. Public firmware built without the overlay
   is unaffected — control stays open.
+
+  *Custom names (from tier community):* you can give the aeration relay channels (Ch 1–6) and the
+  button inputs (DI 1–8) friendly names, shown on the device web UI. Set them either in the *adapter*
+  (the aeration-point names and an optional per-point button name are pushed to the device) or — in
+  standalone operation without an adapter — on the device under *Settings → Names (channels & buttons)*
+  (stored in NVS). *Ch 7 = emergency valve* and *Ch 8 = pump* are fixed. Without a licence the pages
+  show the default `Ch 1…8` / `DI 1…8` labels.
 ]
 
 #safety("Re-enter the activation key after re-flashing")[

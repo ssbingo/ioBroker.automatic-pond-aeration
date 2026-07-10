@@ -14,6 +14,7 @@
 	"Autonomous schedule (run without ioBroker)": "Horaire autonome (fonctionne sans ioBroker)",
 	"Backend": "Backend",
 	"Boosted points (empty = all)": "Points renforcés (empty = all)",
+	"Button name (ESP32 web UI)": "Nom du bouton (interface utilisateur Web ESP32)",
 	"Button state": "État du bouton",
 	"Buttons are only available on aeration-valve channels — this channel drives the pump or the emergency valve.": "Les boutons ne sont disponibles que sur les canaux de vanne d'aération — ce canal commande la pompe ou la vanne d'urgence.",
 	"Channel": "Canal",

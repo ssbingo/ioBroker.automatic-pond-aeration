@@ -528,6 +528,13 @@ dazwischen.
   Steuerung lizenziert*, läuft die Überwachung weiter und Steuerbefehle werden mit einem klaren Hinweis
   übersprungen (siehe `info.licenseControlBlocked`) statt mit wiederholten Fehlern. Öffentliche Firmware
   ohne das Overlay ist nicht betroffen — die Steuerung bleibt offen.
+
+  *Eigene Namen (ab Stufe community):* Sie können den Belüftungs-Relaiskanälen (Ch 1–6) und den
+  Taster-Eingängen (DI 1–8) eigene Namen geben. Sie werden auf der Geräte-Web-Oberfläche angezeigt.
+  Vergabe entweder im *Adapter* (die Namen der Belüftungsstellen und ein optionaler Taster-Name je
+  Punkt werden ans Gerät übertragen) oder — im Standalone-Betrieb ohne Adapter — direkt am Gerät unter
+  *Settings → Namen (Kanäle & Taster)* (im NVS gespeichert). *Ch 7 = Notventil* und *Ch 8 = Pumpe* sind
+  fest. Ohne Lizenz zeigt die Oberfläche die Standardbeschriftung `Ch 1…8` / `DI 1…8`.
 ]
 
 #safety("Freischaltung nach erneutem Flashen erneut eintragen")[

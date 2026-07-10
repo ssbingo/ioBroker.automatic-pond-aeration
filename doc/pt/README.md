@@ -162,7 +162,10 @@ que usa.
 
 ### Pontos de aeração
 O coração da configuração. Adicione **até 8** pontos; cada ponto é uma válvula. Por ponto:
-- **Nome** – por ex. `Pier`, `Deep zone`.
+- **Nome** – por ex. `Pier`, `Deep zone`. Com o backend **ESP32**, este nome também é **exibido na
+  própria interface web do dispositivo** (no canal de relé do ponto) — um **recurso licenciado** (a
+  partir do nível **community**). `Ch 7 = Notventil` (válvula de emergência) e `Ch 8 = Pumpe` (bomba)
+  são rótulos fixos. Consulte [Nomes na interface web do ESP32](#nomes-na-interface-web-do-esp32).
 - **Habilitado** – incluir este ponto no controle.
 - **Backend** – `ioBroker` (um estado externo) ou `ESP32` (um canal de relé no dispositivo). A opção
   `ESP32` só aparece quando o **Backend de hardware** (aba Geral) está em `ESP32 (direto)`.
@@ -182,6 +185,24 @@ O coração da configuração. Adicione **até 8** pontos; cada ponto é uma vá
   emergência** não pode ter um (a opção fica desativada). Com o backend ESP32, um botão premido **no
   dispositivo** é refletido de volta no ioBroker (`aeration.point.<n>.buttonOn`) e recebe a mesma
   prioridade.
+- **Nome do botão** *(backend ESP32, opcional)* – um nome amigável para o botão de substituição deste
+  ponto, exibido na interface web do dispositivo (ver abaixo). Vazio → o botão mostra o nome do ponto.
+
+#### Nomes na interface web do ESP32
+
+*(Backend ESP32, **recurso licenciado** — disponível a partir do nível **community**.)* Dê aos seus
+canais e botões nomes amigáveis que aparecem nas próprias páginas web do dispositivo em vez de
+`Ch 1…8` / `DI 1…8`:
+
+- O adaptador **envia o Nome de cada ponto de aeração** ao seu canal de relé (Ch 1–6) e o **Nome do
+  botão** opcional de cada ponto à entrada digital correspondente (DI 1–8).
+- **Ch 7 = Notventil** (válvula de emergência) e **Ch 8 = Pumpe** (bomba) são **fixos** e não podem
+  ser renomeados.
+- **Standalone (sem adaptador):** os mesmos nomes podem ser editados **no dispositivo** em
+  *Configurações → Namen (Kanäle & Taster)* e são armazenados no ESP (NVS); quando o adaptador está
+  conectado, ele os sobrescreve com os nomes configurados aqui.
+- No firmware **free** (sem licença) os nomes são ignorados e as páginas mostram os rótulos padrão
+  `Ch`/`DI`.
 
 ### Grupos
 Agrupe pontos para comutá-los juntos (por ex. um botão abre vários difusores). Dê um nome ao grupo e
@@ -245,11 +266,14 @@ Cada campo desta aba traz uma **explicação no admin** do que ele faz e do seu 
 esta é a aba em que um valor errado mais importa.
 - **Válvulas abertas mín. enquanto a bomba funciona** – a proteção contra o dead-heading (padrão `1`).
 - **Intervalo do watchdog (s)** e **sobreposição make-before-break (s)**.
-- **Bomba** – se é controlável (então o bloqueio pode desligá-la), o **sinal** da bomba e os tempos
-  mínimos de liga/desliga contra o chaveamento muito frequente. *Com o backend **ESP32**, o sinal da
-  bomba é o **canal de relé do ESP32** — exatamente o mesmo definido em Geral → Backend de hardware,
-  exibido aqui para que as duas abas nunca possam se contradizer; com o backend **ioBroker** é um
-  estado do ioBroker.*
+- **Bomba** – se é **controlável**, o **sinal** da bomba e os tempos mínimos de liga/desliga contra o
+  chaveamento muito frequente. Quando é controlável, o adaptador **aciona a bomba para seguir a
+  demanda de aeração** — ela funciona enquanto pelo menos o mínimo de válvulas está aberto e desliga
+  quando o lago está inativo ou em um disparo por dead-head (respeitando os tempos mínimos de
+  liga/desliga); quando *não* é controlável, a bomba é apenas observada e a válvula de emergência a
+  protege sozinha. *Com o backend **ESP32**, o sinal da bomba é o **canal de relé do ESP32** —
+  exatamente o mesmo definido em Geral → Backend de hardware, exibido aqui para que as duas abas nunca
+  possam se contradizer; com o backend **ioBroker** é um estado do ioBroker.*
 - **Válvula de emergência** – seu **sinal**, se é **normalmente aberta** (à prova de falhas), o
   **tipo** de válvula (solenoide ou válvula de esfera motorizada) e, para uma válvula motorizada, seu
   **tempo de curso**. *Com o backend ESP32, o sinal é igualmente o canal de relé do ESP32 da válvula

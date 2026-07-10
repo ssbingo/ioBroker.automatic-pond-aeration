@@ -167,7 +167,10 @@ usi.
 ### Punti di aerazione
 Il cuore della configurazione. Aggiungi **fino a 8** punti; ciascun punto è una valvola. Per ogni
 punto:
-- **Nome** – ad es. `Pier`, `Deep zone`.
+- **Nome** – ad es. `Pier`, `Deep zone`. Con il backend **ESP32** questo nome viene **mostrato anche
+  sulla web UI del dispositivo** (sul canale relè del punto) — una **funzione su licenza** (a partire
+  dal livello **community**). `Ch 7 = Notventil` (valvola di emergenza) e `Ch 8 = Pumpe` (pompa) sono
+  etichette fisse. Vedi [Nomi sulla web UI dell'ESP32](#nomi-sulla-web-ui-dellesp32).
 - **Abilitato** – includere questo punto nel controllo.
 - **Backend** – `ioBroker` (uno stato esterno) o `ESP32` (un canale relè sul dispositivo). L'opzione
   `ESP32` compare solo quando il **Backend hardware** (scheda Generale) è `ESP32 (diretto)`.
@@ -187,6 +190,25 @@ punto:
   o della **valvola di emergenza** non può averne uno (l'opzione è disattivata). Con il backend ESP32,
   un pulsante premuto **sul dispositivo** viene riflesso in ioBroker (`aeration.point.<n>.buttonOn`) e
   ottiene la stessa priorità.
+- **Nome del pulsante** *(backend ESP32, opzionale)* – un nome amichevole per il pulsante di override
+  di questo punto, mostrato sulla web UI del dispositivo (vedi sotto). Vuoto → il pulsante mostra il
+  nome del punto.
+
+#### Nomi sulla web UI dell'ESP32
+
+*(Backend ESP32, **funzione su licenza** — disponibile a partire dal livello **community**.)* Assegna
+ai tuoi canali e ai tuoi pulsanti nomi amichevoli che compaiono sulle pagine web del dispositivo al
+posto di `Ch 1…8` / `DI 1…8`:
+
+- L'adattatore **invia il Nome di ciascun punto di aerazione** al relativo canale relè (Ch 1–6) e il
+  **Nome del pulsante** facoltativo di ciascun punto all'ingresso digitale corrispondente (DI 1–8).
+- `Ch 7 = Notventil` (valvola di emergenza) e `Ch 8 = Pumpe` (pompa) sono **fissi** e non possono
+  essere rinominati.
+- **Autonomo (senza adattatore):** gli stessi nomi possono essere modificati **sul dispositivo** in
+  *Impostazioni → Namen (Kanäle & Taster)* e sono memorizzati sull'ESP (NVS); quando l'adattatore è
+  connesso li sovrascrive con i nomi qui configurati.
+- Su un firmware **free** (senza licenza) i nomi vengono ignorati e le pagine mostrano le etichette
+  predefinite `Ch`/`DI`.
 
 ### Gruppi
 Raggruppa i punti per commutarli insieme (ad es. un pulsante apre più diffusori). Assegna un nome al
@@ -253,10 +275,14 @@ leggile, perché questa è la scheda in cui un valore sbagliato conta di più.
 - **Valvole aperte min. mentre la pompa è in funzione** – la protezione contro il dead-heading
   (predefinito `1`).
 - **Intervallo del watchdog (s)** e **sovrapposizione make-before-break (s)**.
-- **Pompa** – se è controllabile (allora il blocco può spegnerla), il **segnale** della pompa e i
-  tempi minimi di accensione/spegnimento contro i cicli troppo brevi. *Con il backend **ESP32** il
-  segnale della pompa è il **canale relè ESP32** — esattamente lo stesso impostato in Generale →
-  Backend hardware, qui mostrato affinché le due schede non possano mai contraddirsi; con il backend
+- **Pompa** – se è **controllabile**, il **segnale** della pompa e i tempi minimi di
+  accensione/spegnimento contro i cicli troppo brevi. Quando è controllabile, l'adattatore **pilota la
+  pompa affinché segua la richiesta di aerazione** — è in funzione finché è aperto almeno il minimo di
+  valvole e si spegne quando il laghetto è a riposo o in caso di intervento contro il dead-heading
+  (rispettando i tempi minimi di accensione/spegnimento); quando *non* è controllabile la pompa viene
+  solo osservata e la valvola di emergenza la protegge da sola. *Con il backend **ESP32** il segnale
+  della pompa è il **canale relè ESP32** — esattamente lo stesso impostato in Generale → Backend
+  hardware, qui mostrato affinché le due schede non possano mai contraddirsi; con il backend
   **ioBroker** è uno stato ioBroker.*
 - **Valvola di emergenza** – il suo **segnale**, se è **normalmente aperta** (fail-safe), il **tipo**
   di valvola (elettrovalvola o valvola a sfera motorizzata) e, per una valvola motorizzata, il suo

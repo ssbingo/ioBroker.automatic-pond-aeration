@@ -14,6 +14,7 @@
 	"Autonomous schedule (run without ioBroker)": "Автономний розклад (працює без ioBroker)",
 	"Backend": "Бекенд",
 	"Boosted points (empty = all)": "Посилені точки (empty = all)",
+	"Button name (ESP32 web UI)": "Назва кнопки (веб-інтерфейс ESP32)",
 	"Button state": "Стан кнопки",
 	"Buttons are only available on aeration-valve channels — this channel drives the pump or the emergency valve.": "Кнопки доступні лише на каналах клапанів аерації — цей канал керує насосом або аварійним клапаном.",
 	"Channel": "Канал",

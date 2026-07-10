@@ -159,7 +159,10 @@ części, których używasz.
 
 ### Punkty napowietrzania
 Serce konfiguracji. Dodaj **do 8** punktów; każdy punkt to jeden zawór. Dla każdego punktu:
-- **Nazwa** – np. `Pier`, `Deep zone`.
+- **Nazwa** – np. `Pier`, `Deep zone`. W backendzie **ESP32** ta nazwa jest **wyświetlana także we
+  własnym interfejsie webowym urządzenia** (na kanale przekaźnika danego punktu) — **funkcja
+  licencjonowana** (od poziomu **community**). `Ch 7 = Notventil` (zawór awaryjny) oraz
+  `Ch 8 = Pumpe` (pompa) to stałe etykiety. Zobacz [Nazwy w interfejsie webowym ESP32](#nazwy-w-interfejsie-webowym-esp32).
 - **Włączony** – uwzględnij ten punkt w sterowaniu.
 - **Backend** – `ioBroker` (obcy stan) lub `ESP32` (kanał przekaźnika na urządzeniu). Opcja `ESP32`
   pojawia się tylko wtedy, gdy **Backend sprzętowy** (zakładka „Ogólne") ma wartość
@@ -179,6 +182,23 @@ Serce konfiguracji. Dodaj **do 8** punktów; każdy punkt to jeden zawór. Dla k
   awaryjnego** nie może go mieć (opcja jest wyszarzona). W backendzie ESP32 przycisk naciśnięty **na
   urządzeniu** jest odzwierciedlany z powrotem w ioBroker (`aeration.point.<n>.buttonOn`) i otrzymuje
   ten sam priorytet.
+- **Nazwa przycisku** *(backend ESP32, opcjonalnie)* – przyjazna nazwa przycisku wymuszenia dla tego
+  punktu, wyświetlana w interfejsie webowym urządzenia (patrz niżej). Puste → przycisk pokazuje nazwę
+  punktu.
+
+#### Nazwy w interfejsie webowym ESP32
+
+*(backend ESP32, **funkcja licencjonowana** — dostępna od poziomu **community**.)* Nadaj swoim
+kanałom i przyciskom przyjazne nazwy, które pojawią się na własnych stronach webowych urządzenia
+zamiast `Ch 1…8` / `DI 1…8`:
+
+- Adapter **wysyła nazwę każdego punktu napowietrzania** na jego kanał przekaźnika (Ch 1–6), a
+  opcjonalną **nazwę przycisku** każdego punktu na odpowiadające wejście cyfrowe (DI 1–8).
+- **Ch 7 = Notventil** (zawór awaryjny) oraz **Ch 8 = Pumpe** (pompa) są **stałe** i nie można ich zmienić.
+- **Samodzielnie (bez adaptera):** te same nazwy można edytować **na urządzeniu** w *Settings → Namen
+  (Kanäle & Taster)* i są zapisywane na ESP (NVS); gdy adapter jest podłączony, nadpisuje je nazwami
+  skonfigurowanymi tutaj.
+- Na firmware **free** (bez licencji) nazwy są ignorowane, a strony pokazują domyślne etykiety `Ch`/`DI`.
 
 ### Grupy
 Grupuj punkty, aby przełączać je razem (np. jeden przycisk otwiera kilka dyfuzorów). Nadaj grupie
@@ -242,8 +262,12 @@ je, bo to karta, na której błędna wartość ma największe znaczenie.
 - **Min. otwartych zaworów przy pracującej pompie** – zabezpieczenie przed pracą przy zamkniętych
   zaworach (domyślnie `1`).
 - **Interwał watchdoga (s)** oraz **nakładanie make-before-break (s)**.
-- **Pompa** – czy jest sterowalna (wtedy blokada może ją wyłączyć), **sygnał** pompy oraz minimalne
-  czasy wł./wył. przeciw zbyt częstemu taktowaniu. *W backendzie **ESP32** sygnałem pompy jest **kanał
+- **Pompa** – czy jest **sterowalna**, **sygnał** pompy oraz minimalne czasy wł./wył. przeciw zbyt
+  częstemu taktowaniu. Gdy jest sterowalna, adapter **steruje pompą tak, aby podążała za
+  zapotrzebowaniem na napowietrzanie** — pracuje, dopóki otwarty jest co najmniej minimalny zestaw
+  zaworów, i wyłącza się, gdy staw jest bezczynny lub przy zadziałaniu zabezpieczenia dead-head (z
+  zachowaniem minimalnych czasów wł./wył.); gdy *nie* jest sterowalna, pompa jest tylko obserwowana, a
+  chroni ją sam zawór awaryjny. *W backendzie **ESP32** sygnałem pompy jest **kanał
   przekaźnika ESP32** — dokładnie ten sam, który ustawiono w Ogólne → Backend sprzętowy, pokazany
   tutaj, aby obie zakładki nigdy nie mogły sobie zaprzeczać; w backendzie **ioBroker** jest to stan
   ioBroker.*

@@ -480,7 +480,7 @@ function Settings(props) {
 											)}
 										</Typography>
 									) : p.buttonEnabled ? (
-										<ObjectSelect label={I18n.t('Button state')} value={p.buttonObjectId} onChange={v => updatePoint(i, 'buttonObjectId', v)} {...objProps} />
+										<><ObjectSelect label={I18n.t('Button state')} value={p.buttonObjectId} onChange={v => updatePoint(i, 'buttonObjectId', v)} {...objProps} />{espBackend ? (<TextField variant="standard" fullWidth label={I18n.t('Button name (ESP32 web UI)')} value={p.buttonName || ''} onChange={e => updatePoint(i, 'buttonName', e.target.value)} inputProps={{ maxLength: 24 }} sx={{ mt: 0.5 }} />) : null}</>
 									) : null}
 								</TableCell>
 								<TableCell>
