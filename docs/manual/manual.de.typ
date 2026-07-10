@@ -530,13 +530,30 @@ dazwischen.
   ohne das Overlay ist nicht betroffen — die Steuerung bleibt offen.
 ]
 
+#safety("Freischaltung nach erneutem Flashen erneut eintragen")[
+  Der Freischaltcode wird *im ESP gespeichert* (im NVS-Bereich). Ein *erneutes Flashen über die
+  Installer-/Flash-Seite* überschreibt diesen Bereich und *löscht den gespeicherten Code* — das Gerät
+  startet danach wieder in der 30-Tage-Testphase. Das ist bewusst so (ein sauberer Erstflash) und
+  *kein Grund zur Sorge*: Der *Gerätecode ist unveränderlich*, weil er fest aus der Hardware (Werks-MAC)
+  abgeleitet wird und nicht aus dem Speicher. Deshalb gilt *derselbe Freischaltcode unverändert weiter* —
+  öffnen Sie die `/license`-Seite und fügen Sie *denselben Code* erneut ein; ein neuer Code ist nicht
+  nötig. *Bewahren Sie den Freischaltcode aus der E-Mail daher auf.*
+
+  *Wichtiger Unterschied:* Ein normales *Firmware-Update über die Geräteseite „Update"* (Knopf
+  #emph[Install update online] oder Datei-Upload) schreibt nur in die App-Partition und lässt NVS
+  unangetastet — *Freischaltung und alle Einstellungen bleiben dabei erhalten*. Für spätere
+  Aktualisierungen also die Update-Seite nutzen, nicht den Installer.
+]
+
 #tipbox("Geräte-Weboberfläche (Port 80)")[
-  Öffnen Sie die IP des Boards im Browser — die Firmware liefert fünf eigenständige Seiten (ohne
+  Öffnen Sie die IP des Boards im Browser — die Firmware liefert sechs eigenständige Seiten (ohne
   Cloud, ohne App): *Home* (Relais/Sensoren ansehen und Kanäle vor Ort schalten), *Schedule*
   (autonomen Zeitplan auf dem Gerät ansehen/bearbeiten), *Settings* (DHCP oder statische IP / DNS /
-  Hostname, der *NTP-Server* — Standard `de.pool.ntp.org` — sowie WS2812-LED / Buzzer), *Update*
-  (Firmware-Aktualisierung *über das Netz* mit GitHub-Versionsabgleich) und *Info* (Uhrzeit, IP, MAC,
-  Hostname, Version, Speicher und Laufzeit). Die Zeit hält NTP, gepuffert von der eingebauten *RTC* —
+  Hostname, der *NTP-Server* — Standard `de.pool.ntp.org` — sowie WS2812-LED / Buzzer), *Lizenz*
+  (Gerätecode ablesen und Freischaltcode eingeben), *Update* (Firmware-Aktualisierung *über das Netz*:
+  automatischer Versionsabgleich und *Ein-Klick-Online-Update* direkt aufs Gerät — Freischaltung und
+  Einstellungen bleiben erhalten —, alternativ Datei-Upload, plus ein *Neustart*-Knopf) und *Info*
+  (Uhrzeit, IP, MAC, Hostname, Version, Speicher und Laufzeit). Die Zeit hält NTP, gepuffert von der eingebauten *RTC* —
   so übersteht die Uhr Stromausfall und NTP-Ausfälle. Die Status-LED zeigt grün = normal, orange =
   kein Link, blau = ein Taster-Override ist aktiv, rot-blinkend = Failsafe; der Buzzer piept einmal,
   wenn die Ausfallsicherung auslöst. Die anfängertaugliche Installations- & Freischaltungsanleitung

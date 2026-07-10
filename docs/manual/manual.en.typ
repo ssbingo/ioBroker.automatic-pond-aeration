@@ -488,13 +488,28 @@ With the board flashed and wired, the adapter can drive it directly — no relay
   is unaffected — control stays open.
 ]
 
+#safety("Re-enter the activation key after re-flashing")[
+  The activation key is *stored on the ESP* (in the NVS area). *Re-flashing through the installer /
+  flash page* overwrites that area and *erases the stored key* — the device then restarts into the
+  30-day trial. This is intentional (a clean first flash) and *nothing to worry about*: the *device
+  code is immutable* because it is derived from the hardware (factory MAC), not from storage. So the
+  *same activation key keeps working* — open the `/license` page and paste the *same key* again; a new
+  key is not required. *Keep the activation key from the e-mail somewhere safe.*
+
+  *Important difference:* a normal *firmware update via the device's "Update" page* (the
+  #emph[Install update online] button or a file upload) only writes the app partition and leaves NVS
+  untouched — *the activation and all settings are kept*. So for later updates use the Update page,
+  not the installer.
+]
+
 #tipbox("On-device web UI (port 80)")[
-  Open the board's IP in a browser — the firmware serves five self-contained pages (no cloud, no app):
+  Open the board's IP in a browser — the firmware serves six self-contained pages (no cloud, no app):
   *Home* (watch the relays / sensors and toggle channels on site), *Schedule* (view / edit the
   autonomous schedule on the device), *Settings* (DHCP or static IP / DNS / hostname, the *NTP server*
-  — default `de.pool.ntp.org` — and the WS2812 LED / buzzer), *Update* (an *over-the-air* firmware
-  update with a GitHub "latest version" check) and *Info* (time, IP, MAC, hostname, version, memory
-  and uptime). Time is kept by NTP and backed by the on-board *RTC*, so the clock survives a power
+  — default `de.pool.ntp.org` — and the WS2812 LED / buzzer), *Licence* (read the device code and enter
+  an activation key), *Update* (an *over-the-air* firmware update: automatic version check and a
+  *one-click online update* straight to the device — activation and settings are kept —, or a file
+  upload, plus a *Restart* button) and *Info* (time, IP, MAC, hostname, version, memory and uptime). Time is kept by NTP and backed by the on-board *RTC*, so the clock survives a power
   loss and NTP outages. The status LED shows green = normal, orange = no link, blue = a button
   override is active, red-blinking = failsafe; the buzzer beeps once when the failsafe engages. A
   step-by-step beginner install & activation guide (English + German) is the

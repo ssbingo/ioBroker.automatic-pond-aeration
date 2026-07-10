@@ -146,6 +146,11 @@ you use.
     status under `info.licenseTier` / `info.licenseTrialDaysLeft` / `info.deviceCode`; if the device is
     **not licensed for control**, monitoring keeps working and control is skipped (see
     `info.licenseControlBlocked`). Public firmware without the overlay is unaffected.
+    *Re-flashing note:* the activation key is stored on the ESP and is **erased when you re-flash via
+    the browser installer** (a fresh trial starts). The **device code is hardware-derived and never
+    changes**, so the **same activation key can simply be re-entered** — no new key needed. A firmware
+    **update via the device's Update page** (one-click online update or file upload) keeps the
+    activation and all settings; only the installer resets it.
   - **Sensor mirroring** – each poll the adapter also pushes your configured sensor data points
     (oxygen, water/air temperature, pressure) to the device, so they appear on the **ESP's own web
     UI** (tagged *(ioBroker)*) even for sensors that are only ioBroker states and not wired to the ESP.
