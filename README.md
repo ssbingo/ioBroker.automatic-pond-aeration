@@ -136,7 +136,7 @@ you use.
     sequence stays with the adapter.
   - **Firmware compatibility** – the adapter and the firmware are matched by a **protocol version**
     (the hard contract), not by exact release numbers. This adapter version speaks **protocol 1** and
-    **recommends firmware v1.2.2** (minimum v1.0.0); the admin shows this and links to the releases.
+    **recommends firmware v1.4.0** (minimum v1.0.0); the admin shows this and links to the releases.
     On connect, the device's version and a compatibility flag are published as `info.deviceFirmware`
     and `info.firmwareCompatible`, and any protocol mismatch is written to the log. See the
     compatibility table in the [manual](docs/manual/pond-aeration-manual.en.pdf) / firmware repo.
@@ -405,6 +405,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.1.10 (2026-07-10)
+* (ssbingo) **Recommend firmware v1.4.0** and document its new on-device **Log / Debug page** (`/log`). The reference firmware 1.4.0 adds a live diagnostic log — boot, Ethernet, licence, operating mode and the full **OTA online-update trace with the exact failure reason** — the place to analyse an update or connection problem over the network. The recommended-firmware note (`lib/firmware-compat.js` 1.2.2 → 1.4.0) was updated across the README, all 10 translated docs and the EN/DE PDF manual (now listing seven device pages). No functional change to the adapter
+
 ### 0.1.9 (2026-07-10)
 * (ssbingo) **Custom channel & button names on the ESP32 web UI** (licensed, from tier **community**). Each aeration point's **Name** and an optional per-point **Button name** are pushed to the device and shown on its Home page instead of `Ch N` / `DI N`; `Ch 7 = Notventil` and `Ch 8 = Pumpe` stay fixed. In standalone the names are edited on the device (Settings → Namen) and persist in NVS; the adapter overwrites them when connected. Needs firmware **≥ 1.3.0**. Also documents the 0.1.8 pump behaviour (the pump now follows the aeration demand) across the README, all 10 translated docs and the EN/DE PDF manual. New per-point `buttonName` config + 1 admin string in 11 languages
 
@@ -431,9 +434,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.1.1 (2026-07-09)
 * (ssbingo) **ESP32 configuration UX.** Aeration points now offer **ESP32 relay channels only when the ESP32 backend is selected** — with the ioBroker-state backend a point always maps to an ioBroker state (no more confusing/incorrect ESP options). A new **“Test connection”** button probes the device (via the running instance) and shows its firmware version, so you can immediately see whether **host and port** are right. The **port** field is now explained — the reference firmware **always serves on port 80** — and warns on any other value. The non-functional **“Use WebSocket”** toggle was removed (the adapter polls status over HTTP). New `testEsp32` admin message + explanations; 9 admin strings in 11 languages
-
-### 0.1.0 (2026-07-09)
-* (ssbingo) **Milestone toward the first published release.** The ESP32 direct-control feature set (on-device web UI, autonomous schedule, OTA update, RTC-backed time) and the adapter↔firmware compatibility handling are considered feature-complete for a first pre-release. Also fixes an internal type-check error in the ESP32 backend. **The adapter is still in active development — please verify every function before unattended use** (see the warning at the top)
 
 ---
 

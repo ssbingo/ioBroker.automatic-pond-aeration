@@ -136,7 +136,7 @@ parties que tu utilises.
     sécurité dead-head reste actif). La séquence cyclique reste gérée par l'adaptateur.
   - **Compatibilité du firmware** – l'adaptateur et le firmware sont appariés par une **version du
     protocole** (le contrat strict), et non par des numéros de version exacts. Cette version de
-    l'adaptateur parle le **protocole 1** et **recommande le firmware v1.2.2** (minimum v1.0.0) ;
+    l'adaptateur parle le **protocole 1** et **recommande le firmware v1.4.0** (minimum v1.0.0) ;
     l'admin l'affiche et renvoie aux releases. À la connexion, la version de l'appareil et un
     indicateur de compatibilité sont publiés sous `info.deviceFirmware` et `info.firmwareCompatible`,
     et toute incompatibilité de protocole est consignée dans le journal. Voir le tableau de

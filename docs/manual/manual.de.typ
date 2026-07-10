@@ -508,7 +508,7 @@ dazwischen.
 
   #dtable(
     [Adapter-Version], [Firmware],
-    [0.0.20 +], [Protokoll 1 · empfohlen v1.2.2 · Minimum v1.0.0],
+    [0.0.20 +], [Protokoll 1 · empfohlen v1.4.0 · Minimum v1.0.0],
   )
 
   Beim Verbinden liest der Adapter die Version des Geräts und veröffentlicht sie als
@@ -553,14 +553,16 @@ dazwischen.
 ]
 
 #tipbox("Geräte-Weboberfläche (Port 80)")[
-  Öffnen Sie die IP des Boards im Browser — die Firmware liefert sechs eigenständige Seiten (ohne
+  Öffnen Sie die IP des Boards im Browser — die Firmware liefert sieben eigenständige Seiten (ohne
   Cloud, ohne App): *Home* (Relais/Sensoren ansehen und Kanäle vor Ort schalten), *Schedule*
   (autonomen Zeitplan auf dem Gerät ansehen/bearbeiten), *Settings* (DHCP oder statische IP / DNS /
-  Hostname, der *NTP-Server* — Standard `de.pool.ntp.org` — sowie WS2812-LED / Buzzer), *Lizenz*
-  (Gerätecode ablesen und Freischaltcode eingeben), *Update* (Firmware-Aktualisierung *über das Netz*:
-  automatischer Versionsabgleich und *Ein-Klick-Online-Update* direkt aufs Gerät — Freischaltung und
-  Einstellungen bleiben erhalten —, alternativ Datei-Upload, plus ein *Neustart*-Knopf) und *Info*
-  (Uhrzeit, IP, MAC, Hostname, Version, Speicher und Laufzeit). Die Zeit hält NTP, gepuffert von der eingebauten *RTC* —
+  Hostname, der *NTP-Server* — Standard `de.pool.ntp.org` —, WS2812-LED / Buzzer sowie die lizenzierten
+  Kanal-/Taster-*Namen*), *Lizenz* (Gerätecode ablesen und Freischaltcode eingeben), *Update*
+  (Firmware-Aktualisierung *über das Netz*: automatischer Versionsabgleich und *Ein-Klick-Online-Update*
+  direkt aufs Gerät — Freischaltung und Einstellungen bleiben erhalten —, alternativ Datei-Upload, plus
+  ein *Neustart*-Knopf), *Info* (Uhrzeit, IP, MAC, Hostname, Version, Speicher und Laufzeit) und *Log*
+  (ein Live-Diagnoseprotokoll — Boot, Ethernet, Lizenz, Betriebsmodus und OTA-Update mit dem genauen
+  Fehlergrund — zur Analyse von Problemen über das Netz). Die Zeit hält NTP, gepuffert von der eingebauten *RTC* —
   so übersteht die Uhr Stromausfall und NTP-Ausfälle. Die Status-LED zeigt grün = normal, orange =
   kein Link, blau = ein Taster-Override ist aktiv, rot-blinkend = Failsafe; der Buzzer piept einmal,
   wenn die Ausfallsicherung auslöst. Die anfängertaugliche Installations- & Freischaltungsanleitung

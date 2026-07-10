@@ -133,7 +133,7 @@ die Teile, die du tatsächlich nutzt.
     weiterhin). Die zyklische Sequenz bleibt beim Adapter.
   - **Firmware-Kompatibilität** – Adapter und Firmware werden über eine **Protokoll-Version** (der
     harte Vertrag) abgeglichen, nicht über exakte Release-Nummern. Diese Adapter-Version spricht
-    **Protokoll 1** und **empfiehlt Firmware v1.2.2** (mindestens v1.0.0); der Admin zeigt dies an und
+    **Protokoll 1** und **empfiehlt Firmware v1.4.0** (mindestens v1.0.0); der Admin zeigt dies an und
     verlinkt auf die Releases. Beim Verbinden werden die Version des Geräts und ein
     Kompatibilitäts-Flag als `info.deviceFirmware` und `info.firmwareCompatible` veröffentlicht, und
     jede Protokoll-Abweichung wird ins Log geschrieben. Siehe die Kompatibilitätstabelle im

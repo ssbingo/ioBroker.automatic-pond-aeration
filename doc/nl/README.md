@@ -128,7 +128,7 @@ onderdelen die je gebruikt.
     kracht). De cyclische sequentie blijft bij de adapter.
   - **Firmwarecompatibiliteit** – de adapter en de firmware worden op elkaar afgestemd via een
     **protocolversie** (het harde contract), niet op exacte versienummers. Deze adapterversie spreekt
-    **protocol 1** en **beveelt firmware v1.2.2 aan** (minimaal v1.0.0); de admin toont dit en
+    **protocol 1** en **beveelt firmware v1.4.0 aan** (minimaal v1.0.0); de admin toont dit en
     verwijst naar de releases. Bij het verbinden worden de versie van het apparaat en een
     compatibiliteitsvlag gepubliceerd als `info.deviceFirmware` en `info.firmwareCompatible`, en elke
     protocolafwijking wordt naar het logboek geschreven. Zie de compatibiliteitstabel in de
