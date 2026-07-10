@@ -540,6 +540,22 @@ With the board flashed and wired, the adapter can drive it directly — no relay
   before enabling WiFi. Ethernet / PoE does not need it.
 ]
 
+#tipbox("First setup without LAN — the setup hotspot")[
+  At the pond a network cable is not always at hand. For that case the firmware includes a
+  *setup hotspot*: if neither LAN nor WiFi comes up within *~25 seconds* of boot, the device opens its
+  own WiFi *"pond-aeration-setup"* (password *"pondsetup"*) with a #emph[captive portal].
+  + Join that WiFi from a phone — the config page usually opens by itself (otherwise open
+    #raw("http://192.168.4.1/")) and you land on *Settings*.
+  + Under *WiFi* enter your home network (SSID + password) and *Save*. The device adopts your network
+    and *closes the hotspot automatically* once it has an IP there.
+  + Reconnect your phone to your normal WiFi and open the device there (hostname *pond-aeration*, or as
+    shown by your router).
+
+  The hotspot can also be opened/closed *deliberately* with a button on the *Settings* page (e.g. to
+  move the device to a different WiFi later); the automatic fallback can be turned off there too. The
+  setup hotspot *also requires the external antenna*.
+]
+
 = FAQ
 
 / Do I need an ESP32 to use the adapter?: No. By default it controls valves and the pump through

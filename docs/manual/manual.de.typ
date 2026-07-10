@@ -583,6 +583,23 @@ dazwischen.
   sie an, bevor Sie WLAN aktivieren. Ethernet/PoE braucht sie nicht.
 ]
 
+#tipbox("Ersteinrichtung ohne LAN — der Setup-Hotspot")[
+  Am Teich ist nicht immer ein Netzwerkkabel zur Hand. Für diesen Fall bringt die Firmware einen
+  *Setup-Hotspot* mit: Kommt nach dem Start binnen *~25 Sekunden* weder LAN- noch WLAN-Verbindung
+  zustande, öffnet das Gerät ein eigenes WLAN *„pond-aeration-setup"* (Passwort *„pondsetup"*) mit einem
+  #emph[Captive-Portal].
+  + Verbinden Sie Ihr Handy mit diesem WLAN — die Konfigurationsseite öffnet sich meist von selbst
+    (andernfalls #raw("http://192.168.4.1/") aufrufen) und Sie landen unter *Settings*.
+  + Tragen Sie unter *WiFi* Ihr Heim-WLAN (SSID + Passwort) ein und *Speichern*. Das Gerät übernimmt
+    Ihr Netzwerk und *schließt den Hotspot automatisch*, sobald es dort eine IP erhalten hat.
+  + Verbinden Sie Ihr Handy wieder mit Ihrem normalen WLAN und rufen Sie das Gerät dort auf
+    (Hostname *pond-aeration* bzw. laut Router).
+
+  Der Hotspot lässt sich auf der Seite *Settings* auch *gezielt* per Knopf öffnen/schließen (z. B. um
+  das Gerät später in ein anderes WLAN umzuziehen); die automatische Öffnung kann dort abgeschaltet
+  werden. Der Setup-Hotspot benötigt *ebenfalls die externe Antenne*.
+]
+
 = FAQ
 
 / Brauche ich einen ESP32, um den Adapter zu nutzen?: Nein. Standardmäßig steuert er Ventile und die

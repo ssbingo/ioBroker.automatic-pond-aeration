@@ -131,7 +131,9 @@ you use.
   the aeration points use the relay channel set per point. The adapter pushes a safety config and a
   heartbeat so the firmware's on-device failsafe protects the pond even if ioBroker is down. The device
   is reached over its **IP** — via **Ethernet/PoE** or **optional WiFi** (enabled on the device's own
-  Settings page; WiFi needs the device's external antenna — see the manual).
+  Settings page; WiFi needs the device's external antenna — see the manual). With **no LAN at the pond**,
+  the device can be set up entirely over WiFi via its built-in **setup hotspot** (`pond-aeration-setup`,
+  captive portal) — see the manual.
   - **Autonomous schedule (run without ioBroker)** *(ESP32 only, optional)* – when enabled, the adapter
     also pushes your time schedules to the device; if the connection drops, the ESP32 keeps running
     them on its own using its NTP clock (the dead-head safety interlock still applies). The cyclic
@@ -407,6 +409,10 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.1.12 (2026-07-10)
+* (ssbingo) **Setup hotspot for WiFi-only installs + online-update fix — recommend firmware v1.7.1.** The reference firmware **1.7.1** adds a **setup hotspot** (Option A): with no LAN at the pond, if neither Ethernet nor WiFi comes up shortly after boot the device opens its own WiFi **`pond-aeration-setup`** with a captive portal, so it can be configured entirely from a phone (`http://192.168.4.1/`); the hotspot closes itself once the device is online (needs the external antenna, and can be opened/closed or disabled on the Settings page). It also **fixes the one-click online update**: the download now runs in a dedicated large-stack task (the old path overflowed the loop-task stack and silently rebooted mid-download) and leaves a **crash-surviving breadcrumb** so any failure is visible after the reboot. Every log line now carries a **date + time**, and the mandatory-antenna note is more prominent. Recommended-firmware note (`lib/firmware-compat.js` 1.6.0 → 1.7.1), README, all 10 translated docs and the EN/DE PDF manual updated with the setup hotspot. No change to the control engine
+* (ssbingo) A **hidden pro-dev tier** unlocks the on-device diagnostic **log window** for support/debugging (issued by the maintainer's own licence tool; not publicly documented). Existing community/pro devices can be upgraded to it and downgraded back by entering a code on the device's Licence page
+
 ### 0.1.11 (2026-07-10)
 * (ssbingo) **Optional WiFi for the ESP32 device** and **recommend firmware v1.6.0**. The reference firmware 1.6.0 can now join a **WiFi** network in addition to Ethernet — enable/disable and configure it (SSID + password) on the device's Settings page, applied live; it needs the device's **external antenna** (shipped with the reference device). It also adds an on-device **diagnostic log** with a level filter and a full OTA-update trace (for pinpointing update problems). The adapter now treats **any non-free licence tier** as licensed for control (covers higher tiers automatically). Recommended-firmware note (`lib/firmware-compat.js` 1.4.0 → 1.6.0), README, all 10 translated docs and the EN/DE PDF manual updated with WiFi and the mandatory-antenna note. No change to the control engine
 

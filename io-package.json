@@ -1,267 +1,267 @@
 {
-  "common": {
-    "name": "automatic-pond-aeration",
-    "version": "0.1.11",
-    "news": {
-      "0.1.11": {
-        "en": "Optional WiFi for the ESP32 device and recommend firmware v1.6.0. The reference firmware 1.6.0 can join a WiFi network in addition to Ethernet (enable/configure it on the device Settings page, applied live; it needs the device external antenna) and adds an on-device diagnostic log for pinpointing update problems. The adapter now treats any non-free licence tier as licensed for control. README, all translations and the PDF manual updated with WiFi and the mandatory-antenna note.",
-        "de": "Optionales WLAN für das ESP32-Gerät und empfohlene Firmware v1.6.0. Die Referenz-Firmware 1.6.0 kann zusätzlich zu Ethernet eine Verbindung zu einem WiFi-Netzwerk herstellen (aktivieren/konfigurieren Sie es auf der Seite „Geräteeinstellungen“, wird live angewendet; es benötigt die externe Antenne des Geräts) und fügt ein Diagnoseprotokoll auf dem Gerät hinzu, um Update-Probleme zu lokalisieren. Der Adapter behandelt jetzt jede nicht freie Lizenzstufe als zur Steuerung lizenziert. README, alle Übersetzungen und das PDF-Handbuch aktualisiert mit WLAN und dem Hinweis zur obligatorischen Antenne.",
-        "ru": "Дополнительный Wi-Fi для устройства ESP32 и рекомендуемая прошивка v1.6.0. Эталонная прошивка 1.6.0 может подключаться к сети Wi-Fi в дополнение к Ethernet (включите/настройте ее на странице настроек устройства, применяется в реальном времени; для этого требуется внешняя антенна устройства) и добавляет журнал диагностики на устройстве для выявления проблем с обновлением. Теперь адаптер считает любой несвободный уровень лицензии лицензированным для контроля. README, все переводы и руководство в формате PDF обновлены с учетом Wi-Fi и примечания об обязательной антенне.",
-        "pt": "WiFi opcional para o dispositivo ESP32 e firmware recomendado v1.6.0. O firmware de referência 1.6.0 pode ingressar em uma rede WiFi além de Ethernet (habilitá-lo/configurá-lo na página de configurações do dispositivo, aplicado ao vivo; ele precisa da antena externa do dispositivo) e adiciona um log de diagnóstico no dispositivo para identificar problemas de atualização. O adaptador agora trata qualquer camada de licença não gratuita como licenciada para controle. README, todas as traduções e o manual em PDF atualizado com WiFi e a nota de antena obrigatória.",
-        "nl": "Optionele WiFi voor het ESP32-apparaat en aanbevolen firmware v1.6.0. De referentiefirmware 1.6.0 kan naast Ethernet verbinding maken met een WiFi-netwerk (inschakelen/configureren op de pagina Instellingen van het apparaat, live toegepast; het heeft de externe antenne van het apparaat nodig) en voegt een diagnostisch logbestand op het apparaat toe voor het opsporen van updateproblemen. De adapter behandelt nu elke niet-vrije licentielaag als gelicentieerd voor controle. README, alle vertalingen en de PDF-handleiding bijgewerkt met WiFi en de verplichte antennenoot.",
-        "fr": "WiFi en option pour l'appareil ESP32 et recommande le firmware v1.6.0. Le firmware de référence 1.6.0 peut rejoindre un réseau WiFi en plus d'Ethernet (l'activer/le configurer sur la page Paramètres de l'appareil, appliqué en direct ; il a besoin de l'antenne externe de l'appareil) et ajoute un journal de diagnostic sur l'appareil pour identifier les problèmes de mise à jour. L'adaptateur traite désormais tout niveau de licence non libre comme une licence de contrôle. README, toutes les traductions et le manuel PDF mis à jour avec le WiFi et la note d'antenne obligatoire.",
-        "it": "WiFi opzionale per il dispositivo ESP32 e consiglia firmware v1.6.0. Il firmware di riferimento 1.6.0 può connettersi a una rete WiFi oltre a Ethernet (abilitalo/configuralo nella pagina Impostazioni del dispositivo, applicato in tempo reale; necessita dell'antenna esterna del dispositivo) e aggiunge un registro diagnostico sul dispositivo per individuare problemi di aggiornamento. L'adattatore ora tratta qualsiasi livello di licenza non libero come concesso in licenza per il controllo. README, tutte le traduzioni e il manuale in PDF aggiornato con WiFi e la nota dell'antenna obbligatoria.",
-        "es": "WiFi opcional para el dispositivo ESP32 y firmware recomendado v1.6.0. El firmware de referencia 1.6.0 puede unirse a una red WiFi además de Ethernet (habilítela/configúrela en la página de Configuración del dispositivo, se aplica en vivo; necesita la antena externa del dispositivo) y agrega un registro de diagnóstico en el dispositivo para identificar problemas de actualización. El adaptador ahora trata cualquier nivel de licencia que no sea gratuito como si tuviera licencia para control. README, todas las traducciones y el manual en PDF actualizado con WiFi y la nota de antena obligatoria.",
-        "pl": "Opcjonalne Wi-Fi dla urządzenia ESP32 i zalecane oprogramowanie sprzętowe v1.6.0. Referencyjne oprogramowanie sprzętowe w wersji 1.6.0 może łączyć się z siecią Wi-Fi oprócz sieci Ethernet (włącz/skonfiguruj je na stronie Ustawienia urządzenia, stosowane na żywo; wymaga zewnętrznej anteny urządzenia) i dodaje dziennik diagnostyczny urządzenia w celu wskazania problemów z aktualizacją. Adapter traktuje teraz każdą warstwę licencji, która nie jest wolna, jako licencjonowaną w celu zapewnienia kontroli. README, wszystkie tłumaczenia i instrukcja w formacie PDF zaktualizowana o Wi-Fi i notatkę o obowiązkowej antenie.",
-        "uk": "Додатковий Wi-Fi для пристрою ESP32 і рекомендована прошивка v1.6.0. Еталонне мікропрограмне забезпечення 1.6.0 може приєднуватися до мережі Wi-Fi на додаток до Ethernet (увімкніть/налаштуйте його на сторінці налаштувань пристрою, застосовано в режимі реального часу; для цього потрібна зовнішня антена пристрою) і додає журнал діагностики на пристрої для точного визначення проблем оновлення. Тепер адаптер розглядає будь-який невільний рівень ліцензії як ліцензований для контролю. README, усі переклади та посібник у форматі PDF, оновлений за допомогою Wi-Fi та обов’язкової примітки щодо антени.",
-        "zh-cn": "ESP32 设备可选 WiFi，推荐固件 v1.6.0。除了以太网之外，参考固件 1.6.0 还可以加入 WiFi 网络（在设备“设置”页面上启用/配置它，实时应用；它需要设备外部天线），并添加设备上诊断日志以查明更新问题。该适配器现在将任何非免费许可层视为获得控制许可。自述文件、所有翻译和 PDF 手册均已使用 WiFi 和强制天线注释进行更新。"
-      }
+    "common": {
+        "name": "automatic-pond-aeration",
+        "version": "0.1.12",
+        "news": {
+            "0.1.12": {
+                "en": "Setup hotspot for WiFi-only installs — configure the device from a phone over its own WiFi when there is no LAN at the pond — plus a fix for the one-click online update (it no longer reboots mid-download). Recommends firmware 1.7.1.",
+                "de": "Setup-Hotspot für die Einrichtung ohne LAN — das Gerät per Handy über ein eigenes WLAN konfigurieren, wenn am Teich kein LAN verfügbar ist — sowie eine Korrektur des Online-Updates per Klick (kein Neustart mehr mitten im Download). Empfiehlt Firmware 1.7.1.",
+                "ru": "Настройка точки доступа для установки только через Wi-Fi — настройка устройства с телефона через собственный Wi-Fi, когда на пруду нет локальной сети, а также исправление для онлайн-обновления в один клик (оно больше не перезагружается во время загрузки). Рекомендует прошивку 1.7.1.",
+                "pt": "Configure o ponto de acesso para instalações somente WiFi – configure o dispositivo a partir de um telefone através de seu próprio WiFi quando não houver LAN no lago – além de uma correção para a atualização on-line com um clique (ela não reinicia mais no meio do download). Recomenda firmware 1.7.1.",
+                "nl": "Stel een hotspot in voor installaties met alleen WiFi – configureer het apparaat vanaf een telefoon via zijn eigen WiFi als er geen LAN bij de vijver is – plus een oplossing voor de online update met één klik (hij start niet langer opnieuw op tijdens het downloaden). Aanbevolen firmware 1.7.1.",
+                "fr": "Configurez un point d'accès pour les installations Wi-Fi uniquement - configurez l'appareil à partir d'un téléphone via son propre Wi-Fi lorsqu'il n'y a pas de réseau local sur l'étang - ainsi qu'un correctif pour la mise à jour en ligne en un clic (il ne redémarre plus à mi-téléchargement). Recommande le firmware 1.7.1.",
+                "it": "Configura hotspot per installazioni solo WiFi: configura il dispositivo da un telefono tramite il proprio WiFi quando non è presente una LAN nello stagno, oltre a una correzione per l'aggiornamento online con un clic (non si riavvia più a metà download). Raccomanda il firmware 1.7.1.",
+                "es": "Configure el punto de acceso para instalaciones solo de WiFi: configure el dispositivo desde un teléfono a través de su propio WiFi cuando no haya una LAN en el estanque, además de una solución para la actualización en línea con un solo clic (ya no se reinicia a mitad de la descarga). Recomienda el firmware 1.7.1.",
+                "pl": "Skonfiguruj hotspot do instalacji wyłącznie przez Wi-Fi — skonfiguruj urządzenie z telefonu przez własne Wi-Fi, gdy nad stawem nie ma sieci LAN — plus poprawka dotycząca aktualizacji online jednym kliknięciem (nie uruchamia się już ponownie w trakcie pobierania). Zaleca oprogramowanie 1.7.1.",
+                "uk": "Налаштуйте точку доступу для встановлення лише через Wi-Fi — налаштуйте пристрій із телефону через власний Wi-Fi, коли на ставку немає локальної мережі — плюс виправлення онлайн-оновлення одним клацанням миші (більше не перезавантажується під час завантаження). Рекомендується прошивка 1.7.1.",
+                "zh-cn": "为仅 WiFi 安装设置热点 - 当池塘没有 LAN 时，通过手机通过自己的 WiFi 配置设备 - 加上一键在线更新的修复（它不再在下载过程中重新启动）。推荐固件 1.7.1。"
+            }
+        },
+        "titleLang": {
+            "en": "Automatic Pond Aeration",
+            "de": "Automatische Teichbelüftung",
+            "ru": "Автоматическая аэрация пруда",
+            "pt": "Arejamento automático de lago",
+            "nl": "Automatische vijverbeluchting",
+            "fr": "Aération automatique d'étang",
+            "it": "Aerazione automatica del laghetto",
+            "es": "Aireación automática de estanque",
+            "pl": "Automatyczne napowietrzanie stawu",
+            "uk": "Автоматична аерація ставка",
+            "zh-cn": "自动池塘增氧"
+        },
+        "desc": {
+            "en": "Controls and monitors a pond aeration: switches valves at up to 8 aeration points by schedule, round-robin or groups, with a pump safety interlock and optional oxygen, temperature and pressure monitoring.",
+            "de": "Steuert und überwacht eine Teichbelüftung: schaltet Ventile an bis zu 8 Belüftungsstellen per Zeitplan, Rundlauf oder Gruppen, mit Pumpen-Sicherheitsverriegelung und optionaler Sauerstoff-, Temperatur- und Drucküberwachung.",
+            "ru": "Управляет и контролирует аэрацию пруда: переключает клапаны на 8 точках аэрации по расписанию, циклически или группами, с защитной блокировкой насоса и опциональным контролем кислорода, температуры и давления.",
+            "pt": "Controla e monitoriza o arejamento de um lago: comuta válvulas em até 8 pontos de arejamento por horário, rotação cíclica ou grupos, com bloqueio de segurança da bomba e monitorização opcional de oxigénio, temperatura e pressão.",
+            "nl": "Bestuurt en bewaakt een vijverbeluchting: schakelt kleppen op maximaal 8 beluchtingspunten via schema, cyclische rondgang of groepen, met een veiligheidsvergrendeling voor de pomp en optionele bewaking van zuurstof, temperatuur en druk.",
+            "fr": "Contrôle et surveille l'aération d'un étang : commute des vannes sur jusqu'à 8 points d'aération par horaire, rotation cyclique ou groupes, avec un verrouillage de sécurité de la pompe et une surveillance optionnelle de l'oxygène, de la température et de la pression.",
+            "it": "Controlla e monitora l'aerazione di un laghetto: commuta le valvole in un massimo di 8 punti di aerazione tramite pianificazione, rotazione ciclica o gruppi, con un interblocco di sicurezza della pompa e monitoraggio opzionale di ossigeno, temperatura e pressione.",
+            "es": "Controla y supervisa la aireación de un estanque: conmuta válvulas en hasta 8 puntos de aireación por horario, rotación cíclica o grupos, con un enclavamiento de seguridad de la bomba y supervisión opcional de oxígeno, temperatura y presión.",
+            "pl": "Steruje i monitoruje napowietrzanie stawu: przełącza zawory w maksymalnie 8 punktach napowietrzania według harmonogramu, rotacji cyklicznej lub grup, z blokadą bezpieczeństwa pompy oraz opcjonalnym monitorowaniem tlenu, temperatury i ciśnienia.",
+            "uk": "Керує та контролює аерацію ставка: перемикає клапани на до 8 точок аерації за розкладом, циклічним обходом або групами, із запобіжним блокуванням насоса та опціональним контролем кисню, температури й тиску.",
+            "zh-cn": "控制并监测池塘增氧：通过计划、循环轮换或分组方式切换最多 8 个增氧点的阀门，具备水泵安全联锁以及可选的溶氧、温度和压力监测。"
+        },
+        "authors": [
+            "ssbingo <s.sternitzke@online.de>"
+        ],
+        "keywords": [
+            "pond",
+            "aeration",
+            "Teich",
+            "Belüftung",
+            "valve",
+            "oxygen",
+            "Koi"
+        ],
+        "licenseInformation": {
+            "type": "free",
+            "license": "MIT"
+        },
+        "platform": "Javascript/Node.js",
+        "icon": "automatic-pond-aeration.png",
+        "enabled": true,
+        "extIcon": "https://raw.githubusercontent.com/ssbingo/ioBroker.automatic-pond-aeration/main/admin/automatic-pond-aeration.png",
+        "readme": "https://github.com/ssbingo/ioBroker.automatic-pond-aeration/blob/main/README.md",
+        "loglevel": "info",
+        "tier": 3,
+        "mode": "daemon",
+        "type": "garden",
+        "compact": true,
+        "messagebox": true,
+        "connectionType": "local",
+        "dataSource": "push",
+        "adminUI": {
+            "config": "materialize"
+        },
+        "eraseOnUpload": true,
+        "dependencies": [
+            {
+                "js-controller": ">=6.0.11"
+            }
+        ],
+        "globalDependencies": [
+            {
+                "admin": ">=7.6.20"
+            }
+        ]
     },
-    "titleLang": {
-      "en": "Automatic Pond Aeration",
-      "de": "Automatische Teichbelüftung",
-      "ru": "Автоматическая аэрация пруда",
-      "pt": "Arejamento automático de lago",
-      "nl": "Automatische vijverbeluchting",
-      "fr": "Aération automatique d'étang",
-      "it": "Aerazione automatica del laghetto",
-      "es": "Aireación automática de estanque",
-      "pl": "Automatyczne napowietrzanie stawu",
-      "uk": "Автоматична аерація ставка",
-      "zh-cn": "自动池塘增氧"
+    "native": {
+        "masterEnable": true,
+        "dryRun": false,
+        "controlBackend": "iobroker",
+        "esp32Host": "",
+        "esp32Port": 80,
+        "esp32AuthToken": "",
+        "esp32EmergencyRelay": 6,
+        "esp32PumpRelay": 7,
+        "esp32AutonomousEnabled": false,
+        "pollIntervalSec": 30,
+        "locationMode": "system",
+        "latitude": "",
+        "longitude": "",
+        "address": "",
+        "pumpControllable": false,
+        "pumpObjectId": "",
+        "pumpMinOnSec": 0,
+        "pumpMinOffSec": 0,
+        "emergencyObjectId": "",
+        "emergencyNormallyOpen": true,
+        "emergencyValveType": "solenoid",
+        "emergencyMotorTravelSec": 5,
+        "minOpenValves": 1,
+        "watchdogIntervalSec": 5,
+        "overlapSec": 2,
+        "roundRobinEnabled": false,
+        "roundRobinDwellSec": 60,
+        "sequenceSteps": [],
+        "o2Enabled": false,
+        "o2ObjectId": "",
+        "o2LowThreshold": null,
+        "o2TargetThreshold": null,
+        "o2Hysteresis": 0.5,
+        "o2ControlEnabled": false,
+        "o2AffectedPoints": [],
+        "airTempEnabled": false,
+        "airTempObjectId": "",
+        "waterTempEnabled": false,
+        "waterTempObjectId": "",
+        "pressureEnabled": false,
+        "pressureObjectId": "",
+        "pressureMin": null,
+        "pressureMax": null,
+        "winterEnabled": false,
+        "winterStart": "11-01",
+        "winterEnd": "03-15",
+        "winterFrostProtect": false,
+        "winterAirTempThreshold": 2,
+        "winterAffectedPoints": [],
+        "feederEnabled": false,
+        "feederInstance": "",
+        "feederSwitches": [],
+        "feederOffsetSec": 60,
+        "feederFeedingDurationSec": 15,
+        "feederDurationMode": "measure",
+        "feederAffectedPoints": [],
+        "notifyEnabled": false,
+        "messagingInstance": "",
+        "notifyEvents": [
+            "interlock",
+            "oxygen",
+            "pressure"
+        ],
+        "points": [],
+        "groups": [],
+        "schedules": []
     },
-    "desc": {
-      "en": "Controls and monitors a pond aeration: switches valves at up to 8 aeration points by schedule, round-robin or groups, with a pump safety interlock and optional oxygen, temperature and pressure monitoring.",
-      "de": "Steuert und überwacht eine Teichbelüftung: schaltet Ventile an bis zu 8 Belüftungsstellen per Zeitplan, Rundlauf oder Gruppen, mit Pumpen-Sicherheitsverriegelung und optionaler Sauerstoff-, Temperatur- und Drucküberwachung.",
-      "ru": "Управляет и контролирует аэрацию пруда: переключает клапаны на 8 точках аэрации по расписанию, циклически или группами, с защитной блокировкой насоса и опциональным контролем кислорода, температуры и давления.",
-      "pt": "Controla e monitoriza o arejamento de um lago: comuta válvulas em até 8 pontos de arejamento por horário, rotação cíclica ou grupos, com bloqueio de segurança da bomba e monitorização opcional de oxigénio, temperatura e pressão.",
-      "nl": "Bestuurt en bewaakt een vijverbeluchting: schakelt kleppen op maximaal 8 beluchtingspunten via schema, cyclische rondgang of groepen, met een veiligheidsvergrendeling voor de pomp en optionele bewaking van zuurstof, temperatuur en druk.",
-      "fr": "Contrôle et surveille l'aération d'un étang : commute des vannes sur jusqu'à 8 points d'aération par horaire, rotation cyclique ou groupes, avec un verrouillage de sécurité de la pompe et une surveillance optionnelle de l'oxygène, de la température et de la pression.",
-      "it": "Controlla e monitora l'aerazione di un laghetto: commuta le valvole in un massimo di 8 punti di aerazione tramite pianificazione, rotazione ciclica o gruppi, con un interblocco di sicurezza della pompa e monitoraggio opzionale di ossigeno, temperatura e pressione.",
-      "es": "Controla y supervisa la aireación de un estanque: conmuta válvulas en hasta 8 puntos de aireación por horario, rotación cíclica o grupos, con un enclavamiento de seguridad de la bomba y supervisión opcional de oxígeno, temperatura y presión.",
-      "pl": "Steruje i monitoruje napowietrzanie stawu: przełącza zawory w maksymalnie 8 punktach napowietrzania według harmonogramu, rotacji cyklicznej lub grup, z blokadą bezpieczeństwa pompy oraz opcjonalnym monitorowaniem tlenu, temperatury i ciśnienia.",
-      "uk": "Керує та контролює аерацію ставка: перемикає клапани на до 8 точок аерації за розкладом, циклічним обходом або групами, із запобіжним блокуванням насоса та опціональним контролем кисню, температури й тиску.",
-      "zh-cn": "控制并监测池塘增氧：通过计划、循环轮换或分组方式切换最多 8 个增氧点的阀门，具备水泵安全联锁以及可选的溶氧、温度和压力监测。"
-    },
-    "authors": [
-      "ssbingo <s.sternitzke@online.de>"
+    "encryptedNative": [
+        "esp32AuthToken"
     ],
-    "keywords": [
-      "pond",
-      "aeration",
-      "Teich",
-      "Belüftung",
-      "valve",
-      "oxygen",
-      "Koi"
+    "protectedNative": [
+        "esp32AuthToken"
     ],
-    "licenseInformation": {
-      "type": "free",
-      "license": "MIT"
-    },
-    "platform": "Javascript/Node.js",
-    "icon": "automatic-pond-aeration.png",
-    "enabled": true,
-    "extIcon": "https://raw.githubusercontent.com/ssbingo/ioBroker.automatic-pond-aeration/main/admin/automatic-pond-aeration.png",
-    "readme": "https://github.com/ssbingo/ioBroker.automatic-pond-aeration/blob/main/README.md",
-    "loglevel": "info",
-    "tier": 3,
-    "mode": "daemon",
-    "type": "garden",
-    "compact": true,
-    "messagebox": true,
-    "connectionType": "local",
-    "dataSource": "push",
-    "adminUI": {
-      "config": "materialize"
-    },
-    "eraseOnUpload": true,
-    "dependencies": [
-      {
-        "js-controller": ">=6.0.11"
-      }
-    ],
-    "globalDependencies": [
-      {
-        "admin": ">=7.6.20"
-      }
+    "objects": [],
+    "instanceObjects": [
+        {
+            "_id": "info",
+            "type": "channel",
+            "common": {
+                "name": "Information"
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.connection",
+            "type": "state",
+            "common": {
+                "role": "indicator.connected",
+                "name": "Adapter running / configuration valid",
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.deviceFirmware",
+            "type": "state",
+            "common": {
+                "role": "text",
+                "name": "ESP32 firmware version reported by the connected device",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "def": ""
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.firmwareCompatible",
+            "type": "state",
+            "common": {
+                "role": "indicator",
+                "name": "ESP32 firmware protocol is compatible with this adapter",
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.licenseTier",
+            "type": "state",
+            "common": {
+                "role": "text",
+                "name": "ESP32 active licence tier (free/community/pro; empty if firmware is ungated)",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "def": ""
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.licenseTrialDaysLeft",
+            "type": "state",
+            "common": {
+                "role": "value",
+                "name": "ESP32 licence trial days remaining (0 = no trial running)",
+                "type": "number",
+                "unit": "d",
+                "read": true,
+                "write": false,
+                "def": 0
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.deviceCode",
+            "type": "state",
+            "common": {
+                "role": "text",
+                "name": "ESP32 device code (give this when unlocking to receive an activation key)",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "def": ""
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.licenseControlBlocked",
+            "type": "state",
+            "common": {
+                "role": "indicator",
+                "name": "ESP32 rejected a control command — device not licensed for control",
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        }
     ]
-  },
-  "native": {
-    "masterEnable": true,
-    "dryRun": false,
-    "controlBackend": "iobroker",
-    "esp32Host": "",
-    "esp32Port": 80,
-    "esp32AuthToken": "",
-    "esp32EmergencyRelay": 6,
-    "esp32PumpRelay": 7,
-    "esp32AutonomousEnabled": false,
-    "pollIntervalSec": 30,
-    "locationMode": "system",
-    "latitude": "",
-    "longitude": "",
-    "address": "",
-    "pumpControllable": false,
-    "pumpObjectId": "",
-    "pumpMinOnSec": 0,
-    "pumpMinOffSec": 0,
-    "emergencyObjectId": "",
-    "emergencyNormallyOpen": true,
-    "emergencyValveType": "solenoid",
-    "emergencyMotorTravelSec": 5,
-    "minOpenValves": 1,
-    "watchdogIntervalSec": 5,
-    "overlapSec": 2,
-    "roundRobinEnabled": false,
-    "roundRobinDwellSec": 60,
-    "sequenceSteps": [],
-    "o2Enabled": false,
-    "o2ObjectId": "",
-    "o2LowThreshold": null,
-    "o2TargetThreshold": null,
-    "o2Hysteresis": 0.5,
-    "o2ControlEnabled": false,
-    "o2AffectedPoints": [],
-    "airTempEnabled": false,
-    "airTempObjectId": "",
-    "waterTempEnabled": false,
-    "waterTempObjectId": "",
-    "pressureEnabled": false,
-    "pressureObjectId": "",
-    "pressureMin": null,
-    "pressureMax": null,
-    "winterEnabled": false,
-    "winterStart": "11-01",
-    "winterEnd": "03-15",
-    "winterFrostProtect": false,
-    "winterAirTempThreshold": 2,
-    "winterAffectedPoints": [],
-    "feederEnabled": false,
-    "feederInstance": "",
-    "feederSwitches": [],
-    "feederOffsetSec": 60,
-    "feederFeedingDurationSec": 15,
-    "feederDurationMode": "measure",
-    "feederAffectedPoints": [],
-    "notifyEnabled": false,
-    "messagingInstance": "",
-    "notifyEvents": [
-      "interlock",
-      "oxygen",
-      "pressure"
-    ],
-    "points": [],
-    "groups": [],
-    "schedules": []
-  },
-  "encryptedNative": [
-    "esp32AuthToken"
-  ],
-  "protectedNative": [
-    "esp32AuthToken"
-  ],
-  "objects": [],
-  "instanceObjects": [
-    {
-      "_id": "info",
-      "type": "channel",
-      "common": {
-        "name": "Information"
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.connection",
-      "type": "state",
-      "common": {
-        "role": "indicator.connected",
-        "name": "Adapter running / configuration valid",
-        "type": "boolean",
-        "read": true,
-        "write": false,
-        "def": false
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.deviceFirmware",
-      "type": "state",
-      "common": {
-        "role": "text",
-        "name": "ESP32 firmware version reported by the connected device",
-        "type": "string",
-        "read": true,
-        "write": false,
-        "def": ""
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.firmwareCompatible",
-      "type": "state",
-      "common": {
-        "role": "indicator",
-        "name": "ESP32 firmware protocol is compatible with this adapter",
-        "type": "boolean",
-        "read": true,
-        "write": false,
-        "def": false
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.licenseTier",
-      "type": "state",
-      "common": {
-        "role": "text",
-        "name": "ESP32 active licence tier (free/community/pro; empty if firmware is ungated)",
-        "type": "string",
-        "read": true,
-        "write": false,
-        "def": ""
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.licenseTrialDaysLeft",
-      "type": "state",
-      "common": {
-        "role": "value",
-        "name": "ESP32 licence trial days remaining (0 = no trial running)",
-        "type": "number",
-        "unit": "d",
-        "read": true,
-        "write": false,
-        "def": 0
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.deviceCode",
-      "type": "state",
-      "common": {
-        "role": "text",
-        "name": "ESP32 device code (give this when unlocking to receive an activation key)",
-        "type": "string",
-        "read": true,
-        "write": false,
-        "def": ""
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.licenseControlBlocked",
-      "type": "state",
-      "common": {
-        "role": "indicator",
-        "name": "ESP32 rejected a control command — device not licensed for control",
-        "type": "boolean",
-        "read": true,
-        "write": false,
-        "def": false
-      },
-      "native": {}
-    }
-  ]
 }
