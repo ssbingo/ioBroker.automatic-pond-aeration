@@ -138,7 +138,7 @@ die Teile, die du tatsächlich nutzt.
     weiterhin). Die zyklische Sequenz bleibt beim Adapter.
   - **Firmware-Kompatibilität** – Adapter und Firmware werden über eine **Protokoll-Version** (der
     harte Vertrag) abgeglichen, nicht über exakte Release-Nummern. Diese Adapter-Version spricht
-    **Protokoll 1** und **empfiehlt Firmware v1.6.0** (mindestens v1.0.0); der Admin zeigt dies an und
+    **Protokoll 1** und **empfiehlt Firmware v1.7.10** (mindestens v1.0.0); der Admin zeigt dies an und
     verlinkt auf die Releases. Beim Verbinden werden die Version des Geräts und ein
     Kompatibilitäts-Flag als `info.deviceFirmware` und `info.firmwareCompatible` veröffentlicht, und
     jede Protokoll-Abweichung wird ins Log geschrieben. Siehe die Kompatibilitätstabelle im
@@ -298,6 +298,14 @@ senden sollen:
 
 Bei jeder Flanke (Auslösen und Freigabe) wird ein kurzer, lokalisierter Text gesendet. Ist kein
 Ereignis angehakt, wird nichts gesendet.
+
+**Die Fütterung spammt die Verriegelungs-Benachrichtigung nicht zu.** Wenn der Feeder die
+Belüftungspunkte pausiert, schließen alle Ventile und das Notventil öffnet – das ist normal, daher
+wird die Verriegelungs-Benachrichtigung **für die Dauer der Fütterungspause unterdrückt**. Ein
+echtes Problem erreicht dich trotzdem: Fördert die Pumpe tatsächlich gegen geschlossene Ventile
+(Nullförderung), löst der **Druckalarm** von selbst aus. Möchtest du *doch* während der Fütterung
+über die Verriegelung informiert werden, aktiviere **„Verriegelung während der Fütterung ebenfalls
+melden“** (die Option `notifyInterlockDuringFeeding`, unter dem Verriegelungs-Ereignis).
 
 ## 6. Objekte / Datenpunkte
 

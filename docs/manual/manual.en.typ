@@ -175,8 +175,7 @@ The settings page is organised into tabs. You only fill in the parts you use. Cl
   would …`). Perfect for trying a configuration safely before wiring it up.
 - *Backend* — `Existing ioBroker states` (default) drives your hardware through other adapters'
   states. `ESP32 (direct)` talks to the separate reference firmware on a Waveshare board over HTTP
-  (set the host/IP and the emergency-valve / pump relay channels; see chapter 9). The firmware is
-  still being completed.
+  (set the host/IP and the emergency-valve / pump relay channels; see chapter 9).
 
 == Aeration points
 
@@ -475,7 +474,7 @@ With the board flashed and wired, the adapter can drive it directly — no relay
 
   #dtable(
     [Adapter version], [Firmware],
-    [0.0.20 +], [protocol 1 · recommended v1.1.0 · minimum v1.0.0],
+    [0.0.20 +], [protocol 1 · recommended v1.7.10 · minimum v1.0.0],
   )
 
   On connect the adapter reads the device's version and publishes it as `info.deviceFirmware` with a
@@ -522,7 +521,8 @@ With the board flashed and wired, the adapter can drive it directly — no relay
   Open the board's IP in a browser — the firmware serves seven self-contained pages (no cloud, no app):
   *Home* (watch the relays / sensors and toggle channels on site), *Schedule* (view / edit the
   autonomous schedule on the device), *Settings* (DHCP or static IP / DNS / hostname, the *NTP server*
-  — default `de.pool.ntp.org` —, the WS2812 LED / buzzer and the licensed channel/button *names*),
+  — default `de.pool.ntp.org` — and the *timezone* chosen from a dropdown, e.g. `Europe/Berlin`, so the
+  device's own clock and schedules are correct; the WS2812 LED / buzzer and the licensed channel/button *names*),
   *Licence* (read the device code and enter an activation key), *Update* (an *over-the-air* firmware
   update: automatic version check and a *one-click online update* straight to the device — activation
   and settings are kept —, or a file upload, plus a *Restart* button), *Info* (time, IP, MAC, hostname,

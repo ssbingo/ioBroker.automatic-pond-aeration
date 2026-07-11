@@ -192,8 +192,7 @@ Klicken Sie auf *Speichern* (oder *Speichern und schließen*), wenn Sie fertig s
   Konfiguration sicher auszuprobieren, bevor Sie sie verdrahten.
 - *Backend* — `Existing ioBroker states` (Standard) steuert Ihre Hardware über die States anderer
   Adapter. `ESP32 (direct)` spricht die separate Referenz-Firmware auf einem Waveshare-Board per HTTP
-  an (Host/IP sowie Notventil-/Pumpen-Relaiskanal setzen; siehe Kapitel 9). Die Firmware wird noch
-  fertiggestellt.
+  an (Host/IP sowie Notventil-/Pumpen-Relaiskanal setzen; siehe Kapitel 9).
 
 == Belüftungspunkte
 
@@ -518,7 +517,7 @@ dazwischen.
 
   #dtable(
     [Adapter-Version], [Firmware],
-    [0.0.20 +], [Protokoll 1 · empfohlen v1.6.0 · Minimum v1.0.0],
+    [0.0.20 +], [Protokoll 1 · empfohlen v1.7.10 · Minimum v1.0.0],
   )
 
   Beim Verbinden liest der Adapter die Version des Geräts und veröffentlicht sie als
@@ -566,8 +565,9 @@ dazwischen.
   Öffnen Sie die IP des Boards im Browser — die Firmware liefert sieben eigenständige Seiten (ohne
   Cloud, ohne App): *Home* (Relais/Sensoren ansehen und Kanäle vor Ort schalten), *Schedule*
   (autonomen Zeitplan auf dem Gerät ansehen/bearbeiten), *Settings* (DHCP oder statische IP / DNS /
-  Hostname, der *NTP-Server* — Standard `de.pool.ntp.org` —, WS2812-LED / Buzzer sowie die lizenzierten
-  Kanal-/Taster-*Namen*), *Lizenz* (Gerätecode ablesen und Freischaltcode eingeben), *Update*
+  Hostname, der *NTP-Server* — Standard `de.pool.ntp.org` — und die *Zeitzone* aus einem Dropdown, z. B.
+  `Europe/Berlin`, damit die geräteeigene Uhr und die Zeitpläne stimmen; WS2812-LED / Buzzer sowie die
+  lizenzierten Kanal-/Taster-*Namen*), *Lizenz* (Gerätecode ablesen und Freischaltcode eingeben), *Update*
   (Firmware-Aktualisierung *über das Netz*: automatischer Versionsabgleich und *Ein-Klick-Online-Update*
   direkt aufs Gerät — Freischaltung und Einstellungen bleiben erhalten —, alternativ Datei-Upload, plus
   ein *Neustart*-Knopf), *Info* (Uhrzeit, IP, MAC, Hostname, Version, Speicher und Laufzeit) und *Log*

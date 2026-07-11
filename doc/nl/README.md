@@ -132,7 +132,7 @@ onderdelen die je gebruikt.
     kracht). De cyclische sequentie blijft bij de adapter.
   - **Firmwarecompatibiliteit** – de adapter en de firmware worden op elkaar afgestemd via een
     **protocolversie** (het harde contract), niet op exacte versienummers. Deze adapterversie spreekt
-    **protocol 1** en **beveelt firmware v1.6.0 aan** (minimaal v1.0.0); de admin toont dit en
+    **protocol 1** en **beveelt firmware v1.7.10 aan** (minimaal v1.0.0); de admin toont dit en
     verwijst naar de releases. Bij het verbinden worden de versie van het apparaat en een
     compatibiliteitsvlag gepubliceerd als `info.deviceFirmware` en `info.firmwareCompatible`, en elke
     protocolafwijking wordt naar het logboek geschreven. Zie de compatibiliteitstabel in de
@@ -288,6 +288,14 @@ bijv. Telegram of Pushover), en **vink vervolgens aan welke gebeurtenissen** een
 
 Bij elke flank (in- en uitschakelen) wordt een korte, gelokaliseerde tekst gestuurd. Als er geen
 gebeurtenis is aangevinkt, wordt er niets gestuurd.
+
+**Het voeren spamt de vergrendelingsmelding niet vol.** Wanneer de feeder de beluchtingspunten
+pauzeert, sluiten alle kleppen en gaat de noodklep open – dat is normaal, dus wordt de
+vergrendelingsmelding **voor de duur van de voerpauze onderdrukt**. Een echt probleem bereikt je nog
+steeds: als de pomp daadwerkelijk tegen gesloten kleppen aan draait (dead-heading), gaat het
+**drukalarm** vanzelf af. Wil je *wel* tijdens het voeren over de vergrendeling worden gewaarschuwd,
+schakel dan **„Vergrendeling ook tijdens het voeren melden“** in (de optie
+`notifyInterlockDuringFeeding`, weergegeven onder de vergrendelingsgebeurtenis).
 
 ## 6. Objecten / datapunten
 

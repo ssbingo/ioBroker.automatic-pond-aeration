@@ -139,7 +139,7 @@ usi.
     sicurezza dead-head resta valido). La sequenza ciclica resta gestita dall'adattatore.
   - **Compatibilità del firmware** – l'adattatore e il firmware vengono abbinati tramite una
     **versione del protocollo** (il contratto vincolante), non in base ai numeri di release esatti.
-    Questa versione dell'adattatore parla il **protocollo 1** e **consiglia il firmware v1.6.0**
+    Questa versione dell'adattatore parla il **protocollo 1** e **consiglia il firmware v1.7.10**
     (minimo v1.0.0); l'admin lo mostra e rimanda alle release. Alla connessione, la versione del
     dispositivo e un flag di compatibilità vengono pubblicati come `info.deviceFirmware` e
     `info.firmwareCompatible`, e qualsiasi discrepanza di protocollo viene scritta nel log. Vedi la
@@ -303,6 +303,14 @@ Abilita le notifiche e scegli un'**istanza di messaging** (un qualsiasi adattato
 
 A ogni fronte (intervento e rientro) viene inviato un breve testo localizzato. Se non è spuntato alcun
 evento, non viene inviato nulla.
+
+**L'alimentazione non intasa la notifica del blocco.** Quando il feeder mette in pausa i punti di
+aerazione, tutte le valvole si chiudono e la valvola di emergenza si apre – è normale, quindi la
+notifica del blocco viene **soppressa per tutta la durata della pausa di alimentazione**. Un vero
+problema ti raggiunge comunque: se la pompa spinge davvero contro valvole chiuse (dead-heading),
+l'**allarme pressione** scatta da solo. Se *vuoi comunque* essere avvisato del blocco durante
+l'alimentazione, attiva **«Notifica anche il blocco durante l'alimentazione»** (l'opzione
+`notifyInterlockDuringFeeding`, mostrata sotto l'evento di blocco).
 
 ## 6. Oggetti / punti dati
 

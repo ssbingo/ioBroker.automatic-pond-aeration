@@ -142,7 +142,7 @@ uses.
     seguridad dead-head sigue aplicándose). La secuencia cíclica permanece en el adaptador.
   - **Compatibilidad del firmware** – el adaptador y el firmware se emparejan mediante una **versión
     del protocolo** (el contrato estricto), no por números de versión exactos. Esta versión del
-    adaptador habla **protocolo 1** y **recomienda firmware v1.6.0** (mínimo v1.0.0); el admin lo
+    adaptador habla **protocolo 1** y **recomienda firmware v1.7.10** (mínimo v1.0.0); el admin lo
     muestra y enlaza a las publicaciones (releases). Al conectar, la versión del dispositivo y una
     marca de compatibilidad se publican como `info.deviceFirmware` e `info.firmwareCompatible`, y
     cualquier discrepancia de protocolo se escribe en el registro. Consulta la tabla de compatibilidad
@@ -305,6 +305,15 @@ Habilita las notificaciones y elige una **instancia de mensajería** (cualquier 
 
 En cada flanco (activación y liberación) se envía un texto breve y localizado. Si no se marca ningún
 evento, no se envía nada.
+
+**La alimentación no satura de notificaciones el enclavamiento.** Cuando el feeder pausa los puntos
+de aireación, todas las válvulas se cierran y la válvula de emergencia se abre – esto es normal, por
+lo que la notificación del enclavamiento **se suprime durante toda la pausa de alimentación**. Un
+problema real sigue llegándote: si la bomba realmente trabaja contra válvulas cerradas
+(dead-heading), la **alarma de presión** se dispara por sí sola. Si *sí* quieres recibir avisos del
+enclavamiento durante la alimentación, activa **«Notificar también el enclavamiento durante la
+alimentación»** (la opción `notifyInterlockDuringFeeding`, que se muestra bajo el evento de
+enclavamiento).
 
 ## 6. Objetos / puntos de datos
 

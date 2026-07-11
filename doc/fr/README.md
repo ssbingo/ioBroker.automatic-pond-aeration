@@ -141,7 +141,7 @@ parties que tu utilises.
     sécurité dead-head reste actif). La séquence cyclique reste gérée par l'adaptateur.
   - **Compatibilité du firmware** – l'adaptateur et le firmware sont appariés par une **version du
     protocole** (le contrat strict), et non par des numéros de version exacts. Cette version de
-    l'adaptateur parle le **protocole 1** et **recommande le firmware v1.6.0** (minimum v1.0.0) ;
+    l'adaptateur parle le **protocole 1** et **recommande le firmware v1.7.10** (minimum v1.0.0) ;
     l'admin l'affiche et renvoie aux releases. À la connexion, la version de l'appareil et un
     indicateur de compatibilité sont publiés sous `info.deviceFirmware` et `info.firmwareCompatible`,
     et toute incompatibilité de protocole est consignée dans le journal. Voir le tableau de
@@ -307,6 +307,15 @@ message :
 
 À chaque front (déclenchement et relâchement), un court texte localisé est envoyé. Si aucun événement
 n'est coché, rien n'est envoyé.
+
+**L'alimentation ne sature pas la notification de verrouillage.** Lorsque le feeder met en pause les
+points d'aération, toutes les vannes se ferment et la vanne d'urgence s'ouvre – c'est normal, la
+notification de verrouillage est donc **supprimée pendant toute la pause d'alimentation**. Un vrai
+problème te parvient malgré tout : si la pompe refoule réellement contre des vannes fermées
+(dead-heading), l'**alarme de pression** se déclenche d'elle-même. Si tu veux *quand même* être
+alerté du verrouillage pendant l'alimentation, active **« Notifier aussi le verrouillage pendant
+l'alimentation »** (l'option `notifyInterlockDuringFeeding`, affichée sous l'événement de
+verrouillage).
 
 ## 6. Objets / points de données
 

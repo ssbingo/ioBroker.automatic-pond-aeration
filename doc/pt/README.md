@@ -137,7 +137,7 @@ que usa.
     continua a valer). A sequência cíclica permanece no adaptador.
   - **Compatibilidade de firmware** – o adaptador e o firmware são correspondidos por uma **versão do
     protocolo** (o contrato rígido), não por números de versão exatos. Esta versão do adaptador fala
-    o **protocolo 1** e **recomenda o firmware v1.6.0** (mínimo v1.0.0); o admin mostra isso e liga
+    o **protocolo 1** e **recomenda o firmware v1.7.10** (mínimo v1.0.0); o admin mostra isso e liga
     para as releases. Ao conectar, a versão do dispositivo e um sinalizador de compatibilidade são
     publicados como `info.deviceFirmware` e `info.firmwareCompatible`, e qualquer incompatibilidade de
     protocolo é escrita no log. Consulte a tabela de compatibilidade no
@@ -293,6 +293,14 @@ Habilite as notificações e escolha uma **instância de messaging** (qualquer a
 
 A cada transição (disparo e liberação) é enviado um texto curto e localizado. Sem nenhum evento
 marcado, nada é enviado.
+
+**A alimentação não inunda a notificação de bloqueio.** Quando o feeder pausa os pontos de aeração,
+todas as válvulas fecham e a válvula de emergência abre – isso é normal, então a notificação de
+bloqueio fica **suprimida durante a pausa da alimentação**. Um problema real ainda chega até você: se
+a bomba realmente trabalhar contra válvulas fechadas (dead-heading), o **alarme de pressão** dispara
+por conta própria. Se você quiser mesmo ser avisado sobre o bloqueio durante a alimentação, habilite
+**“Também notificar o bloqueio durante a alimentação”** (a opção `notifyInterlockDuringFeeding`,
+mostrada sob o evento de bloqueio).
 
 ## 6. Objetos / pontos de dados
 

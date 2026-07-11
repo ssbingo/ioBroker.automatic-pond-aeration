@@ -133,7 +133,7 @@ części, których używasz.
     bezpieczeństwa dead-head nadal obowiązuje). Sekwencja cykliczna pozostaje po stronie adaptera.
   - **Zgodność firmware** – adapter i firmware są dopasowywane za pomocą **wersji protokołu** (twardy
     kontrakt), a nie dokładnych numerów wydań. Ta wersja adaptera mówi **protokołem 1** i **zaleca
-    firmware v1.6.0** (minimum v1.0.0); panel admin pokazuje to i odsyła do wydań. Po połączeniu
+    firmware v1.7.10** (minimum v1.0.0); panel admin pokazuje to i odsyła do wydań. Po połączeniu
     wersja urządzenia i flaga zgodności są publikowane jako `info.deviceFirmware` i
     `info.firmwareCompatible`, a każda niezgodność protokołu jest zapisywana w dzienniku. Zobacz
     tabelę zgodności w [podręczniku](../../docs/manual/pond-aeration-manual.en.pdf) / repozytorium
@@ -290,6 +290,14 @@ lub Pushover), a następnie **zaznacz, które zdarzenia** mają wysyłać komuni
 
 Przy każdym zboczu (zadziałanie i ustąpienie) wysyłany jest krótki, zlokalizowany tekst. Gdy nie
 zaznaczono żadnego zdarzenia, nic nie jest wysyłane.
+
+**Karmienie nie zasypuje powiadomień o blokadzie.** Gdy feeder wstrzymuje punkty napowietrzania,
+wszystkie zawory zamykają się, a zawór awaryjny się otwiera – to normalne, więc powiadomienie o
+blokadzie jest **wstrzymywane na czas pauzy karmienia**. Prawdziwy problem i tak do Ciebie dotrze:
+jeśli pompa naprawdę pracuje przy zamkniętych zaworach (dead-head), **alarm ciśnienia** wyzwoli się
+samodzielnie. Jeśli mimo to chcesz otrzymywać powiadomienia o blokadzie podczas karmienia, włącz
+**„Powiadamiaj o blokadzie także podczas karmienia"** (opcja `notifyInterlockDuringFeeding`,
+wyświetlana pod zdarzeniem blokady).
 
 ## 6. Obiekty / punkty danych
 

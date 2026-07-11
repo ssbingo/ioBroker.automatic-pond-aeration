@@ -133,21 +133,21 @@ you use.
   is reached over its **IP** — via **Ethernet/PoE** or **optional WiFi** (enabled on the device's own
   Settings page; WiFi needs the device's external antenna — see the manual). With **no LAN at the pond**,
   the device can be set up entirely over WiFi via its built-in **setup hotspot** (`pond-aeration-setup`,
-  captive portal) — see the manual.
+  captive portal at `http://192.168.4.1/`) — see the manual.
   - **Autonomous schedule (run without ioBroker)** *(ESP32 only, optional)* – when enabled, the adapter
     also pushes your time schedules to the device; if the connection drops, the ESP32 keeps running
     them on its own using its NTP clock (the dead-head safety interlock still applies). The cyclic
     sequence stays with the adapter.
   - **Firmware compatibility** – the adapter and the firmware are matched by a **protocol version**
     (the hard contract), not by exact release numbers. This adapter version speaks **protocol 1** and
-    **recommends firmware v1.6.0** (minimum v1.0.0); the admin shows this and links to the releases.
+    **recommends firmware v1.7.10** (minimum v1.0.0); the admin shows this and links to the releases.
     On connect, the device's version and a compatibility flag are published as `info.deviceFirmware`
     and `info.firmwareCompatible`, and any protocol mismatch is written to the log. See the
     compatibility table in the [manual](docs/manual/pond-aeration-manual.en.pdf) / firmware repo.
   - **Licensing** *(only if your firmware ships the optional licensing overlay)* – the device runs a
     tier: **free** (monitoring only), **community** (relay control) or **pro** (+ the autonomous
     standalone schedule); safety (failsafe, emergency valve, dead-head interlock, hand buttons) is
-    always active regardless. A new device runs fully (**pro**) for a trial period, then falls back to
+    always active regardless. A new device runs fully (**pro**) for a **30-day trial**, then falls back to
     free until an activation key is entered on the device's `/license` page. The adapter shows the
     status under `info.licenseTier` / `info.licenseTrialDaysLeft` / `info.deviceCode`; if the device is
     **not licensed for control**, monitoring keeps working and control is skipped (see
@@ -276,6 +276,13 @@ Telegram or Pushover), then **tick which events** should send a message:
 - **Pressure alarm** – when the pressure leaves or re-enters its range.
 
 A short, localized text is sent on each edge (raise and clear). With no event ticked, nothing is sent.
+
+**Feeding does not spam the interlock notification.** When the feeder pauses the aeration points, all
+valves close and the emergency valve opens – this is normal, so the interlock notification is
+**suppressed for the duration of the feeding pause**. A real problem still reaches you: if the pump
+actually dead-heads against closed valves the **pressure alarm** fires on its own. If you *do* want to
+be alerted for the interlock during feeding, enable **“Also notify the interlock during feeding”**
+(the `notifyInterlockDuringFeeding` option, shown under the interlock event).
 
 ## 6. Objects / data points
 
@@ -409,6 +416,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.1.16 (2026-07-11)
+* (ssbingo) **Documentation cross-check & refresh across the whole project.** A full audit of every document — the adapter README, the beginner PDF manual (EN/DE), all 10 translated docs, and (in the firmware / licence-tool / flash-page repos) the firmware README, PROTOCOL, INSTALL guides, the licence tool and the browser flash page — corrected stale facts and filled gaps. Highlights on the adapter side: the **recommended firmware is now stated as v1.7.10** everywhere (README body, manual EN/DE and all 10 translated docs previously said v1.1.0 / v1.6.0); the **Notifications section now documents the feeding behaviour** — the emergency valve opening during a feeding pause is not notified, plus the new **“Also notify the interlock during feeding”** (`notifyInterlockDuringFeeding`) opt-in; the **device timezone dropdown** is documented in the manual; the outdated “firmware still being completed” note was removed; and the setup-hotspot captive-portal address (`http://192.168.4.1/`) and the **30-day** trial are spelled out. EN/DE PDF manual rebuilt. No functional change to the adapter
+
 ### 0.1.15 (2026-07-11)
 * (ssbingo) **New option “Also notify the interlock during feeding”** (Notifications tab, default off). Since 0.1.14 the emergency valve opening while the feeder pauses the aeration points is treated as normal and not notified; enable this switch if you *do* want to be alerted for that interlock trip during feeding as well. The pressure-sensor alarm keeps its own notification either way. New config `notifyInterlockDuringFeeding`; admin string localized in 11 languages
 
@@ -437,9 +447,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.1.7 (2026-07-10)
 * (ssbingo) **Admin: the ESP32 pump & emergency-valve relays are now drop-downs.** On both the **General** and **Safety** tabs the ESP32 pump and emergency-valve relay channels are picked from a drop-down — just like the aeration-point channel — that **reserves** the other role’s channel and greys out channels already used by an aeration point, so the two can no longer silently collide. No functional change; reuses existing localized strings
-
-### 0.1.6 (2026-07-10)
-* (ssbingo) **Documentation refresh across the whole project.** The English README, all **10 translated docs** and the **EN/DE PDF manual** were brought fully up to date and made more beginner-friendly: the direct **ESP32 backend** is documented as available (no longer “planned”), the ESP32 **channel picker** (which reserves the pump/emergency relay channels) and the **Safety-tab relay-channel** behaviour are described, and the **licence re-flashing** and **sensor-mirroring** notes are included. The adapter now **recommends firmware v1.2.2** (`lib/firmware-compat.js`; minimum unchanged at v1.0.0). No change to the control engine
 
 ---
 
