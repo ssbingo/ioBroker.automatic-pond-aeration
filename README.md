@@ -130,13 +130,13 @@ you use.
   software), then set the **host/IP** and map the **emergency-valve relay** and **pump relay** (0–7);
   the aeration points use the relay channel set per point. The adapter pushes a safety config and a
   heartbeat so the firmware's on-device failsafe protects the pond even if ioBroker is down. The device
-  is reached over its **IP** — via **Ethernet/PoE** or **optional WiFi** (enabled on the device's own
+  is reached over its **IP** — via **Ethernet/PoE** (Power over Ethernet — data + power on one cable) or **optional WiFi** (enabled on the device's own
   Settings page; WiFi needs the device's external antenna — see the manual). With **no LAN at the pond**,
   the device can be set up entirely over WiFi via its built-in **setup hotspot** (`pond-aeration-setup`,
-  captive portal at `http://192.168.4.1/`) — see the manual.
+  captive portal — the phone's browser opens the config page automatically — at `http://192.168.4.1/`) — see the manual.
   - **Autonomous schedule (run without ioBroker)** *(ESP32 only, optional)* – when enabled, the adapter
     also pushes your time schedules to the device; if the connection drops, the ESP32 keeps running
-    them on its own using its NTP clock (the dead-head safety interlock still applies). The cyclic
+    them on its own using its NTP clock (NTP = internet time sync; the dead-head safety interlock still applies). The cyclic
     sequence stays with the adapter.
   - **Firmware compatibility** – the adapter and the firmware are matched by a **protocol version**
     (the hard contract), not by exact release numbers. This adapter version speaks **protocol 1** and
@@ -198,7 +198,7 @@ buttons friendly names that appear on the device's own web pages instead of `Ch 
   optional **Button name** to the matching digital input (DI 1–8).
 - **Ch 7 = Notventil** (emergency valve) and **Ch 8 = Pumpe** (pump) are **fixed** and cannot be renamed.
 - **Standalone (no adapter):** the same names can be edited **on the device** under *Settings → Namen
-  (Kanäle & Taster)* and are stored on the ESP (NVS); when the adapter is connected it overwrites them
+  (Kanäle & Taster)* and are stored on the ESP (NVS — the device's non-volatile settings memory); when the adapter is connected it overwrites them
   with the names configured here.
 - On **free** (unlicensed) firmware the names are ignored and the pages show the default `Ch`/`DI` labels.
 
@@ -386,12 +386,10 @@ read-only status values updated by the adapter.
 | `winter.active` | boolean | `indicator` | Winter mode is currently forcing aeration on |
 | `winter.frostActive` | boolean | `indicator` | Frost protection is engaged (cold enough) |
 
-**Statistics**
+**Statistics** (per-point runtimes are listed above under *Aeration points*)
 
 | Object | Type | Role | Description |
 |--------|------|------|-------------|
-| `aeration.point.<n>.runtimeTodaySec` | number | `value` | Runtime of point `<n>` today (seconds) |
-| `aeration.point.<n>.runtimeTotalH` | number | `value` | Total runtime of point `<n>` (hours) |
 | `statistics.compressorRuntimeTodayH` | number | `value` | Compressor runtime today (hours) |
 | `statistics.switchCyclesToday` | number | `value` | Valve switch cycles today |
 
@@ -416,6 +414,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.1.17 (2026-07-11)
+* (ssbingo) **Documentation readability polish.** Follow-up to the 0.1.16 cross-check: the on-device web-UI page list and the licensing tiers in the PDF manual are now **bulleted lists** instead of dense paragraphs; the **acronyms PoE / NTP / NVS** and *captive portal* are explained on first use in the README; a duplicated per-point runtime row was removed from the README's *Statistics* table; and an EN↔DE data-point table row order was aligned. EN/DE PDF manual rebuilt. No functional change
+
 ### 0.1.16 (2026-07-11)
 * (ssbingo) **Documentation cross-check & refresh across the whole project.** A full audit of every document — the adapter README, the beginner PDF manual (EN/DE), all 10 translated docs, and (in the firmware / licence-tool / flash-page repos) the firmware README, PROTOCOL, INSTALL guides, the licence tool and the browser flash page — corrected stale facts and filled gaps. Highlights on the adapter side: the **recommended firmware is now stated as v1.7.10** everywhere (README body, manual EN/DE and all 10 translated docs previously said v1.1.0 / v1.6.0); the **Notifications section now documents the feeding behaviour** — the emergency valve opening during a feeding pause is not notified, plus the new **“Also notify the interlock during feeding”** (`notifyInterlockDuringFeeding`) opt-in; the **device timezone dropdown** is documented in the manual; the outdated “firmware still being completed” note was removed; and the setup-hotspot captive-portal address (`http://192.168.4.1/`) and the **30-day** trial are spelled out. EN/DE PDF manual rebuilt. No functional change to the adapter
 
@@ -444,9 +445,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.1.8 (2026-07-10)
 * (ssbingo) **Fix: the pump is now actually driven (both backends).** The adapter never had an ON-path for the pump — it only ever switched it *off* in an emergency — so on the ESP32 backend the pump relay stayed off forever. Now, when the pump is **controllable**, it **follows the aeration demand**: it runs while at least `minOpenValves` valves are open and switches off when the pond is idle or on a dead-head trip, honouring the anti short-cycle min on/off times. The interlock also now knows the ESP32 pump state is **monitored** (the relay is polled) instead of assuming the pump might always be running — this stops the emergency valve being held open unnecessarily. New unit-tested `pumpShouldRun` helper; pump-controllable help text clarified
-
-### 0.1.7 (2026-07-10)
-* (ssbingo) **Admin: the ESP32 pump & emergency-valve relays are now drop-downs.** On both the **General** and **Safety** tabs the ESP32 pump and emergency-valve relay channels are picked from a drop-down — just like the aeration-point channel — that **reserves** the other role’s channel and greys out channels already used by an aeration point, so the two can no longer silently collide. No functional change; reuses existing localized strings
 
 ---
 

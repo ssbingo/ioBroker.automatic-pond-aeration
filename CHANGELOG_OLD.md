@@ -27,6 +27,9 @@
 ### 0.1.6 (2026-07-10)
 * (ssbingo) **Documentation refresh across the whole project.** The English README, all **10 translated docs** and the **EN/DE PDF manual** were brought fully up to date and made more beginner-friendly: the direct **ESP32 backend** is documented as available (no longer “planned”), the ESP32 **channel picker** (which reserves the pump/emergency relay channels) and the **Safety-tab relay-channel** behaviour are described, and the **licence re-flashing** and **sensor-mirroring** notes are included. The adapter now **recommends firmware v1.2.2** (`lib/firmware-compat.js`; minimum unchanged at v1.0.0). No change to the control engine
 
+### 0.1.7 (2026-07-10)
+* (ssbingo) **Admin: the ESP32 pump & emergency-valve relays are now drop-downs.** On both the **General** and **Safety** tabs the ESP32 pump and emergency-valve relay channels are picked from a drop-down — just like the aeration-point channel — that **reserves** the other role’s channel and greys out channels already used by an aeration point, so the two can no longer silently collide. No functional change; reuses existing localized strings
+
 ### 0.0.20 (2026-07-09)
 * (ssbingo) **Firmware compatibility, made visible.** The adapter now declares, in one place (`lib/firmware-compat.js`), the ESP32 firmware it expects — the **protocol version** is the hard contract, plus a **recommended** (v1.1.0) and **minimum** (v1.0.0) firmware version. The ESP32 config tab shows a note with the recommended version and a link to the firmware releases. On connect the adapter reads the device's `GET /api/info`, publishes the reported version and a compatibility flag as **`info.deviceFirmware`** / **`info.firmwareCompatible`**, and logs an error on a protocol mismatch or a warning on outdated firmware. Pure/unit-tested `evaluateFirmware`; the manual and firmware repo gained a compatibility table. 5 new admin strings in 11 languages
 

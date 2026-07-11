@@ -484,8 +484,11 @@ With the board flashed and wired, the adapter can drive it directly — no relay
 ]
 
 #tipbox("Licensing & activation (optional)")[
-  If your firmware ships the optional *licensing overlay*, the device runs one of three tiers: *free*
-  (monitoring only), *community* (relay control) or *pro* (+ the autonomous standalone schedule).
+  If your firmware ships the optional *licensing overlay*, the device runs one of three tiers:
+  - *free* — monitoring only.
+  - *community* — + relay control.
+  - *pro* — + the autonomous standalone schedule.
+
   Safety always runs regardless of tier — failsafe, emergency valve, dead-head interlock and the hand
   buttons are never locked. A brand-new device runs fully (*pro*) for a *30-day trial*, then falls back
   to free until you enter an activation key on the device's `/license` page (which shows the *device
@@ -518,20 +521,23 @@ With the board flashed and wired, the adapter can drive it directly — no relay
 ]
 
 #tipbox("On-device web UI (port 80)")[
-  Open the board's IP in a browser — the firmware serves seven self-contained pages (no cloud, no app):
-  *Home* (watch the relays / sensors and toggle channels on site), *Schedule* (view / edit the
-  autonomous schedule on the device), *Settings* (DHCP or static IP / DNS / hostname, the *NTP server*
-  — default `de.pool.ntp.org` — and the *timezone* chosen from a dropdown, e.g. `Europe/Berlin`, so the
-  device's own clock and schedules are correct; the WS2812 LED / buzzer and the licensed channel/button *names*),
-  *Licence* (read the device code and enter an activation key), *Update* (an *over-the-air* firmware
-  update: automatic version check and a *one-click online update* straight to the device — activation
-  and settings are kept —, or a file upload, plus a *Restart* button), *Info* (time, IP, MAC, hostname,
-  version, memory and uptime) and *Log* (a live diagnostic log — boot, Ethernet, licence, mode and OTA
-  update with the exact failure reason — for analysing problems over the network). Time is kept by NTP and backed by the on-board *RTC*, so the clock survives a power
-  loss and NTP outages. The status LED shows green = normal, orange = no link, blue = a button
-  override is active, red-blinking = failsafe; the buzzer beeps once when the failsafe engages. A
-  step-by-step beginner install & activation guide (English + German) is the
-  #link("https://ssbingo.github.io/pond-aeration-flash/")[flash page] itself.
+  Open the board's IP in a browser — the firmware serves *seven* self-contained pages (no cloud, no app):
+  - *Home* — watch the relays / sensors and toggle channels on site.
+  - *Schedule* — view / edit the autonomous schedule on the device.
+  - *Settings* — DHCP or static IP / DNS / hostname; the *NTP server* (default `de.pool.ntp.org`) and
+    the *timezone* from a dropdown (e.g. `Europe/Berlin`) so the device's own clock and schedules are
+    correct; the WS2812 LED / buzzer; WiFi and the setup hotspot; the licensed channel/button *names*.
+  - *Licence* — read the device code and enter an activation key.
+  - *Update* — an *over-the-air* firmware update: automatic version check and a *one-click online
+    update* straight to the device (activation and settings are kept), or a file upload, plus a *Restart* button.
+  - *Info* — time, IP, MAC, hostname, version, memory and uptime.
+  - *Log* — a live diagnostic log (boot, Ethernet, licence, mode and the OTA update with the exact
+    failure reason) for analysing problems over the network.
+
+  Time is kept by NTP and backed by the on-board *RTC*, so the clock survives a power loss and NTP
+  outages. The status LED shows green = normal, orange = no link, blue = a button override is active,
+  red-blinking = failsafe; the buzzer beeps once when the failsafe engages. A step-by-step beginner
+  install & activation guide is the #link("https://ssbingo.github.io/pond-aeration-flash/")[flash page] itself.
 ]
 
 #tipbox("WiFi (optional)")[

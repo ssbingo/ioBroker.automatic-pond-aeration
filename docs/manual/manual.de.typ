@@ -350,8 +350,8 @@ Statuswerte.
   [`control.enabled` *(w)*], [Hauptfreigabe],
   [`control.mode` *(w)*], [`auto` / `manual` / `off`],
   [`aeration.point.<n>.valveState`], [Ventil ist offen],
-  [`aeration.point.<n>.buttonOn`], [Übersteuerungs-Taster aktiv (nur mit konfiguriertem Taster)],
   [`aeration.point.<n>.active`], [Punkt belüftet gerade],
+  [`aeration.point.<n>.buttonOn`], [Übersteuerungs-Taster aktiv (nur mit konfiguriertem Taster)],
   [`aeration.point.<n>.runtimeTodaySec` / `.runtimeTotalH`], [Laufzeit heute / gesamt],
   [`safety.interlockActive`], [Sicherheitsverriegelung gerade aktiv],
   [`safety.emergencyValve`], [Notventil ist offen],
@@ -528,7 +528,10 @@ dazwischen.
 
 #tipbox("Lizenzierung & Freischaltung (optional)")[
   Wenn Ihre Firmware das optionale *Lizenz-Overlay* enthält, läuft das Gerät in einer von drei Stufen:
-  *free* (nur Überwachung), *community* (Relaissteuerung) oder *pro* (+ autonomer Standalone-Zeitplan).
+  - *free* — nur Überwachung.
+  - *community* — + Relaissteuerung.
+  - *pro* — + autonomer Standalone-Zeitplan.
+
   Die Sicherheit läuft stufenunabhängig immer — Ausfallsicherung, Notventil, Dead-Head-Verriegelung und
   die Hand-Taster werden nie gesperrt. Ein neues Gerät läuft *30 Tage* voll (*pro*) und fällt danach auf
   free zurück, bis Sie auf der `/license`-Seite des Geräts einen Freischaltcode eingeben (die Seite zeigt
@@ -562,21 +565,26 @@ dazwischen.
 ]
 
 #tipbox("Geräte-Weboberfläche (Port 80)")[
-  Öffnen Sie die IP des Boards im Browser — die Firmware liefert sieben eigenständige Seiten (ohne
-  Cloud, ohne App): *Home* (Relais/Sensoren ansehen und Kanäle vor Ort schalten), *Schedule*
-  (autonomen Zeitplan auf dem Gerät ansehen/bearbeiten), *Settings* (DHCP oder statische IP / DNS /
-  Hostname, der *NTP-Server* — Standard `de.pool.ntp.org` — und die *Zeitzone* aus einem Dropdown, z. B.
-  `Europe/Berlin`, damit die geräteeigene Uhr und die Zeitpläne stimmen; WS2812-LED / Buzzer sowie die
-  lizenzierten Kanal-/Taster-*Namen*), *Lizenz* (Gerätecode ablesen und Freischaltcode eingeben), *Update*
-  (Firmware-Aktualisierung *über das Netz*: automatischer Versionsabgleich und *Ein-Klick-Online-Update*
-  direkt aufs Gerät — Freischaltung und Einstellungen bleiben erhalten —, alternativ Datei-Upload, plus
-  ein *Neustart*-Knopf), *Info* (Uhrzeit, IP, MAC, Hostname, Version, Speicher und Laufzeit) und *Log*
-  (ein Live-Diagnoseprotokoll — Boot, Ethernet, Lizenz, Betriebsmodus und OTA-Update mit dem genauen
-  Fehlergrund — zur Analyse von Problemen über das Netz). Die Zeit hält NTP, gepuffert von der eingebauten *RTC* —
-  so übersteht die Uhr Stromausfall und NTP-Ausfälle. Die Status-LED zeigt grün = normal, orange =
-  kein Link, blau = ein Taster-Override ist aktiv, rot-blinkend = Failsafe; der Buzzer piept einmal,
-  wenn die Ausfallsicherung auslöst. Die anfängertaugliche Installations- & Freischaltungsanleitung
-  (Deutsch + Englisch) ist die #link("https://ssbingo.github.io/pond-aeration-flash/")[Flash-Seite] selbst.
+  Öffnen Sie die IP des Boards im Browser — die Firmware liefert *sieben* eigenständige Seiten (ohne
+  Cloud, ohne App):
+  - *Home* — Relais/Sensoren ansehen und Kanäle vor Ort schalten.
+  - *Schedule* — den autonomen Zeitplan auf dem Gerät ansehen/bearbeiten.
+  - *Settings* — DHCP oder statische IP / DNS / Hostname; der *NTP-Server* (Standard `de.pool.ntp.org`)
+    und die *Zeitzone* aus einem Dropdown (z. B. `Europe/Berlin`), damit die geräteeigene Uhr und die
+    Zeitpläne stimmen; WS2812-LED / Buzzer; WLAN und der Setup-Hotspot; die lizenzierten Kanal-/Taster-*Namen*.
+  - *Lizenz* — Gerätecode ablesen und Freischaltcode eingeben.
+  - *Update* — Firmware-Aktualisierung *über das Netz*: automatischer Versionsabgleich und
+    *Ein-Klick-Online-Update* direkt aufs Gerät (Freischaltung und Einstellungen bleiben erhalten),
+    alternativ Datei-Upload, plus ein *Neustart*-Knopf.
+  - *Info* — Uhrzeit, IP, MAC, Hostname, Version, Speicher und Laufzeit.
+  - *Log* — ein Live-Diagnoseprotokoll (Boot, Ethernet, Lizenz, Betriebsmodus und OTA-Update mit dem
+    genauen Fehlergrund) zur Analyse von Problemen über das Netz.
+
+  Die Zeit hält NTP, gepuffert von der eingebauten *RTC* — so übersteht die Uhr Stromausfall und
+  NTP-Ausfälle. Die Status-LED zeigt grün = normal, orange = kein Link, blau = ein Taster-Override ist
+  aktiv, rot-blinkend = Failsafe; der Buzzer piept einmal, wenn die Ausfallsicherung auslöst. Die
+  anfängertaugliche Installations- & Freischaltungsanleitung ist die
+  #link("https://ssbingo.github.io/pond-aeration-flash/")[Flash-Seite] selbst.
 ]
 
 #tipbox("WLAN (optional)")[
