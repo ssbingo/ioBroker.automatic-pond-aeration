@@ -409,6 +409,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.1.15 (2026-07-11)
+* (ssbingo) **New option “Also notify the interlock during feeding”** (Notifications tab, default off). Since 0.1.14 the emergency valve opening while the feeder pauses the aeration points is treated as normal and not notified; enable this switch if you *do* want to be alerted for that interlock trip during feeding as well. The pressure-sensor alarm keeps its own notification either way. New config `notifyInterlockDuringFeeding`; admin string localized in 11 languages
+
 ### 0.1.14 (2026-07-11)
 * (ssbingo) **No more alarm messages for the emergency valve opening during feeding.** When the feeder pauses the aeration points (all valves closed for feeding), the dead-head interlock opening the emergency valve is normal and expected — it **no longer sends a notification**. A genuine problem still reaches you: the **pressure-sensor alarm keeps its own notification**, so if the pump actually dead-heads against closed valves you are warned. An interlock trip that **persists after feeding ends** is still escalated as usual, and the "interlock cleared" message is only sent for trips that were actually announced
 
@@ -437,9 +440,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.1.6 (2026-07-10)
 * (ssbingo) **Documentation refresh across the whole project.** The English README, all **10 translated docs** and the **EN/DE PDF manual** were brought fully up to date and made more beginner-friendly: the direct **ESP32 backend** is documented as available (no longer “planned”), the ESP32 **channel picker** (which reserves the pump/emergency relay channels) and the **Safety-tab relay-channel** behaviour are described, and the **licence re-flashing** and **sensor-mirroring** notes are included. The adapter now **recommends firmware v1.2.2** (`lib/firmware-compat.js`; minimum unchanged at v1.0.0). No change to the control engine
-
-### 0.1.5 (2026-07-10)
-* (ssbingo) **Admin consistency for the ESP32 backend.** On the **Safety** tab the pump and emergency valve are now shown as their **ESP32 relay channels** (the very same ones set under *General → Hardware backend*) instead of separate ioBroker states — the two tabs can no longer contradict each other. The **aeration-point channel picker** is now a dropdown that **reserves** the pump/emergency channels and greys out channels already used by other points; when no channel is left, further points are added as ioBroker states. 6 new admin strings localized in 11 languages
 
 ---
 

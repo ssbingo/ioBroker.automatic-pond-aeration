@@ -280,7 +280,8 @@ A short, localized text is sent on each edge. With no event ticked, nothing is s
   normal and expected, so the *interlock notification is suppressed for the duration of the feeding
   pause*. A genuine problem still reaches you: if the pump really dead-heads against closed valves the
   *pressure alarm* fires and is reported on its own. An interlock trip that *persists after feeding
-  ends* is escalated as usual.
+  ends* is escalated as usual. If you nevertheless want to be alerted for the interlock during
+  feeding, enable *Also notify the interlock during feeding* on the Notifications tab.
 ]
 
 = Using the adapter day to day

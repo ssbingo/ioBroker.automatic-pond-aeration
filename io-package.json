@@ -1,20 +1,20 @@
 {
     "common": {
         "name": "automatic-pond-aeration",
-        "version": "0.1.14",
+        "version": "0.1.15",
         "news": {
-            "0.1.14": {
-                "en": "The emergency valve opening while the feeder pauses the aeration points (all valves closed for feeding) is now treated as a normal event and no longer sends a notification. A real problem is still reported: the pressure-sensor alarm keeps its own notification.",
-                "de": "Das Öffnen des Notventils während der Fütterungspause (alle Ventile für die Fütterung geschlossen) gilt jetzt als normaler Vorgang und löst keine Benachrichtigung mehr aus. Ein echtes Problem wird weiterhin gemeldet: Der Drucksensor-Alarm behält seine eigene Benachrichtigung.",
-                "ru": "Аварийное открытие клапана, когда кормушка приостанавливает точки аэрации (все клапаны закрыты для кормления), теперь рассматривается как обычное событие и больше не отправляет уведомление. По-прежнему сообщается о реальной проблеме: сигнализация датчика давления сохраняет собственное уведомление.",
-                "pt": "A abertura da válvula de emergência enquanto o alimentador pausa os pontos de aeração (todas as válvulas fechadas para alimentação) agora é tratada como um evento normal e não envia mais notificação. Um problema real ainda é relatado: o alarme do sensor de pressão mantém sua própria notificação.",
-                "nl": "Het openen van de noodklep terwijl de voerbak de beluchtingspunten pauzeert (alle kleppen gesloten voor het voeren) wordt nu als een normale gebeurtenis behandeld en stuurt geen melding meer. Er wordt nog steeds een echt probleem gemeld: het druksensoralarm behoudt zijn eigen melding.",
-                "fr": "L'ouverture de la vanne d'urgence pendant que le doseur met en pause les points d'aération (toutes les vannes fermées pour l'alimentation) est désormais traitée comme un événement normal et n'envoie plus de notification. Un vrai problème est toujours signalé : l'alarme du capteur de pression conserve sa propre notification.",
-                "it": "L'apertura della valvola di emergenza mentre l'alimentatore mette in pausa i punti di aerazione (tutte le valvole chiuse per l'alimentazione) viene ora trattato come un evento normale e non invia più una notifica. Viene comunque segnalato un vero problema: l'allarme del sensore di pressione mantiene la propria notifica.",
-                "es": "La apertura de la válvula de emergencia mientras el comedero pausa los puntos de aireación (todas las válvulas cerradas para la alimentación) ahora se trata como un evento normal y ya no envía una notificación. Todavía se informa de un problema real: la alarma del sensor de presión mantiene su propia notificación.",
-                "pl": "Otwarcie zaworu awaryjnego w czasie, gdy podajnik zatrzymuje punkty napowietrzania (wszystkie zawory zamknięte na czas karmienia) jest teraz traktowane jako normalne zdarzenie i nie powoduje już wysyłania powiadomienia. Nadal zgłaszany jest prawdziwy problem: alarm czujnika ciśnienia generuje własne powiadomienie.",
-                "uk": "Аварійне відкриття клапана, коли живильник призупиняє точки аерації (усі клапани закриті для годування), тепер розглядається як звичайна подія і більше не надсилає сповіщення. Про справжню проблему все ще повідомляється: сигналізація датчика тиску зберігає власне сповіщення.",
-                "zh-cn": "进料器暂停曝气点（所有阀门关闭进料）时紧急阀门打开现在被视为正常事件，不再发送通知。仍然报告了一个真正的问题：压力传感器警报保留自己的通知。"
+            "0.1.15": {
+                "en": "New option \"Also notify the interlock during feeding\" (Notifications tab, default off): since 0.1.14 the emergency valve opening while the feeder pauses the points is not notified; enable this to be alerted for it during feeding too. The pressure alarm keeps its own notification either way.",
+                "de": "Neue Option \"Verriegelung während der Fütterung ebenfalls melden\" (Reiter Benachrichtigungen, Standard aus): Seit 0.1.14 wird das Öffnen des Notventils während der Fütterungspause nicht gemeldet; aktivieren Sie dies, um während der Fütterung trotzdem benachrichtigt zu werden. Der Druckalarm behält seine eigene Benachrichtigung.",
+                "ru": "Новая опция «Также уведомлять о блокировке во время кормления» (вкладка «Уведомления», по умолчанию отключена): с версии 0.1.14 об аварийном открытии клапана во время паузы кормушки не уведомляется; включите это, чтобы получать оповещения об этом во время кормления. Сигнализация давления в любом случае сохраняет собственное уведомление.",
+                "pt": "Nova opção “Notificar também o intertravamento durante a alimentação” (aba Notificações, padrão desativado): desde 0.1.14 a abertura da válvula de emergência enquanto o alimentador pausa os pontos não é notificado; permita que ele seja alertado sobre isso também durante a alimentação. O alarme de pressão mantém sua própria notificação de qualquer maneira.",
+                "nl": "Nieuwe optie \"Ook de vergrendeling waarschuwen tijdens het voeren\" (tabblad Meldingen, standaard uitgeschakeld): sinds 0.1.14 wordt het openen van de noodklep terwijl de voerautomaat de wissels pauzeert, niet gemeld; zorg ervoor dat dit ook tijdens het voeren wordt gewaarschuwd. Het drukalarm behoudt hoe dan ook zijn eigen melding.",
+                "fr": "Nouvelle option « Notifier également le verrouillage pendant l'alimentation » (onglet Notifications, désactivé par défaut) : depuis la version 0.1.14, l'ouverture de la vanne d'urgence pendant que le doseur met les points en pause n'est pas notifiée ; permettez-lui d'être alerté également pendant l'alimentation. L'alarme de pression conserve sa propre notification dans tous les cas.",
+                "it": "Nuova opzione \"Notifica anche l'interblocco durante l'alimentazione\" (scheda Notifiche, disattivata per default): dalla 0.1.14 l'apertura della valvola di emergenza mentre l'alimentatore è in pausa sui punti non viene notificata; consentirgli di essere avvisato anche durante l'alimentazione. L'allarme di pressione mantiene la propria notifica in ogni caso.",
+                "es": "Nueva opción \"Notificar también el enclavamiento durante la alimentación\" (pestaña Notificaciones, por defecto desactivada): desde 0.1.14 no se notifica la apertura de la válvula de emergencia mientras el alimentador pausa los puntos; Permita que esto también reciba alertas durante la alimentación. La alarma de presión mantiene su propia notificación de cualquier manera.",
+                "pl": "Nowa opcja „Powiadamiaj także blokadę podczas podawania” (zakładka Powiadomienia, domyślnie wyłączona): od wersji 0.1.14 otwarcie zaworu awaryjnego podczas postoju podajnika nie jest sygnalizowane; włączyć ostrzeżenie o tym również podczas karmienia. Tak czy inaczej alarm ciśnienia ma własne powiadomienie.",
+                "uk": "Нова опція «Також сповіщати про блокування під час подачі» (вкладка «Сповіщення», за замовчуванням вимкнено): з 0.1.14 аварійне відкриття клапана, коли живильник призупиняє точки, не повідомляється; увімкніть це, щоб отримувати сповіщення про це також під час годування. Сигналізація тиску зберігає власне сповіщення в будь-якому випадку.",
+                "zh-cn": "新选项“在喂料期间也通知联锁”（“通知”选项卡，默认关闭）：自 0.1.14 起，在喂料器暂停点时不会通知紧急阀门打开；使其在喂食期间也能收到警报。无论哪种方式，压力警报都会保留自己的通知。"
             }
         },
         "titleLang": {
@@ -151,6 +151,7 @@
             "oxygen",
             "pressure"
         ],
+        "notifyInterlockDuringFeeding": false,
         "points": [],
         "groups": [],
         "schedules": []

@@ -185,6 +185,8 @@ declare global {
 			messagingInstance: string;
 			/** Which event categories send a message ("interlock" | "oxygen" | "pressure"). */
 			notifyEvents: string[];
+			/** Also notify the dead-head interlock trip that happens during a feeding pause (default off). */
+			notifyInterlockDuringFeeding: boolean;
 
 			/** The configured aeration points (max 8). */
 			points: AerationPointConfig[];

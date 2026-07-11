@@ -309,7 +309,9 @@ nichts gesendet.
   ist normal und beabsichtigt. Deshalb wird die *Verriegelungs-Benachrichtigung während der
   Fütterungspause unterdrückt*. Ein echtes Problem erreicht Sie trotzdem: Läuft die Pumpe wirklich
   gegen geschlossene Ventile an, schlägt der *Druckalarm* an und wird eigenständig gemeldet. Eine
-  Verriegelung, die *nach dem Ende der Fütterung bestehen bleibt*, wird wie gewohnt eskaliert.
+  Verriegelung, die *nach dem Ende der Fütterung bestehen bleibt*, wird wie gewohnt eskaliert. Wenn Sie
+  trotzdem während der Fütterung über die Verriegelung informiert werden möchten, aktivieren Sie
+  *Verriegelung während der Fütterung ebenfalls melden* im Reiter Benachrichtigungen.
 ]
 
 = Den Adapter im Alltag nutzen

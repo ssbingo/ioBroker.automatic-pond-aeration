@@ -118,6 +118,28 @@ function NotifyTab(props) {
 					{selectedEvents.length === 0 ? (
 						<Alert severity="info" sx={{ mt: 1 }}>{I18n.t('No event selected — nothing will be sent.')}</Alert>
 					) : null}
+					{selectedEvents.includes('interlock') ? (
+						<FormControlLabel
+							sx={{ mt: 1, alignItems: 'flex-start' }}
+							control={
+								<Switch
+									checked={!!native.notifyInterlockDuringFeeding}
+									onChange={e => set('notifyInterlockDuringFeeding', e.target.checked)}
+								/>
+							}
+							label={
+								<span>
+									{I18n.t('Also notify the interlock during feeding')}
+									<Typography component="span" variant="caption" color="textSecondary" sx={{ ml: 1 }}>
+										—{' '}
+										{I18n.t(
+											'By default the emergency valve opening while the feeder pauses the points is treated as normal and not notified (a pressure alarm is still reported on its own). Enable this to also be alerted for that interlock trip during feeding.',
+										)}
+									</Typography>
+								</span>
+							}
+						/>
+					) : null}
 				</Box>
 			) : null}
 		</Box>

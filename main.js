@@ -515,11 +515,12 @@ class AutomaticPondAeration extends utils.Adapter {
 			// alarm on it — a genuine problem (pump still dead-heading against closed valves) shows up
 			// as a pressure-sensor alarm, which is reported by its own notification. So the only warning
 			// during feeding comes from the pressure alarm; otherwise it is a silent, normal event.
-			if (this.feederPauseActive) {
+			if (this.feederPauseActive && !this.cfg.notifyInterlockDuringFeeding) {
 				this.interlockNotified = false;
 				this.log.info(
 					`Safety interlock engaged during feeding (${source}): emergency valve open, pump off — ` +
-						'normal for a feeding pause (no alert; a pressure alarm would be reported separately).',
+						'normal for a feeding pause (no alert; a pressure alarm would be reported separately). ' +
+						'Enable "notify interlock during feeding" to be alerted anyway.',
 				);
 			} else {
 				this.interlockNotified = true;
