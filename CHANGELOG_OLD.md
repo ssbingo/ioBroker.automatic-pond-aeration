@@ -18,6 +18,9 @@
 ### 0.1.3 (2026-07-09)
 * (ssbingo) **ESP32 firmware install & licence UX.** The reference firmware is now flashed **in the browser** from a new [flash page](https://ssbingo.github.io/pond-aeration-flash/) (ESP Web Tools) — no PlatformIO, no command line. The admin's **Test connection** now also shows the device's **licence status**: the active tier, trial days remaining, the **device code** (to give when unlocking) and a clear warning when the device is **not licensed for control** (monitoring keeps working). README, all 10 translated docs and the PDF manual (EN/DE) were rewritten to the browser-flash flow; 5 admin strings localized in 11 languages
 
+### 0.1.4 (2026-07-09)
+* (ssbingo) The adapter now **mirrors the configured sensor data points** (oxygen, water/air temperature, pressure) to the ESP32's **own web UI** via `POST /api/sensors`, so they appear on the device's Home page — even for sensors that are only ioBroker states and not wired to the ESP. A physically wired ESP sensor keeps priority; pushed values are tagged **(ioBroker)** and drop out after a few minutes. Needs firmware ≥ 1.1.7
+
 ### 0.0.20 (2026-07-09)
 * (ssbingo) **Firmware compatibility, made visible.** The adapter now declares, in one place (`lib/firmware-compat.js`), the ESP32 firmware it expects — the **protocol version** is the hard contract, plus a **recommended** (v1.1.0) and **minimum** (v1.0.0) firmware version. The ESP32 config tab shows a note with the recommended version and a link to the firmware releases. On connect the adapter reads the device's `GET /api/info`, publishes the reported version and a compatibility flag as **`info.deviceFirmware`** / **`info.firmwareCompatible`**, and logs an error on a protocol mismatch or a warning on outdated firmware. Pure/unit-tested `evaluateFirmware`; the manual and firmware repo gained a compatibility table. 5 new admin strings in 11 languages
 

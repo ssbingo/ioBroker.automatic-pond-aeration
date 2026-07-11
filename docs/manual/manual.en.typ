@@ -275,6 +275,14 @@ or Pushover), then *tick which events* should send a message:
 
 A short, localized text is sent on each edge. With no event ticked, nothing is sent.
 
+#tipbox("Feeding does not spam the interlock notification")[
+  When the feeder pauses the aeration points, all valves close and the emergency valve opens — that is
+  normal and expected, so the *interlock notification is suppressed for the duration of the feeding
+  pause*. A genuine problem still reaches you: if the pump really dead-heads against closed valves the
+  *pressure alarm* fires and is reported on its own. An interlock trip that *persists after feeding
+  ends* is escalated as usual.
+]
+
 = Using the adapter day to day
 
 The adapter exposes *data points* (states) you can read and command — from the ioBroker admin, from

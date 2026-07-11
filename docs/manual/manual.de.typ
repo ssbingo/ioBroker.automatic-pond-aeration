@@ -304,6 +304,14 @@ Nachricht senden sollen:
 Bei jeder Flanke wird ein kurzer, lokalisierter Text gesendet. Ist kein Ereignis angehakt, wird
 nichts gesendet.
 
+#tipbox("Die Fütterung spammt die Verriegelungs-Benachrichtigung nicht zu")[
+  Wenn der Feeder die Belüftungspunkte pausiert, schließen alle Ventile und das Notventil öffnet — das
+  ist normal und beabsichtigt. Deshalb wird die *Verriegelungs-Benachrichtigung während der
+  Fütterungspause unterdrückt*. Ein echtes Problem erreicht Sie trotzdem: Läuft die Pumpe wirklich
+  gegen geschlossene Ventile an, schlägt der *Druckalarm* an und wird eigenständig gemeldet. Eine
+  Verriegelung, die *nach dem Ende der Fütterung bestehen bleibt*, wird wie gewohnt eskaliert.
+]
+
 = Den Adapter im Alltag nutzen
 
 Der Adapter stellt *Datenpunkte* (States) bereit, die Sie lesen und ansteuern können — aus dem

@@ -409,6 +409,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.1.14 (2026-07-11)
+* (ssbingo) **No more alarm messages for the emergency valve opening during feeding.** When the feeder pauses the aeration points (all valves closed for feeding), the dead-head interlock opening the emergency valve is normal and expected — it **no longer sends a notification**. A genuine problem still reaches you: the **pressure-sensor alarm keeps its own notification**, so if the pump actually dead-heads against closed valves you are warned. An interlock trip that **persists after feeding ends** is still escalated as usual, and the "interlock cleared" message is only sent for trips that were actually announced
+
 ### 0.1.13 (2026-07-10)
 * (ssbingo) **Fix: the ESP32 device no longer flaps into failsafe every ~15 s.** The adapter used to send the on-device safety **heartbeat only together with the status poll** (every `pollIntervalSec`, default 30 s), while the firmware trips its failsafe after 15 s without a heartbeat — so at any normal poll interval the device dropped into failsafe (**emergency valve open, pump off**) roughly every 15 s and recovered on the next poll. The heartbeat now runs on its **own fast 5 s timer, independent of the status poll**, and the failsafe timeout is a fixed 15 s (three heartbeats). `pollIntervalSec` now only controls how often the full status is refreshed and no longer affects failsafe stability
 * (ssbingo) **Recommend firmware v1.7.10** — the **one-click online update now works**. The real cause was an HTTP route collision in the firmware (the file-upload route silently shadowed the online-update route and just rebooted the device); firmware 1.7.9 fixes it. Firmware 1.7.x also adds a **timezone dropdown** in the device settings (pick e.g. `Europe/Berlin` instead of a POSIX string). Recommended-firmware note `lib/firmware-compat.js` 1.7.1 → 1.7.10
@@ -437,9 +440,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.1.5 (2026-07-10)
 * (ssbingo) **Admin consistency for the ESP32 backend.** On the **Safety** tab the pump and emergency valve are now shown as their **ESP32 relay channels** (the very same ones set under *General → Hardware backend*) instead of separate ioBroker states — the two tabs can no longer contradict each other. The **aeration-point channel picker** is now a dropdown that **reserves** the pump/emergency channels and greys out channels already used by other points; when no channel is left, further points are added as ioBroker states. 6 new admin strings localized in 11 languages
-
-### 0.1.4 (2026-07-09)
-* (ssbingo) The adapter now **mirrors the configured sensor data points** (oxygen, water/air temperature, pressure) to the ESP32's **own web UI** via `POST /api/sensors`, so they appear on the device's Home page — even for sensors that are only ioBroker states and not wired to the ESP. A physically wired ESP sensor keeps priority; pushed values are tagged **(ioBroker)** and drop out after a few minutes. Needs firmware ≥ 1.1.7
 
 ---
 

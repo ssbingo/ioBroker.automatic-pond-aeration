@@ -71,6 +71,9 @@ class AutomaticPondAeration extends utils.Adapter {
 		// Safety watchdog timer and last interlock state (for edge-triggered logging).
 		this.watchdog = null;
 		this.interlockWasActive = false;
+		// Whether the current interlock trip was actually notified (so we only send the matching
+		// "cleared" message for trips we announced — a feeding-caused trip is silent, see applySafety).
+		this.interlockNotified = false;
 		// Control engine runtime state.
 		this.controlTimer = null;
 		this.runtimeEnabled = true;
@@ -507,13 +510,39 @@ class AutomaticPondAeration extends utils.Adapter {
 		// Edge-triggered logging so a persistent trip is not logged on every tick.
 		const interlockChanged = decision.interlockActive !== this.interlockWasActive;
 		if (interlockChanged && decision.interlockActive) {
-			this.log.error(`Safety interlock TRIPPED (${source}): ${decision.tripReason}`);
-			this.notify('interlock', 'notifyInterlockTripped', { reason: decision.tripReason || '' });
+			// A dead-head interlock trip WHILE the feeder is pausing the aeration points is normal and
+			// expected: feeding forces all points off, so the emergency valve opens by design. Don't
+			// alarm on it — a genuine problem (pump still dead-heading against closed valves) shows up
+			// as a pressure-sensor alarm, which is reported by its own notification. So the only warning
+			// during feeding comes from the pressure alarm; otherwise it is a silent, normal event.
+			if (this.feederPauseActive) {
+				this.interlockNotified = false;
+				this.log.info(
+					`Safety interlock engaged during feeding (${source}): emergency valve open, pump off — ` +
+						'normal for a feeding pause (no alert; a pressure alarm would be reported separately).',
+				);
+			} else {
+				this.interlockNotified = true;
+				this.log.error(`Safety interlock TRIPPED (${source}): ${decision.tripReason}`);
+				this.notify('interlock', 'notifyInterlockTripped', { reason: decision.tripReason || '' });
+			}
 		} else if (interlockChanged && !decision.interlockActive) {
 			this.logInfo('interlockCleared');
-			this.notify('interlock', 'notifyInterlockCleared');
+			// Only announce the recovery if we announced the trip (a feeding-caused trip was silent).
+			if (this.interlockNotified) {
+				this.notify('interlock', 'notifyInterlockCleared');
+			}
+			this.interlockNotified = false;
 		} else if (decision.interlockActive) {
-			this.log.silly(`Safety interlock still active (${source}); ${decision.openValveCount} valve(s) open.`);
+			// A trip that started silently during feeding but is STILL active after the feeding pause
+			// ended is a genuine dead-head — escalate it (once).
+			if (!this.interlockNotified && !this.feederPauseActive) {
+				this.interlockNotified = true;
+				this.log.error(`Safety interlock still TRIPPED after feeding (${source}): ${decision.tripReason}`);
+				this.notify('interlock', 'notifyInterlockTripped', { reason: decision.tripReason || '' });
+			} else {
+				this.log.silly(`Safety interlock still active (${source}); ${decision.openValveCount} valve(s) open.`);
+			}
 		}
 		this.interlockWasActive = decision.interlockActive;
 
