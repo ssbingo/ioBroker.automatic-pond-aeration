@@ -85,7 +85,7 @@ jobs:
       # shared action once npm 12 / the action handle provenance again.
       - uses: actions/checkout@v4
       - name: Use Node.js 24.x
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6.4.0
         with:
           node-version: '24.x'
           registry-url: 'https://registry.npmjs.org'
