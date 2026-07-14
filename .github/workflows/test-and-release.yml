@@ -83,7 +83,7 @@ jobs:
       # We publish explicitly with npm pinned to 11.18.0 (the last 11.x = the version those releases
       # succeeded with; OIDC trusted publishing, no NPM_TOKEN, intact provenance). Revert to the
       # shared action once npm 12 / the action handle provenance again.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Use Node.js 24.x
         uses: actions/setup-node@v4
         with:
