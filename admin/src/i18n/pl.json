@@ -168,7 +168,6 @@
 	"Winter start": "Początek zimy",
 	"With the ESP32 backend the emergency valve is an ESP32 relay channel — the same one set under General → Hardware backend. Changing it here changes it there too.": "W przypadku backendu ESP32 zawór awaryjny jest kanałem przekaźnika ESP32 — tym samym, który jest ustawiony w obszarze Ogólne → Zaplecze sprzętowe. Zmiana tutaj powoduje zmianę również tam.",
 	"With the ESP32 backend the pump is an ESP32 relay channel — the same one set under General → Hardware backend. Changing it here changes it there too.": "W przypadku zaplecza ESP32 pompa jest kanałem przekaźnika ESP32 — tym samym, który jest ustawiony w obszarze Ogólne → Zaplecze sprzętowe. Zmiana tutaj powoduje zmianę również tam.",
-	"days left": "pozostało dni",
 	"emergency valve (reserved)": "zawór awaryjny (zarezerwowany)",
 	"in use": "w użyciu",
 	"incompatible protocol!": "niezgodny protokół!",
@@ -176,7 +175,6 @@
 	"ioBroker system location": "Lokalizacja systemowa ioBroker",
 	"protocol": "protokół",
 	"pump (reserved)": "pompa (zarezerwowana)",
-	"trial": "test",
 	"when dissolved oxygen drops too low or recovers": "gdy rozpuszczony tlen spada zbyt nisko lub wraca do normy",
 	"when the dead-head interlock trips or clears": "gdy blokada dead-head zadziała lub zostaje skasowana",
 	"when the pressure leaves or re-enters its range": "gdy ciśnienie wychodzi poza swój zakres lub do niego wraca"

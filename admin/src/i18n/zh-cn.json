@@ -168,7 +168,6 @@
 	"Winter start": "冬季开始",
 	"With the ESP32 backend the emergency valve is an ESP32 relay channel — the same one set under General → Hardware backend. Changing it here changes it there too.": "对于 ESP32 后端，紧急阀是一个 ESP32 继电器通道 - 与常规 → 硬件后端下设置的通道相同。这里改变它也会改变那里。",
 	"With the ESP32 backend the pump is an ESP32 relay channel — the same one set under General → Hardware backend. Changing it here changes it there too.": "对于 ESP32 后端，泵是一个 ESP32 中继通道 - 与常规 → 硬件后端下设置的通道相同。这里改变它也会改变那里。",
-	"days left": "剩余天数",
 	"emergency valve (reserved)": "紧急阀（预留）",
 	"in use": "使用中",
 	"incompatible protocol!": "协议不兼容！",
@@ -176,7 +175,6 @@
 	"ioBroker system location": "ioBroker 系统位置",
 	"protocol": "协议",
 	"pump (reserved)": "泵（预留）",
-	"trial": "审判",
 	"when dissolved oxygen drops too low or recovers": "当溶解氧过低或恢复时",
 	"when the dead-head interlock trips or clears": "当憋压联锁触发或解除时",
 	"when the pressure leaves or re-enters its range": "当压力超出其范围或重新回到范围内时"

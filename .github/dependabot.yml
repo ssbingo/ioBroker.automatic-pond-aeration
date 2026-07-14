@@ -1,7 +1,11 @@
 version: 2
 updates:
   - package-ecosystem: npm
-    directory: "/"
+    # "/" is the adapter; "/docs/manual" is the manual's build tooling (private, currently no deps —
+    # listed so the repo checker's non-root package.json warning (W8905) is satisfied).
+    directories:
+      - "/"
+      - "/docs/manual"
     schedule:
       # custom cron (distributes load vs. a fixed monthly time); times are Europe/Berlin
       interval: cron

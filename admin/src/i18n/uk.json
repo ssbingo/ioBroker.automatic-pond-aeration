@@ -168,7 +168,6 @@
 	"Winter start": "Початок зими",
 	"With the ESP32 backend the emergency valve is an ESP32 relay channel — the same one set under General → Hardware backend. Changing it here changes it there too.": "У системі ESP32 аварійним клапаном є релейний канал ESP32 — той самий, який налаштовано в меню Загальне → Обладнання. Якщо змінити це тут, це також зміниться там.",
 	"With the ESP32 backend the pump is an ESP32 relay channel — the same one set under General → Hardware backend. Changing it here changes it there too.": "З серверною частиною ESP32 насос є релейним каналом ESP32 — той самий, що налаштовано в розділі Загальні → Серійна частина обладнання. Якщо змінити це тут, це також зміниться там.",
-	"days left": "залишилося днів",
 	"emergency valve (reserved)": "аварійний клапан (зарезервований)",
 	"in use": "в користуванні",
 	"incompatible protocol!": "несумісний протокол!",
@@ -176,7 +175,6 @@
 	"ioBroker system location": "Системне місцезнаходження ioBroker",
 	"protocol": "протокол",
 	"pump (reserved)": "насос (зарезервовано)",
-	"trial": "суд",
 	"when dissolved oxygen drops too low or recovers": "коли розчинений кисень падає надто низько або відновлюється",
 	"when the dead-head interlock trips or clears": "коли блокування dead-head спрацьовує або знімається",
 	"when the pressure leaves or re-enters its range": "коли тиск виходить за межі діапазону або повертається до нього"

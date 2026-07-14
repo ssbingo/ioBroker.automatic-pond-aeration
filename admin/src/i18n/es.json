@@ -168,7 +168,6 @@
 	"Winter start": "Inicio del invierno",
 	"With the ESP32 backend the emergency valve is an ESP32 relay channel — the same one set under General → Hardware backend. Changing it here changes it there too.": "Con el backend ESP32, la válvula de emergencia es un canal de relé ESP32, el mismo configurado en General → Hardware backend. Cambiarlo aquí también lo cambia allí.",
 	"With the ESP32 backend the pump is an ESP32 relay channel — the same one set under General → Hardware backend. Changing it here changes it there too.": "Con el backend ESP32, la bomba es un canal de relé ESP32, el mismo configurado en General → Hardware backend. Cambiarlo aquí también lo cambia allí.",
-	"days left": "quedan días",
 	"emergency valve (reserved)": "válvula de emergencia (reservada)",
 	"in use": "en uso",
 	"incompatible protocol!": "¡protocolo incompatible!",
@@ -176,7 +175,6 @@
 	"ioBroker system location": "Ubicación del sistema ioBroker",
 	"protocol": "protocolo",
 	"pump (reserved)": "bomba (reservada)",
-	"trial": "ensayo",
 	"when dissolved oxygen drops too low or recovers": "cuando el oxígeno disuelto baja demasiado o se recupera",
 	"when the dead-head interlock trips or clears": "cuando el enclavamiento dead-head se dispara o se restablece",
 	"when the pressure leaves or re-enters its range": "cuando la presión sale de su rango o vuelve a entrar"

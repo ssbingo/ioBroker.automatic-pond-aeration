@@ -168,7 +168,6 @@
 	"Winter start": "Begin winter",
 	"With the ESP32 backend the emergency valve is an ESP32 relay channel — the same one set under General → Hardware backend. Changing it here changes it there too.": "Bij de ESP32-backend is de noodklep een ESP32-relaiskanaal - hetzelfde kanaal dat is ingesteld onder Algemeen → Hardware-backend. Als je het hier verandert, verandert het daar ook.",
 	"With the ESP32 backend the pump is an ESP32 relay channel — the same one set under General → Hardware backend. Changing it here changes it there too.": "Met de ESP32-backend is de pomp een ESP32-relaiskanaal — hetzelfde kanaal dat is ingesteld onder Algemeen → Hardware-backend. Als je het hier verandert, verandert het daar ook.",
-	"days left": "dagen over",
 	"emergency valve (reserved)": "noodventiel (gereserveerd)",
 	"in use": "in gebruik",
 	"incompatible protocol!": "incompatibel protocol!",
@@ -176,7 +175,6 @@
 	"ioBroker system location": "ioBroker-systeemlocatie",
 	"protocol": "protocol",
 	"pump (reserved)": "pomp (gereserveerd)",
-	"trial": "proces",
 	"when dissolved oxygen drops too low or recovers": "wanneer de opgeloste zuurstof te laag wordt of herstelt",
 	"when the dead-head interlock trips or clears": "wanneer de dead-head-vergrendeling wordt geactiveerd of opgeheven",
 	"when the pressure leaves or re-enters its range": "wanneer de druk buiten zijn bereik komt of er weer binnenkomt"
