@@ -1,6 +1,6 @@
 {
   "name": "iobroker.automatic-pond-aeration",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "description": "Controls and monitors a pond aeration system: switches valves at up to 8 aeration points by schedule, cyclic round-robin or groups, with a pump safety interlock, optional oxygen/temperature/pressure monitoring, astro times and geolocation.",
   "author": {
     "name": "ssbingo",

@@ -414,6 +414,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.1.19 (2026-07-15)
+* (ssbingo) **Build/CI:** the release workflow now uses the shared **`ioBroker/testing-action-deploy@v1`** (it installs npm@11 and publishes via OIDC trusted publishing), replacing the hand-rolled deploy steps that existed only to work around npm 12's broken provenance. Clears repo-checker warning W3017. No functional or user-facing change
+
 ### 0.1.18 (2026-07-11)
 * (ssbingo) **Repo hygiene.** Removed two stale, unused admin i18n keys (`days left`, `trial`) from all 10 non-English translations, and added the manual's build-tooling directory to the dependabot config (clears repo-checker warnings W5605 / W8905). No functional or user-facing change
 
@@ -442,9 +445,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.1.10 (2026-07-10)
 * (ssbingo) **Recommend firmware v1.4.0** and document its new on-device **Log / Debug page** (`/log`). The reference firmware 1.4.0 adds a live diagnostic log — boot, Ethernet, licence, operating mode and the full **OTA online-update trace with the exact failure reason** — the place to analyse an update or connection problem over the network. The recommended-firmware note (`lib/firmware-compat.js` 1.2.2 → 1.4.0) was updated across the README, all 10 translated docs and the EN/DE PDF manual (now listing seven device pages). No functional change to the adapter
-
-### 0.1.9 (2026-07-10)
-* (ssbingo) **Custom channel & button names on the ESP32 web UI** (licensed, from tier **community**). Each aeration point's **Name** and an optional per-point **Button name** are pushed to the device and shown on its Home page instead of `Ch N` / `DI N`; `Ch 7 = Notventil` and `Ch 8 = Pumpe` stay fixed. In standalone the names are edited on the device (Settings → Namen) and persist in NVS; the adapter overwrites them when connected. Needs firmware **≥ 1.3.0**. Also documents the 0.1.8 pump behaviour (the pump now follows the aeration demand) across the README, all 10 translated docs and the EN/DE PDF manual. New per-point `buttonName` config + 1 admin string in 11 languages
 
 ---
 

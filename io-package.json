@@ -1,20 +1,20 @@
 {
     "common": {
         "name": "automatic-pond-aeration",
-        "version": "0.1.18",
+        "version": "0.1.19",
         "news": {
-            "0.1.18": {
-                "en": "Repo hygiene: removed two stale, unused admin translation keys (days left, trial) from all non-English files, and covered the manual's build-tooling directory in the dependabot config. No functional or user-facing change.",
-                "de": "Repo-Aufräumen: Zwei veraltete, unbenutzte Admin-Übersetzungs-Keys (days left, trial) aus allen nicht-englischen Dateien entfernt und das Build-Verzeichnis des Handbuchs in die Dependabot-Konfiguration aufgenommen. Keine funktionale oder nutzersichtbare Änderung.",
-                "ru": "Гигиена репозитория: удалены два устаревших, неиспользуемых ключа перевода администратора (осталось дней, пробная версия) из всех неанглийских файлов и закрыт каталог инструментов сборки руководства в конфигурации зависимости. Никаких функциональных или пользовательских изменений.",
-                "pt": "Higiene do repositório: removeu duas chaves de tradução de administrador obsoletas e não utilizadas (dias restantes, teste) de todos os arquivos que não estão em inglês e cobriu o diretório de ferramentas de construção do manual na configuração do dependabot. Nenhuma alteração funcional ou voltada ao usuário.",
-                "nl": "Repo-hygiëne: verwijderde twee verouderde, ongebruikte admin-vertaalsleutels (nog enkele dagen, proefversie) uit alle niet-Engelse bestanden en bedekte de map build-tooling van de handleiding in de dependabot-configuratie. Geen functionele of gebruikersgerichte verandering.",
-                "fr": "Hygiène du dépôt : suppression de deux clés de traduction d'administrateur obsolètes et inutilisées (jours restants, essai) de tous les fichiers non anglais et couverture du répertoire d'outils de construction du manuel dans la configuration de dependabot. Aucun changement fonctionnel ou orienté utilisateur.",
-                "it": "Igiene del repository: rimosse due chiavi di traduzione dell'amministratore obsolete e inutilizzate (giorni rimasti, prova) da tutti i file non inglesi e coperta la directory build-tooling del manuale nella configurazione di dependabot. Nessun cambiamento funzionale o rivolto all'utente.",
-                "es": "Higiene del repositorio: eliminó dos claves de traducción de administrador obsoletas y no utilizadas (quedan días, prueba) de todos los archivos que no están en inglés y cubrió el directorio de herramientas de compilación del manual en la configuración de dependabot. Sin cambios funcionales o de cara al usuario.",
-                "pl": "Higiena repozytorium: usunięto dwa nieaktualne, nieużywane klucze do tłumaczenia administratora (pozostały dni, wersja próbna) ze wszystkich plików w języku innym niż angielski i zajęto się katalogiem narzędzi do budowania podręcznika w konfiguracji zależności bota. Żadnych zmian funkcjonalnych ani widocznych dla użytkownika.",
-                "uk": "Гігієна сховища: видалено два застарілі, невикористані ключі перекладу адміністратора (залишилося днів, пробна версія) з усіх файлів не англійською мовою та охоплено каталог інструментів для збирання посібника в конфігурації dependabot. Жодних функціональних або користувацьких змін.",
-                "zh-cn": "回购卫生：从所有非英语文件中删除了两个过时的、未使用的管理翻译密钥（剩余天数，试用版），并覆盖了 dependentabot 配置中的手册构建工具目录。没有功能或面向用户的更改。"
+            "0.1.19": {
+                "en": "Build/CI only: the release workflow now uses the shared ioBroker/testing-action-deploy@v1 (npm@11 + OIDC trusted publishing) instead of hand-rolled deploy steps. No functional or user-facing change.",
+                "de": "Nur Build/CI: Der Release-Workflow nutzt jetzt die geteilte Action ioBroker/testing-action-deploy@v1 (npm@11 + OIDC-Trusted-Publishing) statt handgebauter Deploy-Schritte. Keine funktionale oder nutzersichtbare Änderung.",
+                "ru": "Только для сборки/CI: рабочий процесс выпуска теперь использует общий ioBroker/testing-action-deploy@v1 (npm@11 + доверенная публикация OIDC) вместо шагов развертывания вручную. Никаких функциональных или пользовательских изменений.",
+                "pt": "Somente build/CI: o fluxo de trabalho de lançamento agora usa o ioBroker/testing-action-deploy@v1 compartilhado (npm@11 + publicação confiável do OIDC) em vez de etapas de implantação roladas manualmente. Nenhuma alteração funcional ou voltada ao usuário.",
+                "nl": "Alleen Build/CI: de release-workflow gebruikt nu de gedeelde ioBroker/testing-action-deploy@v1 (npm@11 + OIDC vertrouwde publicatie) in plaats van handgerolde implementatiestappen. Geen functionele of gebruikersgerichte verandering.",
+                "fr": "Build/CI uniquement : le workflow de publication utilise désormais le partage ioBroker/testing-action-deploy@v1 (npm@11 + publication approuvée OIDC) au lieu des étapes de déploiement exécutées manuellement. Aucun changement fonctionnel ou orienté utilisateur.",
+                "it": "Solo build/CI: il flusso di lavoro di rilascio ora utilizza ioBroker/testing-action-deploy@v1 condiviso (npm@11 + pubblicazione attendibile OIDC) anziché passaggi di distribuzione manuali. Nessun cambiamento funzionale o rivolto all'utente.",
+                "es": "Solo compilación/CI: el flujo de trabajo de lanzamiento ahora utiliza ioBroker/testing-action-deploy@v1 compartido (npm@11 + publicación confiable OIDC) en lugar de pasos de implementación hechos a mano. Sin cambios funcionales o de cara al usuario.",
+                "pl": "Tylko kompilacja/CI: przepływ pracy związany z wydaniem wykorzystuje teraz współdzielone ioBroker/testing-action-deploy@v1 (npm@11 + zaufane publikowanie OIDC) zamiast ręcznych kroków wdrażania. Żadnych zmian funkcjonalnych ani widocznych dla użytkownika.",
+                "uk": "Лише збірка/CI: робочий процес випуску тепер використовує спільний ioBroker/testing-action-deploy@v1 (npm@11 + довірена публікація OIDC) замість ручних кроків розгортання. Жодних функціональних або користувацьких змін.",
+                "zh-cn": "仅构建/CI：发布工作流程现在使用共享的 ioBroker/testing-action-deploy@v1（npm@11 + OIDC 可信发布）而不是手动部署步骤。没有功能或面向用户的更改。"
             }
         },
         "titleLang": {
