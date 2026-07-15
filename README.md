@@ -414,6 +414,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.1.18 (2026-07-11)
+* (ssbingo) **Repo hygiene.** Removed two stale, unused admin i18n keys (`days left`, `trial`) from all 10 non-English translations, and added the manual's build-tooling directory to the dependabot config (clears repo-checker warnings W5605 / W8905). No functional or user-facing change
+
 ### 0.1.17 (2026-07-11)
 * (ssbingo) **Documentation readability polish.** Follow-up to the 0.1.16 cross-check: the on-device web-UI page list and the licensing tiers in the PDF manual are now **bulleted lists** instead of dense paragraphs; the **acronyms PoE / NTP / NVS** and *captive portal* are explained on first use in the README; a duplicated per-point runtime row was removed from the README's *Statistics* table; and an EN↔DE data-point table row order was aligned. EN/DE PDF manual rebuilt. No functional change
 
@@ -442,9 +445,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.1.9 (2026-07-10)
 * (ssbingo) **Custom channel & button names on the ESP32 web UI** (licensed, from tier **community**). Each aeration point's **Name** and an optional per-point **Button name** are pushed to the device and shown on its Home page instead of `Ch N` / `DI N`; `Ch 7 = Notventil` and `Ch 8 = Pumpe` stay fixed. In standalone the names are edited on the device (Settings → Namen) and persist in NVS; the adapter overwrites them when connected. Needs firmware **≥ 1.3.0**. Also documents the 0.1.8 pump behaviour (the pump now follows the aeration demand) across the README, all 10 translated docs and the EN/DE PDF manual. New per-point `buttonName` config + 1 admin string in 11 languages
-
-### 0.1.8 (2026-07-10)
-* (ssbingo) **Fix: the pump is now actually driven (both backends).** The adapter never had an ON-path for the pump — it only ever switched it *off* in an emergency — so on the ESP32 backend the pump relay stayed off forever. Now, when the pump is **controllable**, it **follows the aeration demand**: it runs while at least `minOpenValves` valves are open and switches off when the pond is idle or on a dead-head trip, honouring the anti short-cycle min on/off times. The interlock also now knows the ESP32 pump state is **monitored** (the relay is polled) instead of assuming the pump might always be running — this stops the emergency valve being held open unnecessarily. New unit-tested `pumpShouldRun` helper; pump-controllable help text clarified
 
 ---
 
