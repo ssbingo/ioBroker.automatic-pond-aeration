@@ -145,7 +145,7 @@ Zwei weitere Sicherheitsmechanismen arbeiten daneben:
 
 #spec(
   ([Eine ioBroker-Installation], [Der Smart-Home-Server, in dem dieser Adapter läuft #src(1).
-    Version: js-controller ≥ 6.0.11, admin ≥ 7.6.20.]),
+    Version: js-controller ≥ 6.0.11, admin ≥ 8.0.0.]),
   ([Node.js ≥ 22], [Vom Adapter vorausgesetzt.]),
   ([Mindestens ein schaltbares Ventil], [In ioBroker als *State* erreichbar — z. B. von einer
     Relaisplatine, einer smarten Steckdose oder einem KNX-/Zigbee-Aktor. Der Adapter schaltet diese

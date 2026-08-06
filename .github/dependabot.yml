@@ -22,8 +22,10 @@ updates:
       # do not bump @types/node across major versions (tied to the Node engine)
       - dependency-name: "@types/node"
         update-types: ["version-update:semver-major"]
-      # the admin UI stack is pinned by @iobroker/adapter-react-v5 (React 18 / MUI 6):
-      # major upgrades of these break the configuration page (npm ERESOLVE / build)
+      # TARGET: React 19 + MUI 9 (to match iobroker.admin > 8.0.0) — but the admin UI stack is pinned by
+      # @iobroker/adapter-react-v5, whose latest (8.3.2) still peers React ^18.3.1 / MUI ^6.5.0. Major
+      # upgrades of these break the configuration page (npm ERESOLVE / build). REMOVE these ignores and
+      # bump to React 19 / MUI 9 the moment adapter-react-v5 ships React-19/MUI-9 support (see rule 26).
       - dependency-name: "react"
         update-types: ["version-update:semver-major"]
       - dependency-name: "react-dom"
@@ -37,7 +39,7 @@ updates:
       - dependency-name: "@mui/icons-material"
         update-types: ["version-update:semver-major"]
       # @mui/x-date-pickers >= 8 requires @mui/material >= 7 (we are pinned to MUI 6),
-      # so keep it on the 7.x line until adapter-react-v5 moves to MUI 7 / React 19
+      # so keep it on the 7.x line until adapter-react-v5 moves to React 19 / MUI 9 (see rule 26)
       - dependency-name: "@mui/x-date-pickers"
         update-types: ["version-update:semver-major"]
       - dependency-name: "react-leaflet"

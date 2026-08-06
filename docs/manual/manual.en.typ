@@ -132,7 +132,7 @@ Two more safety mechanisms work alongside it:
 
 #spec(
   ([An ioBroker installation], [The smart-home server this adapter runs in #src(1). Version:
-    js-controller ≥ 6.0.11, admin ≥ 7.6.20.]),
+    js-controller ≥ 6.0.11, admin ≥ 8.0.0.]),
   ([Node.js ≥ 22], [Required by the adapter.]),
   ([At least one switchable valve], [Reachable in ioBroker as a *state* — e.g. from a relay board,
     smart plug or KNX/Zigbee actuator. The adapter switches these existing states.]),

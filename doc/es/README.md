@@ -102,7 +102,7 @@ ya que esto provoca sobrepresión y puede dañar la bomba. Por eso:
 ## 3. Requisitos
 
 * Node.js ≥ 22
-* js-controller ≥ 6.0.11, admin ≥ 7.6.20
+* js-controller ≥ 6.0.11, admin ≥ 8.0.0
 * Una o varias válvulas accesibles como estados de ioBroker (p. ej. un adaptador de relé/enchufe
   inteligente).
 

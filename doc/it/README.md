@@ -100,7 +100,7 @@ ciò provoca sovrapressione e può danneggiare la pompa. Pertanto:
 ## 3. Requisiti
 
 * Node.js ≥ 22
-* js-controller ≥ 6.0.11, admin ≥ 7.6.20
+* js-controller ≥ 6.0.11, admin ≥ 8.0.0
 * Una o più valvole raggiungibili come stati ioBroker (ad es. un adattatore relè/presa smart).
 
 ## 4. Installazione

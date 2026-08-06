@@ -98,7 +98,7 @@ causa sobrepressão e pode danificar a bomba. Por isso:
 ## 3. Pré-requisitos
 
 * Node.js ≥ 22
-* js-controller ≥ 6.0.11, admin ≥ 7.6.20
+* js-controller ≥ 6.0.11, admin ≥ 8.0.0
 * Uma ou mais válvulas acessíveis como estados do ioBroker (por ex. um adaptador de relé/tomada inteligente).
 
 ## 4. Instalação

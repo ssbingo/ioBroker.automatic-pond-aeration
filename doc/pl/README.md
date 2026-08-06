@@ -94,7 +94,7 @@ powoduje to nadciśnienie i może uszkodzić pompę. Dlatego:
 ## 3. Wymagania
 
 * Node.js ≥ 22
-* js-controller ≥ 6.0.11, admin ≥ 7.6.20
+* js-controller ≥ 6.0.11, admin ≥ 8.0.0
 * Jeden lub więcej zaworów dostępnych jako stany ioBroker (np. adapter przekaźnika/inteligentnego gniazdka).
 
 ## 4. Instalacja

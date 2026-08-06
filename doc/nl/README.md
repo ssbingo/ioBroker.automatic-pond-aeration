@@ -94,7 +94,7 @@ veroorzaakt overdruk en kan de pomp beschadigen. Daarom:
 ## 3. Vereisten
 
 * Node.js ≥ 22
-* js-controller ≥ 6.0.11, admin ≥ 7.6.20
+* js-controller ≥ 6.0.11, admin ≥ 8.0.0
 * Eén of meer kleppen die als ioBroker-states bereikbaar zijn (bijv. een relais-/stekkeradapter).
 
 ## 4. Installatie

@@ -105,7 +105,7 @@ overpressure and can damage the pump. Therefore:
 ## 3. Requirements
 
 * Node.js ≥ 22
-* js-controller ≥ 6.0.11, admin ≥ 7.6.20
+* js-controller ≥ 6.0.11, admin ≥ 8.0.0
 * One or more valves reachable as ioBroker states (e.g. a relay/smart-plug adapter).
 
 ## 4. Installation
@@ -414,6 +414,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.1.20 (2026-08-06)
+* (ssbingo) **Minimum requirements raised: admin ≥ 8.0.0** (js-controller ≥ 6.0.11 and Node ≥ 22 unchanged) — updated in `io-package.json`, the README, all 10 translated docs and the EN/DE PDF manual. iobroker.admin > 8.0.0 runs on **React 19 + MUI 9**; the adapter's custom-React config page will move to React 19 / MUI 9 **as soon as `@iobroker/adapter-react-v5` supports it** (its latest, 8.3.2, still targets React 18 / MUI 6), so until then the self-contained config bundle runs unchanged under admin 8. Also synced the dependency bumps merged on GitHub (adapter-core, adapter-react-v5, @iobroker/testing, suncalc, @types/node). No functional change to the control engine
+
 ### 0.1.19 (2026-07-15)
 * (ssbingo) **Build/CI:** the release workflow now uses the shared **`ioBroker/testing-action-deploy@v1`** (it installs npm@11 and publishes via OIDC trusted publishing), replacing the hand-rolled deploy steps that existed only to work around npm 12's broken provenance. Clears repo-checker warning W3017. No functional or user-facing change
 
@@ -442,9 +445,6 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the complete, milestone-based plan.
 
 ### 0.1.11 (2026-07-10)
 * (ssbingo) **Optional WiFi for the ESP32 device** and **recommend firmware v1.6.0**. The reference firmware 1.6.0 can now join a **WiFi** network in addition to Ethernet — enable/disable and configure it (SSID + password) on the device's Settings page, applied live; it needs the device's **external antenna** (shipped with the reference device). It also adds an on-device **diagnostic log** with a level filter and a full OTA-update trace (for pinpointing update problems). The adapter now treats **any non-free licence tier** as licensed for control (covers higher tiers automatically). Recommended-firmware note (`lib/firmware-compat.js` 1.4.0 → 1.6.0), README, all 10 translated docs and the EN/DE PDF manual updated with WiFi and the mandatory-antenna note. No change to the control engine
-
-### 0.1.10 (2026-07-10)
-* (ssbingo) **Recommend firmware v1.4.0** and document its new on-device **Log / Debug page** (`/log`). The reference firmware 1.4.0 adds a live diagnostic log — boot, Ethernet, licence, operating mode and the full **OTA online-update trace with the exact failure reason** — the place to analyse an update or connection problem over the network. The recommended-firmware note (`lib/firmware-compat.js` 1.2.2 → 1.4.0) was updated across the README, all 10 translated docs and the EN/DE PDF manual (now listing seven device pages). No functional change to the adapter
 
 ---
 

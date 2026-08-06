@@ -98,7 +98,7 @@ Dead-Heading) – das erzeugt Überdruck und kann die Pumpe beschädigen. Deshal
 ## 3. Voraussetzungen
 
 * Node.js ≥ 22
-* js-controller ≥ 6.0.11, admin ≥ 7.6.20
+* js-controller ≥ 6.0.11, admin ≥ 8.0.0
 * Ein oder mehrere Ventile, erreichbar als ioBroker-States (z. B. ein Relais-/Steckdosen-Adapter).
 
 ## 4. Installation

@@ -1,20 +1,20 @@
 {
     "common": {
         "name": "automatic-pond-aeration",
-        "version": "0.1.19",
+        "version": "0.1.20",
         "news": {
-            "0.1.19": {
-                "en": "Build/CI only: the release workflow now uses the shared ioBroker/testing-action-deploy@v1 (npm@11 + OIDC trusted publishing) instead of hand-rolled deploy steps. No functional or user-facing change.",
-                "de": "Nur Build/CI: Der Release-Workflow nutzt jetzt die geteilte Action ioBroker/testing-action-deploy@v1 (npm@11 + OIDC-Trusted-Publishing) statt handgebauter Deploy-Schritte. Keine funktionale oder nutzersichtbare Änderung.",
-                "ru": "Только для сборки/CI: рабочий процесс выпуска теперь использует общий ioBroker/testing-action-deploy@v1 (npm@11 + доверенная публикация OIDC) вместо шагов развертывания вручную. Никаких функциональных или пользовательских изменений.",
-                "pt": "Somente build/CI: o fluxo de trabalho de lançamento agora usa o ioBroker/testing-action-deploy@v1 compartilhado (npm@11 + publicação confiável do OIDC) em vez de etapas de implantação roladas manualmente. Nenhuma alteração funcional ou voltada ao usuário.",
-                "nl": "Alleen Build/CI: de release-workflow gebruikt nu de gedeelde ioBroker/testing-action-deploy@v1 (npm@11 + OIDC vertrouwde publicatie) in plaats van handgerolde implementatiestappen. Geen functionele of gebruikersgerichte verandering.",
-                "fr": "Build/CI uniquement : le workflow de publication utilise désormais le partage ioBroker/testing-action-deploy@v1 (npm@11 + publication approuvée OIDC) au lieu des étapes de déploiement exécutées manuellement. Aucun changement fonctionnel ou orienté utilisateur.",
-                "it": "Solo build/CI: il flusso di lavoro di rilascio ora utilizza ioBroker/testing-action-deploy@v1 condiviso (npm@11 + pubblicazione attendibile OIDC) anziché passaggi di distribuzione manuali. Nessun cambiamento funzionale o rivolto all'utente.",
-                "es": "Solo compilación/CI: el flujo de trabajo de lanzamiento ahora utiliza ioBroker/testing-action-deploy@v1 compartido (npm@11 + publicación confiable OIDC) en lugar de pasos de implementación hechos a mano. Sin cambios funcionales o de cara al usuario.",
-                "pl": "Tylko kompilacja/CI: przepływ pracy związany z wydaniem wykorzystuje teraz współdzielone ioBroker/testing-action-deploy@v1 (npm@11 + zaufane publikowanie OIDC) zamiast ręcznych kroków wdrażania. Żadnych zmian funkcjonalnych ani widocznych dla użytkownika.",
-                "uk": "Лише збірка/CI: робочий процес випуску тепер використовує спільний ioBroker/testing-action-deploy@v1 (npm@11 + довірена публікація OIDC) замість ручних кроків розгортання. Жодних функціональних або користувацьких змін.",
-                "zh-cn": "仅构建/CI：发布工作流程现在使用共享的 ioBroker/testing-action-deploy@v1（npm@11 + OIDC 可信发布）而不是手动部署步骤。没有功能或面向用户的更改。"
+            "0.1.20": {
+                "en": "Minimum requirements raised: admin >= 8.0.0 (js-controller >= 6.0.11 and Node >= 22 unchanged). iobroker.admin > 8.0.0 runs on React 19 + MUI 9; the custom config page migrates as soon as @iobroker/adapter-react-v5 supports it. No functional change.",
+                "de": "Mindestanforderungen angehoben: admin >= 8.0.0 (js-controller >= 6.0.11 und Node >= 22 unverändert). iobroker.admin > 8.0.0 nutzt React 19 + MUI 9; die Custom-Konfigurationsseite wird migriert, sobald @iobroker/adapter-react-v5 dies unterstützt. Keine funktionale Änderung.",
+                "ru": "Минимальные требования: admin >= 8.0.0 (js-контроллер >= 6.0.11 и Node >= 22 без изменений). iobroker.admin > 8.0.0 работает на React 19 + MUI 9; пользовательская страница конфигурации будет перенесена, как только @iobroker/adapter-react-v5 поддержит ее. Никаких функциональных изменений.",
+                "pt": "Requisitos mínimos levantados: admin >= 8.0.0 (js-controller >= 6.0.11 e Node >= 22 inalterados). iobroker.admin > 8.0.0 roda em React 19 + MUI 9; a página de configuração personalizada migra assim que @iobroker/adapter-react-v5 oferece suporte. Nenhuma mudança funcional.",
+                "nl": "Minimale vereisten: admin >= 8.0.0 (js-controller >= 6.0.11 en Node >= 22 ongewijzigd). iobroker.admin > 8.0.0 draait op React 19 + MUI 9; de aangepaste configuratiepagina migreert zodra @iobroker/adapter-react-v5 dit ondersteunt. Geen functionele verandering.",
+                "fr": "Configuration minimale requise : admin >= 8.0.0 (js-controller >= 6.0.11 et Node >= 22 inchangé). iobroker.admin > 8.0.0 fonctionne sur React 19 + MUI 9 ; la page de configuration personnalisée migre dès que @iobroker/adapter-react-v5 la prend en charge. Aucun changement fonctionnel.",
+                "it": "Requisiti minimi aumentati: admin >= 8.0.0 (js-controller >= 6.0.11 e Node >= 22 invariati). iobroker.admin > 8.0.0 funziona su React 19 + MUI 9; la pagina di configurazione personalizzata viene migrata non appena @iobroker/adapter-react-v5 la supporta. Nessun cambiamento funzionale.",
+                "es": "Requisitos mínimos planteados: admin >= 8.0.0 (js-controller >= 6.0.11 y Node >= 22 sin cambios). iobroker.admin > 8.0.0 se ejecuta en React 19 + MUI 9; la página de configuración personalizada migra tan pronto como @iobroker/adapter-react-v5 la admita. Ningún cambio funcional.",
+                "pl": "Podniesione minimalne wymagania: admin >= 8.0.0 (kontroler js >= 6.0.11 i węzeł >= 22 bez zmian). iobroker.admin > 8.0.0 działa na React 19 + MUI 9; niestandardowa strona konfiguracyjna jest migrowana, gdy tylko @iobroker/adapter-react-v5 ją obsługuje. Żadnych zmian funkcjonalnych.",
+                "uk": "Підвищені мінімальні вимоги: admin >= 8.0.0 (js-controller >= 6.0.11 і Node >= 22 без змін). iobroker.admin > 8.0.0 працює на React 19 + MUI 9; користувацька сторінка конфігурації переміщується, щойно її підтримує @iobroker/adapter-react-v5. Без функціональних змін.",
+                "zh-cn": "提出的最低要求：admin >= 8.0.0（js-controller >= 6.0.11 且 Node >= 22 不变）。 iobroker.admin > 8.0.0 在 React 19 + MUI 9 上运行；一旦 @iobroker/adapter-react-v5 支持，自定义配置页面就会迁移。没有功能变化。"
             }
         },
         "titleLang": {
@@ -83,7 +83,7 @@
         ],
         "globalDependencies": [
             {
-                "admin": ">=7.6.20"
+                "admin": ">=8.0.0"
             }
         ]
     },

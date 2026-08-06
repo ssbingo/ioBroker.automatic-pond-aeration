@@ -101,7 +101,7 @@ heading) – cela provoque une surpression et peut endommager la pompe. C'est po
 ## 3. Prérequis
 
 * Node.js ≥ 22
-* js-controller ≥ 6.0.11, admin ≥ 7.6.20
+* js-controller ≥ 6.0.11, admin ≥ 8.0.0
 * Une ou plusieurs vannes accessibles en tant qu'états ioBroker (p. ex. un adaptateur de relais/prise
   connectée).
 
